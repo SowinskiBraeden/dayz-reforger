@@ -1,0 +1,27 @@
+{
+  "name": "applicantz",
+  "version": "0.0.1",
+  "description": "Application Handler for Discord",
+  "main": "index.js",
+  "nodemonConfig": {
+    "ignore": ["logs/*.log", "logs/*.json"]
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node dev-index.js",
+    "debug": "nodemon dev-index.js"
+  },
+  "author": "Braeden Sowinski",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^1.1.0",
+    "colors": "^1.4.0",
+    "discord-bitfield-calculator": "^1.0.0",
+    "discord.js": "^14.3.0",
+    "dotenv": "^16.0.2",
+    "winston": "^3.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

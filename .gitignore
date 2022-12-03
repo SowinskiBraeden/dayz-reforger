@@ -1,0 +1,13 @@
+# Node modules
+node_modules/*
+
+# Testing/dev related
+*_test.js
+dev-*.js
+
+# Logs
+logs/*
+npm-debug.log
+
+#env
+.env
