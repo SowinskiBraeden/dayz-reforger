@@ -118,10 +118,10 @@ module.exports = {
 
         const success = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`**Success!**\n> The faction <@&${factionID}> has now claimed *${interaction.values[0]}*`)
+          .setDescription(`**Success!**\n> The faction <@&${factionID}> has now claimed ***${interaction.values[0]}***`)
           .setImage(armbandURL);
 
-        return interaction.update({ embeds: [success], components: [], flags: 0 });
+        return interaction.update({ embeds: [success], components: [] });
       }
     },
 
