@@ -232,4 +232,4 @@ class DayzArmbands extends Client {
   }
 }
 
-module.exports = QuarksBot;
+module.exports = DayzArmbands;
