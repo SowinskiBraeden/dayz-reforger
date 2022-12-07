@@ -11,7 +11,7 @@ module.exports = {
   Scopes: ["identify", "guilds", "applications.commands"], //Discord OAuth2 Scopes
   IconURL: "",
   Colors: {
-    Default: "#6e5145",
+    Default: "#f05724",
     Red: "#ba0f0f",
     Green: "#32a852",
     Yellow: "#ffb01f"

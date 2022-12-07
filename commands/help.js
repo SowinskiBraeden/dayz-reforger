@@ -1,5 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, SelectMenuBuilder } = require("discord.js");
-const settings = require('../config/settingsHelp');
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
   name: "help",

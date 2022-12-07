@@ -192,10 +192,10 @@ class DayzArmbands extends Client {
   getDefaultSettings(GuildId) {
     return {
       serverID: GuildId,
-      allowedChannels: [], // list of channels the bot is allowed to be used in
+      allowedChannels: [],
       factionArmbands: {},
       usedArmbands: [],
-      botAdmin: null, //
+      botAdmin: null,
     }
   }
 
@@ -216,7 +216,7 @@ class DayzArmbands extends Client {
 
     return {
       serverID: GuildId,
-      customChannelStatus: guild.server.allowedChannels.length > 0 ? true : false, // not stored but calculated after
+      customChannelStatus: guild.server.allowedChannels.length > 0 ? true : false,
       allowedChannels: guild.server.allowedChannels,
       factionArmbands: guild.server.factionArmbands,
       usedArmbands: guild.server.usedArmbands,
