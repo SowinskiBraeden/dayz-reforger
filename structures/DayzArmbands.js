@@ -195,6 +195,7 @@ class DayzArmbands extends Client {
       allowedChannels: [],
       factionArmbands: {},
       usedArmbands: [],
+      excludedRoles: [],
       botAdmin: null,
     }
   }
@@ -220,6 +221,7 @@ class DayzArmbands extends Client {
       allowedChannels: guild.server.allowedChannels,
       factionArmbands: guild.server.factionArmbands,
       usedArmbands: guild.server.usedArmbands,
+      excludedRoles: guild.server.excludedRoles,
       botAdmin: guild.server.botAdmin,
     };
   }

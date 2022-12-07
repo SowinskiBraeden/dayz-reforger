@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Embed } = require('discord.js');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -72,6 +72,31 @@ module.exports = {
           description: "Remove role",
           value: "remove",
           type: 1,
+        },
+      ]
+    },
+    {
+      name: "exclude_role",
+      description: "Exclude roles from users to use to claim a flag.",
+      value: "exclude_role",
+      type: 1,
+      options: [
+        {
+          name: "add_or_remove",
+          description: "Add or remove a role from the exclude list.",
+          value: "add_or_remove",
+          type: 3,
+          choices: [
+            { name: 'add', value: 'add' }, { name: 'remove', value: 'remove' },
+          ],
+          required: true,
+        },
+        {
+          name: "role",
+          description: "The role to manage",
+          value: "role",
+          type: 8,
+          required: true,
         },
       ]
     },
@@ -188,6 +213,31 @@ module.exports = {
 
             return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
           }
+
+      } else if (args[0].name == 'exclude') {
+
+        if (args[0].options[0].value == 'add') {
+          client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$push: {'server.excludedRoles': args[0].options[1].value}}, function(err, res) {
+            if (err) return client.sendInternalError(interaction, err);
+          })
+
+          const success = new EmbedBuilder()
+            .setColor(client.config.Colors.Green)
+            .setDescription(`**Done!**\n> Successfully added <@&${args[0].options[1].value}> to list of excluded roles.`)
+
+          return interaction.send({ embeds: [success] });
+
+        } else if (args[0].options[0].value == 'remove') {
+          client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$pull: {'server.excludedRoles': args[0].options[1].value}}, function(err, res) {
+            if (err) return client.sendInternalError(interaction, err);
+          })
+
+          const success = new EmbedBuilder()
+            .setColor(client.config.Colors.Green)
+            .setDescription(`**Done!**\n> Successfully removed <@&${args[0].options[1].value}> to list of excluded roles.`)
+
+          return interaction.send({ embeds: [success] });
+        }
 
       } else if (args[0].name == 'reset') {
         const prompt = new EmbedBuilder()
