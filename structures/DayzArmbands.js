@@ -7,7 +7,7 @@ const Logger = require("../util/Logger");
 const path = require("path");
 const fs = require('fs');
 
-class Applicantz extends Client {
+class DayzArmbands extends Client {
 
   constructor(options, config) {
     super(options)
@@ -22,6 +22,10 @@ class Applicantz extends Client {
       "The config.js is not filled out. Please make sure nothing is blank, otherwise the bot will not work properly."
     );
 
+    this.db;
+    this.dbo;
+    this.connectMongo(this.config.mongoURI, this.config.dbo);
+    this.databaseConnected = false;
     this.LoadCommandsAndInteractionHandlers();
     this.LoadEvents();
 
@@ -30,12 +34,14 @@ class Applicantz extends Client {
     this.ws.on("INTERACTION_CREATE", async (interaction) => {
       const start = new Date().getTime();
       if (interaction.type!=3) {
+        let GuildDB = await this.GetGuild(interaction.guild_id);
         
         const command = interaction.data.name.toLowerCase();
         const args = interaction.data.options;
 
         client.log(`Interaction - ${command}`);
 
+        //Easy to send respnose so ;)
         interaction.guild = await this.guilds.fetch(interaction.guild_id);
         interaction.send = async (message) => {
           const rest = new REST({ version: '10' }).setToken(client.config.Token);
@@ -48,9 +54,17 @@ class Applicantz extends Client {
           });
         };
 
+        if (!this.databaseConnected) {
+          let dbFailedEmbed = new EmbedBuilder()
+            .setDescription(`**Internal Error:**\nUh Oh D:  Its not you, its me.\nThe bot has failed to connect to the database 5 times!\nContact the Developers\nhttps://discord.gg/YCXhvy9uZw`)
+            .setColor(this.config.Colors.Red)
+        
+          return interaction.send({ embeds: [dbFailedEmbed] });
+        }
+
         let cmd = client.commands.get(command);
         try {
-          cmd.SlashCommand.run(this, interaction, args, start); // start is only used in ping / stats command
+          cmd.SlashCommand.run(this, interaction, args, { GuildDB }, start); // start is only used in ping / stats command
         } catch (err) {
           this.sendInternalError(err);
         }
@@ -58,6 +72,46 @@ class Applicantz extends Client {
     });
 
     const client = this;
+  }
+
+  async connectMongo(mongoURI, dbo) {
+    let failed = false;
+
+    let dbLogDir = path.join(__dirname, '..', 'logs', 'database-logs.json');
+    let databaselogs;
+    try {
+      databaselogs = JSON.parse(fs.readFileSync(dbLogDir));
+    } catch (err) {
+      databaselogs = {
+        attempts: 0,
+        connected: false,
+      };
+    }
+
+    if (databaselogs.attempts >= 5) {
+      this.error('Failed to connect to mongodb after multiple attempts');
+      return; // prevent further attempts
+    }
+
+    try {
+      // Connect to Mongo database.
+      this.db = await MongoClient.connect(mongoURI, {connectTimeoutMS: 1000});
+      this.dbo = this.db.db(dbo);
+      mongoose.connect(`${mongoURI}/${dbo}`);
+      this.log('Successfully connected to mongoDB');
+      databaselogs.connected = true;
+      databaselogs.attempts = 0; // reset attempts
+      this.databaseConnected = true;
+    } catch (err) {
+      databaselogs.attempts++;
+      this.error(`Failed to connect to mongodb: attempt ${databaselogs.attempts}`);
+      failed = true;
+    }
+
+    // write JSON string to a file
+    await fs.writeFileSync(dbLogDir, JSON.stringify(databaselogs));
+
+    if (failed) process.exit(-1);
   }
 
   exists(n) {return null != n && undefined != n && "" != n}
@@ -125,7 +179,7 @@ class Applicantz extends Client {
   sendInternalError(Interaction, Error) {
     this.error(Error);
     const embed = new EmbedBuilder()
-      .setDescription(`**Internal Error:**\nUh Oh D:  Its not you, its me.\nThis command has crashed\nContact the Developers\n${this.config.SupportServer}`)
+      .setDescription(`**Internal Error:**\nUh Oh D:  Its not you, its me.\nThis command has crashed\nContact the Developers\nhttps://discord.gg/YCXhvy9uZw`)
       .setColor(this.config.Colors.Red)
   
     Interaction.send({ embeds: [embed] });
@@ -137,6 +191,39 @@ class Applicantz extends Client {
     this.guilds.cache.forEach((guild) => RegisterGuildCommands(this, guild.id));
   }
 
+  getDefaultSettings(GuildId) {
+    return {
+      serverID: GuildId,
+      allowedChannels: [], // list of channels the bot is allowed to be used in
+      factionArmbands: [], // list of armbands in use
+      botAdmin: null, //
+    }
+  }
+
+  async GetGuild(GuildId) {
+    let guild = undefined;
+    if (this.databaseConnected) guild = await this.dbo.collection("guilds").findOne({"server.serverID":GuildId}).then(guild => guild);
+
+    // If guild not found, generate guild default
+    if (!guild) {
+      guild = {}
+      guild.server = this.getDefaultSettings(GuildId);
+      if (this.databaseConnected) {
+        this.dbo.collection("guilds").insertOne(guild, function(err, res) {
+          if (err) throw err;
+        });
+      }
+    }
+
+    return {
+      serverID: GuildId,
+      customChannelStatus: guild.server.allowedChannels.length > 0 ? true : false, // not stored but calculated after
+      allowedChannels: guild.server.allowedChannels,
+      factionArmbands: [],
+      botAdmin: guild.server.botAdmin,
+    };
+  }
+
   log(Text) { this.logger.log(Text); }
   error(Text) { this.logger.error(Text); }
 
@@ -145,4 +232,4 @@ class Applicantz extends Client {
   }
 }
 
-module.exports = Applicantz;
+module.exports = QuarksBot;

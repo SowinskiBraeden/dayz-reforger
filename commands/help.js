@@ -33,7 +33,7 @@ module.exports = {
     },
     { 
       name: "credits",
-      description: "Applicantz Credits",
+      description: "DayzArmbands Credits",
       value: "credits",
       type: 1,
     },
@@ -56,7 +56,7 @@ module.exports = {
     run: async (client, interaction, args) => {
     if (args[0].name == 'version') {
       const versionEmbed = new EmbedBuilder()
-        .setTitle(`Current Applicantz Version`)
+        .setTitle(`Current DayzArmbands Version`)
         .setDescription(client.config.Version);
 
       return interaction.send({ embeds: [versionEmbed] });
@@ -72,7 +72,7 @@ module.exports = {
           .setColor(client.config.Colors.Default)
           .setDescription(`${Commands.join("\n")}
     
-    Applicantz Version: v${client.config.Version}`);
+    DayzArmbands Version: v${client.config.Version}`);
         if (!args[0].options[0]) return interaction.send({ embeds: [Embed] });
         else {
           let cmd =
@@ -114,9 +114,9 @@ module.exports = {
       } else if (args[0].name == 'support') {
         const supportEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`**__Applicantz Support__**
+          .setDescription(`**__DayzArmbands Support__**
           
-            Are you experiencing troubles with Applicantz?
+            Are you experiencing troubles with DayzArmbands?
             Do you have questions or concerns?
             Do you require help to use the bot?
             Do you have a feature you'd like to see?
