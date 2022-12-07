@@ -4,7 +4,10 @@
   "description": "A Discord Bot to handle DayZ server flags and armbands for in game factions.",
   "main": "index.js",
   "nodemonConfig": {
-    "ignore": ["logs/*.log", "logs/*.json"]
+    "ignore": [
+      "logs/*.log",
+      "logs/*.json"
+    ]
   },
   "scripts": {
     "start": "node index.js",
@@ -19,6 +22,7 @@
     "discord-bitfield-calculator": "^1.0.0",
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.2",
+    "mongodb": "^4.12.1",
     "winston": "^3.8.1"
   },
   "devDependencies": {

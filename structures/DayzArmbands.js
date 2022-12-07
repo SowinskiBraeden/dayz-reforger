@@ -2,7 +2,6 @@ const { RegisterGlobalCommands, RegisterGuildCommands} = require("../util/Regist
 const { Collection, Client, EmbedBuilder, Routes } = require('discord.js');
 const MongoClient = require('mongodb').MongoClient;
 const { REST } = require('@discordjs/rest');
-const mongoose = require('mongoose');
 const Logger = require("../util/Logger");
 const path = require("path");
 const fs = require('fs');
@@ -97,7 +96,6 @@ class DayzArmbands extends Client {
       // Connect to Mongo database.
       this.db = await MongoClient.connect(mongoURI, {connectTimeoutMS: 1000});
       this.dbo = this.db.db(dbo);
-      mongoose.connect(`${mongoURI}/${dbo}`);
       this.log('Successfully connected to mongoDB');
       databaselogs.connected = true;
       databaselogs.attempts = 0; // reset attempts
@@ -195,7 +193,8 @@ class DayzArmbands extends Client {
     return {
       serverID: GuildId,
       allowedChannels: [], // list of channels the bot is allowed to be used in
-      factionArmbands: [], // list of armbands in use
+      factionArmbands: {},
+      usedArmbands: [],
       botAdmin: null, //
     }
   }
@@ -219,7 +218,8 @@ class DayzArmbands extends Client {
       serverID: GuildId,
       customChannelStatus: guild.server.allowedChannels.length > 0 ? true : false, // not stored but calculated after
       allowedChannels: guild.server.allowedChannels,
-      factionArmbands: [],
+      factionArmbands: guild.server.factionArmbands,
+      usedArmbands: guild.server.usedArmbands,
       botAdmin: guild.server.botAdmin,
     };
   }
