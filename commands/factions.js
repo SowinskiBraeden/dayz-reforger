@@ -1,4 +1,4 @@
-const { ModalBuilder, ActionRowBuilder } = require('discord.js');
+const { ModalBuilder, ActionRowBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
   name: "factions",
@@ -19,8 +19,22 @@ module.exports = {
      * @param {string[]} args
      * @param {*} param3
     */
-    run: async (client, interaction, args) => {
+    run: async (client, interaction, args, { GuildDB }) => {
       
+      let factions = new EmbedBuilder()
+        .setColor(client.config.Colors.Default)
+        .setTitle('Factions & Armbands')
+
+      let description = '';
+
+      for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
+        if (description == "") description += `> <@&${factionID}> - ${data.armband}`;
+        else description += `\n> <@&${factionID}> - *${data.armband}*`;
+      }
+
+      factions.setDescription(description);
+
+      return interaction.send({ embeds: [factions] });
     },
   },
   Interactions: {}
