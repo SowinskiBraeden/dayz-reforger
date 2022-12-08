@@ -76,15 +76,15 @@ module.exports = {
       ]
     },
     {
-      name: "exclude_role",
+      name: "exclude",
       description: "Exclude roles from users to use to claim a flag.",
-      value: "exclude_role",
+      value: "exclude",
       type: 1,
       options: [
         {
-          name: "add_or_remove",
+          name: "action",
           description: "Add or remove a role from the exclude list.",
-          value: "add_or_remove",
+          value: "action",
           type: 3,
           choices: [
             { name: 'add', value: 'add' }, { name: 'remove', value: 'remove' },
