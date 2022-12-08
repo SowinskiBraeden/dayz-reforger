@@ -180,7 +180,11 @@ class DayzArmbands extends Client {
       .setDescription(`**Internal Error:**\nUh Oh D:  Its not you, its me.\nThis command has crashed\nContact the Developers\nhttps://discord.gg/YCXhvy9uZw`)
       .setColor(this.config.Colors.Red)
   
-    Interaction.send({ embeds: [embed] });
+    try {
+      Interaction.send({ embeds: [embed] });
+    } catch {
+      Interaction.update({ embeds: [embed], components: [] });
+    }
   }
 
   // Calls register for guild and global commands
