@@ -26,12 +26,16 @@ module.exports = {
       let factions = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
         .setTitle('Factions & Armbands')
-
+        
       let description = '';
-
-      for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
-        if (description == "") description += `> <@&${factionID}> - ${data.armband}`;
-        else description += `\n> <@&${factionID}> - *${data.armband}*`;
+      
+      if (GuildDB.usedArmbands.length == 0) {
+        description = '> There are no factions that have claimed armbands.';
+      } else {
+        for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
+          if (description == "") description += `> <@&${factionID}> - ${data.armband}`;
+          else description += `\n> <@&${factionID}> - *${data.armband}*`;
+        }
       }
 
       factions.setDescription(description);
