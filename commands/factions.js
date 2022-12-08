@@ -1,4 +1,4 @@
-const { ModalBuilder, ActionRowBuilder, EmbedBuilder } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
   name: "factions",

@@ -1,4 +1,4 @@
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder, InteractionCollector } = require('discord.js');
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
 const { Armbands } = require('../config/armbandsdb.js');
 
 module.exports = {

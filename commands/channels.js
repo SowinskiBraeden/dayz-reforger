@@ -1,4 +1,4 @@
-const { ModalBuilder, ActionRowBuilder } = require('discord.js');
+const { ModalBuilder } = require('discord.js');
 
 module.exports = {
   name: "channels",
