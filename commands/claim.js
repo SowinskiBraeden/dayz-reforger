@@ -6,7 +6,7 @@ module.exports = {
   debug: false,
   global: false,
   description: "claim an available armband for your ",
-  usage: "[cmd] [opts]",
+  usage: "[role]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],
