@@ -45,16 +45,16 @@ module.exports = {
         const opt = new ActionRowBuilder()
           .addComponents(
             new ButtonBuilder()
-              .setCustomId(`ChangeArmband-yes-${interaction.member.user.id}-${args[0].value}`)
+              .setCustomId(`ChangeArmband-yes-${args[0].value}-${interaction.member.user.id}`)
               .setLabel("Yes")
               .setStyle(ButtonStyle.Success),
             new ButtonBuilder()
-              .setCustomId(`ChangeArmband-no-${interaction.member.user.id}-${args[0].value}`)
+              .setCustomId(`ChangeArmband-no-${args[0].value}-${interaction.member.user.id}`)
               .setLabel("No")
               .setStyle(ButtonStyle.Secondary)
           )
 
-        return interaction.send({ embeds: [warnArmbadChange], components: [opt], flags: (1 << 6) });
+        return interaction.send({ embeds: [warnArmbadChange], components: [opt] });
       }
 
       let available = new SelectMenuBuilder()
@@ -104,8 +104,28 @@ module.exports = {
           faction: factionID,
           armband: interaction.values[0],
         };
-        client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, {$push: {'server.usedArmbands': interaction.values[0]}, $set: {[`server.factionArmbands.${factionID}`]: data}}, function (err, res) {
-          if (err) return client.sendInternalError(interacction, err);
+
+        let query = {
+          $push: {
+            'server.usedArmbands': interaction.values[0]
+          },
+          $set: {
+            [`server.factionArmbands.${factionID}`]: data
+          },
+        };
+
+        if (interaction.customId.split('-')[2] == 'update') {
+          let removeQuery;
+          for (const [fid, data] of Object.entries(GuildDB.factionArmbands)) {
+            if (fid == factionID) removeQuery = data.armband;
+          }
+          client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, {$pull: {'server.usedArmbands': removeQuery}}, function (err, res) {
+            if (err) return client.sendInternalError(interaction, err);
+          })
+        }
+        
+        client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, function (err, res) {
+          if (err) return client.sendInternalError(interaction, err);
         })
 
         let armbandURL;
@@ -128,7 +148,51 @@ module.exports = {
 
     ChangeArmband: {
       run: async (client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+          return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
+        if (interaction.customId.split('-')[1]=='yes') {
+          let available = new SelectMenuBuilder()
+            .setCustomId(`Claim-${interaction.customId.split('-')[2]}-update-1-${interaction.member.user.id}`)
+            .setPlaceholder('Select an armband from list 1 to claim')
+          
+          let availableNext = new SelectMenuBuilder()
+            .setCustomId(`Claim-${interaction.customId.split('-')[2]}-update-2-${interaction.member.user.id}`)
+            .setPlaceholder('Select an armband from list 2 to claim')
+
+          let tracker = 0;
+          for (let i = 0; i < Armbands.length; i++) {
+            if (!GuildDB.usedArmbands.includes(Armbands[i].name)) {
+              tracker++;
+              data = {
+                label: Armbands[i].name,
+                description: 'Select this armband',
+                value: Armbands[i].name,
+              }
+              if (tracker > 25) availableNext.addOptions(data);
+              else available.addOptions(data);
+            }
+          }
+
+          let compList = []
+
+          let opt = new ActionRowBuilder().addComponents(available);
+          compList.push(opt)
+          let opt2 = undefined;
+          if (tracker > 25) {
+            opt2 = new ActionRowBuilder().addComponents(availableNext);
+            compList.push(opt2);
+          } 
+
+          return interaction.update({ embeds: [], components: compList });  
+
+        } else {
+          const cancel = new EmbedBuilder()
+            .setColor(client.config.Colors.Default)
+            .setDescription('**Canceled**\n> Your factions armband will remain the same');
+
+          return interaction.update({ embeds: [cancel], components: [] });
+        }
       }
     }
   }
