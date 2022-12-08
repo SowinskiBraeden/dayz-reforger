@@ -24,11 +24,11 @@ module.exports = {
       
       let available = new SelectMenuBuilder()
         .setCustomId(`View-1-${interaction.member.user.id}`)
-        .setPlaceholder('Select an armband from list 1 to claim')
+        .setPlaceholder('View an armband from list 1')
       
       let availableNext = new SelectMenuBuilder()
         .setCustomId(`View-2-${interaction.member.user.id}`)
-        .setPlaceholder('Select an armband from list 2 to claim')
+        .setPlaceholder('View an armband from list 2')
 
       let tracker = 0;
       for (let i = 0; i < Armbands.length; i++) {
