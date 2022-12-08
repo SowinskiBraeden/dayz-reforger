@@ -32,10 +32,11 @@ module.exports = {
       let channels = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
         .setTitle('Channels')
-      let des;
+
+      let des = '';
       for (let i = 0; i < GuildDB.allowedChannels.length; i++) {
         if (i == 0) des += `> <#${GuildDB.allowedChannels[i]}>`;
-        else des += `\n > <#${GuildDB.allowedChannels[i]}>`;
+        else des += `\n> <#${GuildDB.allowedChannels[i]}>`;
       }
       channels.setDescription(des);
 
