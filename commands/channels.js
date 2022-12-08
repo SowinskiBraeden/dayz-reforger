@@ -1,4 +1,4 @@
-const { ModalBuilder } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
   name: "channels",
@@ -20,14 +20,27 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
-      
+      if (!GuildDB.customChannelStatus) {
+        let noChannels = new EmbedBuilder()
+          .setColor(client.config.Colors.Default)
+          .setTitle('Channels')
+          .setDescription('> There have been no configured channels');
+
+        return interaction.send({ embeds: [noChannels] });
+      }
+
+      let channels = new EmbedBuilder()
+        .setColor(client.config.Colors.Default)
+        .setTitle('Channels')
+      let des;
+      for (let i = 0; i < GuildDB.allowedChannels.length; i++) {
+        if (i == 0) des += `> <#${GuildDB.allowedChannels[i]}>`;
+        else des += `\n > <#${GuildDB.allowedChannels[i]}>`;
+      }
+      channels.setDescription(des);
+
+      return interaction.send({ embeds: [channels] });
     },
   },
-  Interactions: {
-    ViewArmbads: {
-      run: async (client, interaction) => {
-        
-      }
-    }
-  }
+  Interactions: {}
 }
