@@ -21,7 +21,5 @@ module.exports = {
   dbo: process.env.dbo || "knoldus",
   Presence: {
     status: "online", // You can show online, idle, and dnd
-    name: "Grand Theft Auto V", // The message shown
-    type: "PLAYING", // PLAYING, WATCHING, LISTENING, STREAMING
   },
 }
