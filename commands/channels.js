@@ -19,7 +19,7 @@ module.exports = {
      * @param {string[]} args
      * @param {*} param3
     */
-    run: async (client, interaction, args) => {
+    run: async (client, interaction, args, { GuildDB }) => {
       
     },
   },

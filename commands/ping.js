@@ -19,7 +19,7 @@ module.exports = {
      * @param {string[]} args
      * @param {*} param3
     */
-    run: async (client, interaction, args, start) => {
+    run: async (client, interaction, args, { GuildDB }, start) => {
       const end = new Date().getTime();
       const pingEmbed = new EmbedBuilder()
         .setDescription(`🏓 **Pong!** Bot ping: ${end - start}ms`)

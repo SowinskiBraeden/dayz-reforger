@@ -19,7 +19,7 @@ module.exports = {
      * @param {string[]} args
      * @param {*} param3
     */
-    run: async (client, interaction, args, start) => {
+    run: async (client, interaction, args, { GuildDB }) => {
       const end = new Date().getTime();
       const stats = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
