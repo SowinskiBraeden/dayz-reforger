@@ -27,12 +27,13 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
+      if (GuildDB.customChannelStatus==true&&!GuildDB.allowedChannels.includes(interaction.channel_id))
+        return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) });
 
+      // Handle invalid roles
       let des;
-
       if (GuildDB.excludedRoles.includes(args[0].value)) des = '**Notice:**\n> This role has been configured to be excluded to claim an armband.';
       if (!interaction.member.roles.includes(args[0].value)) des = '**Notice:**\n> You cannot claim an armband for a role you don\'t have.';
-
       if (des) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(des)], flags: (1 << 6) });
 
       // If this faction has an existing record in the db

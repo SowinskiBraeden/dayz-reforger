@@ -21,6 +21,8 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
+      if (GuildDB.customChannelStatus==true&&!GuildDB.allowedChannels.includes(interaction.channel_id))
+        return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) }); 
       
       let available = new SelectMenuBuilder()
         .setCustomId(`View-1-${interaction.member.user.id}`)

@@ -53,13 +53,13 @@ module.exports = {
      */
 
     run: async (client, interaction, args) => {
-    if (args[0].name == 'version') {
-      const versionEmbed = new EmbedBuilder()
-        .setTitle(`Current DayzArmbands Version`)
-        .setDescription(client.config.Version);
+      if (args[0].name == 'version') {
+        const versionEmbed = new EmbedBuilder()
+          .setTitle(`Current DayzArmbands Version`)
+          .setDescription(client.config.Version);
 
-      return interaction.send({ embeds: [versionEmbed] });
-    } else if (args[0].name == 'commands') {
+        return interaction.send({ embeds: [versionEmbed] });
+      } else if (args[0].name == 'commands') {
         let Commands = client.commands.filter((cmd) => {
           return !cmd.debug
         }).map((cmd) => 
