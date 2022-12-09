@@ -31,7 +31,7 @@ module.exports = {
 
       let excluded = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setTitle('Channels')
+        .setTitle('Excluded Roles')
 
       let des = '*These roles you cannot use to claim an armband.*';
       for (let i = 0; i < GuildDB.excludedRoles.length; i++) {
