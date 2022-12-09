@@ -264,14 +264,17 @@ module.exports = {
         const channelColor = GuildDB.customChannelStatus ? '+ ' : '- ';
         const botAdminRole = GuildDB.botAdmin ? `\n╚➤ <@&${GuildDB.botAdmin}>` : '';
         const botAdminRoleColor = GuildDB.botAdmin ? `+ ` : '- ';
-        
+        const excludedRolesColor = GuildDB.excludedRoles.length > 0 ? `+ ` : '- ';
+        const excludedRolesInfo = GuildDB.excludedRoles.length > 0 ? '\n╚➤ \`/excluded\` to view' : '';
+
         const settingsEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setTitle('Current Guild Configurations')
           .addFields(
             { name: 'Guild ID', value: `\`\`\`arm\n${GuildDB.serverID}\`\`\``, inline: true },
             { name: 'Has Allowed Channels?', value: `\`\`\`diff\n${channelColor}${GuildDB.customChannelStatus}\`\`\`${channelsInfo}`, inline: true },
-            { name: 'Has bot admin role?', value: `\`\`\`diff\n${botAdminRoleColor}${client.exists(GuildDB.botAdmin)}\`\`\`${botAdminRole}`, inline: true }, 
+            { name: 'Has bot admin role?', value: `\`\`\`diff\n${botAdminRoleColor}${client.exists(GuildDB.botAdmin)}\`\`\`${botAdminRole}`, inline: true },
+            { name: 'Excluded roles?', value: `\`\`\`diff\n${excludedRolesColor}${GuildDB.excludedRoles.length > 0}\`\`\`${excludedRolesInfo}` },
           );
 
         return interaction.send({ embeds: [settingsEmbed] });
