@@ -33,7 +33,7 @@ module.exports = {
         .setColor(client.config.Colors.Default)
         .setTitle('Channels')
 
-      let des = '*These roles you cannot use to claim an armband.';
+      let des = '*These roles you cannot use to claim an armband.*';
       for (let i = 0; i < GuildDB.excludedRoles.length; i++) {
         des += `\n> <@&${GuildDB.excludedRoles[i]}>`;
       }
