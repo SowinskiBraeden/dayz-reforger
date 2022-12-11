@@ -24,7 +24,7 @@ module.exports = {
         let noChannels = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setTitle('Channels')
-          .setDescription('> There have been no configured channels');
+          .setDescription('> There are no configured channels');
 
         return interaction.send({ embeds: [noChannels] });
       }
