@@ -36,6 +36,16 @@ module.exports = {
       if (!interaction.member.roles.includes(args[0].value)) des = '**Notice:**\n> You cannot claim an armband for a role you don\'t have.';
       if (des) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(des)], flags: (1 << 6) });
 
+      for (let roleID in Object(GuildDB.factionArmbands)) {
+        if (interaction.member.roles.includes(roleID) && roleID != args[0].value) {
+          return interaction.send({ embeds: [
+            new EmbedBuilder()
+              .setColor(client.config.Colors.Yellow)
+              .setDescription('**Notice:**\n> You already have another role with a claimed flag.')
+          ], flags: (1 << 6) })
+        }
+      }
+
       // If this faction has an existing record in the db
       if (GuildDB.factionArmbands[args[0].value]) {
         const warnArmbadChange = new EmbedBuilder()
