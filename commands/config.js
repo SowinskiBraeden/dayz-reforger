@@ -124,7 +124,7 @@ module.exports = {
       let canUseCommand = false;
 
       if (permissions.includes("MANAGE_GUILD")) canUseCommand = true;
-      if (client.exists(GuildDB.botAdmin) && interaction.member.roles.includes(GuildDB.botAdmin)) canUseCommand = true;
+      if (GuildDB.hasBotAdmin && interaction.member.roles.filter(e => GuildDB.botAdminRoles.indexOf(e) !== -1).length > 0) canUseCommand = true;
       if (!canUseCommand) return interaction.send({ content: 'You don\'t have the permissions to use this command.' });
 
       if (args[0].name == 'allowed_channels') {
@@ -269,8 +269,11 @@ module.exports = {
       } else if (args[0].name == 'view') {
         const channelsInfo = GuildDB.customChannelStatus ? '\n╚➤ \`/channels\` to view' : '';
         const channelColor = GuildDB.customChannelStatus ? '+ ' : '- ';
-        const botAdminRole = GuildDB.botAdmin ? `\n╚➤ <@&${GuildDB.botAdmin}>` : '';
-        const botAdminRoleColor = GuildDB.botAdmin ? `+ ` : '- ';
+        let botAdminRoles = '';
+        for (let i = 0; i < GuildDB.botAdminRoles.length; i++) {
+          botAdminRoles += `\n╚➤ <@&${GuildDB.botAdminRoles[i]}>`;
+        }
+        const botAdminRoleColor = GuildDB.hasBotAdmin ? `+ ` : '- ';
         const excludedRolesColor = GuildDB.excludedRoles.length > 0 ? `+ ` : '- ';
         const excludedRolesInfo = GuildDB.excludedRoles.length > 0 ? '\n╚➤ \`/excluded\` to view' : '';
 
@@ -280,7 +283,7 @@ module.exports = {
           .addFields(
             { name: 'Guild ID', value: `\`\`\`arm\n${GuildDB.serverID}\`\`\``, inline: true },
             { name: 'Has Allowed Channels?', value: `\`\`\`diff\n${channelColor}${GuildDB.customChannelStatus}\`\`\`${channelsInfo}`, inline: true },
-            { name: 'Has bot admin role?', value: `\`\`\`diff\n${botAdminRoleColor}${client.exists(GuildDB.botAdmin)}\`\`\`${botAdminRole}`, inline: true },
+            { name: 'Has bot admin role?', value: `\`\`\`diff\n${botAdminRoleColor}${client.exists(GuildDB.botAdmin)}\`\`\`${botAdminRoles}`, inline: true },
             { name: 'Excluded roles?', value: `\`\`\`diff\n${excludedRolesColor}${GuildDB.excludedRoles.length > 0}\`\`\`${excludedRolesInfo}` },
           );
 
