@@ -55,23 +55,21 @@ module.exports = {
       type: 2,
       options: [
         {
-          name: "set",
-          description: "Set role",
-          value: "role",
-          type: 1,
-          options: [{
-            name: "role",
-            description: "Role to set",
-            value: "role",
-            type: 8,
-            required: true,
-          }]
+          name: "action",
+          description: "Add or remove a role from the exclude list.",
+          value: "action",
+          type: 3,
+          choices: [
+            { name: 'add', value: 'add' }, { name: 'remove', value: 'remove' },
+          ],
+          required: true,
         },
         {
-          name: "remove",
-          description: "Remove role",
-          value: "remove",
-          type: 1,
+          name: "role",
+          description: "Role to configure",
+          value: "role",
+          type: 8,
+          required: true,
         },
       ]
     },
@@ -181,20 +179,29 @@ module.exports = {
 
       } else if (args[0].name == 'bot_admin_role') {
         
-          if (args[0].options[0].name == 'set') {
+          if (args[0].options[0].value == 'add') {
             const roleId = args[0].options[0].options[0].value;
   
-            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set:{"server.botAdmin": roleId}}, function(err, res) {
+            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$push: {"server.botAdminRoles": roleId}}, function(err, res) {
               if (err) return client.sendInternalError(interaction, err);
             });
       
             const successEmbed = new EmbedBuilder()
-              .setDescription(`Successfully set <@&${roleId}> as a bot admin role.\nUsers with this role can use restricted commands.`)
+              .setDescription(`Successfully added <@&${roleId}> as a bot admin role.\nUsers with this role can use restricted commands.`)
               .setColor(client.config.Colors.Green);
       
             return interaction.send({ embeds: [successEmbed] });    
 
-          } else if (args[0].options[0].name== 'remove') {
+          } else if (args[0].options[0].value== 'remove') {
+
+            if (!GuildDB.botADminRoles.includes(args[0].options[1].value)) {
+              const noRole = new EmbedBuilder()
+                .setColor(client.config.Colors.Yellow)
+                .setDescription(`**Notice:**\n> The role <@&${args[0].options[1].value}> has not been configured as a bot admin.`);
+
+              return interaction.send({ embeds: [noRole] });
+            }
+
             const prompt = new EmbedBuilder()
               .setTitle(`Are you sure you want to remove this role as a bot admin?`)
               .setColor(client.config.Colors.Default)
@@ -202,11 +209,11 @@ module.exports = {
             const opt = new ActionRowBuilder()
               .addComponents(
                 new ButtonBuilder()
-                  .setCustomId(`RemoveBotAdminRole-yes-${interaction.member.user.id}`)
+                  .setCustomId(`RemoveBotAdminRole-yes-${args[0].options[1].value}-${interaction.member.user.id}`)
                   .setLabel("Yes")
                   .setStyle(ButtonStyle.Danger),
                 new ButtonBuilder()
-                  .setCustomId(`RemoveBotAdminRole-no-${interaction.member.user.id}`)
+                  .setCustomId(`RemoveBotAdminRole-no-${args[0].options[1].value}-${interaction.member.user.id}`)
                   .setLabel("No")
                   .setStyle(ButtonStyle.Success)
               )
@@ -318,8 +325,9 @@ module.exports = {
         }
         let action = '';
         if (interaction.customId.split('-')[1]=='yes') {
+          let role = interaction.customId.split('-')[2];
           action = 'removed';
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$set: {"server.botAdmin": null}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull: {"server.botAdminRoles": role}}, function(err, res) {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
