@@ -1,6 +1,6 @@
 {
   "name": "dayz-armbands",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "description": "A Discord Bot to handle DayZ server flags and armbands for in game factions.",
   "main": "index.js",
   "nodemonConfig": {

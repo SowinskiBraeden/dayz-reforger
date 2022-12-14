@@ -52,7 +52,7 @@ module.exports = {
       name: "bot_admin_role",
       description: "Set/remove bot admin role",
       value: "bot_admin_role",
-      type: 2,
+      type: 1,
       options: [
         {
           name: "action",
