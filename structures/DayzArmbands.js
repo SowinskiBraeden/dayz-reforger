@@ -43,7 +43,7 @@ class DayzArmbands extends Client {
               $pull: { 'server.usedArmbands': data.armband },
               $unset: { [`server.factionArmbands.${factionID}`]: "" },
             };
-            this.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, function (err, res) {
+            await this.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, function (err, res) {
               if (err) return client.sendInternalError(interaction, err);
             });
           }
