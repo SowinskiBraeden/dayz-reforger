@@ -45,7 +45,16 @@ module.exports = {
           for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
             const guild = client.guilds.cache.get(GuildDB.serverID);
             const role = guild.roles.cache.find(role => role.id == factionID);
-            console.log(role);
+            if (!role) {
+              let query = {
+                $pull: { 'server.usedArmbands': data.armband },
+                $unset: { [`server.factionArmbands.${factionID}`]: "" },
+              };
+              client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, function (err, res) {
+                if (err) return client.sendInternalError(interaction, err);
+              });
+              continue;
+            }
             if (description == "") description += `> <@&${factionID}> - ${data.armband}`;
             else description += `\n> <@&${factionID}> - *${data.armband}*`;
           }
