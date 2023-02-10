@@ -34,6 +34,20 @@ class DayzArmbands extends Client {
       const start = new Date().getTime();
       if (interaction.type!=3) {
         let GuildDB = await this.GetGuild(interaction.guild_id);
+
+        for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
+          const guild = this.guilds.cache.get(GuildDB.serverID);
+          const role = guild.roles.cache.find(role => role.id == factionID);
+          if (!role) {
+            let query = {
+              $pull: { 'server.usedArmbands': data.armband },
+              $unset: { [`server.factionArmbands.${factionID}`]: "" },
+            };
+            this.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, function (err, res) {
+              if (err) return client.sendInternalError(interaction, err);
+            });
+          }
+        }
         
         const command = interaction.data.name.toLowerCase();
         const args = interaction.data.options;
