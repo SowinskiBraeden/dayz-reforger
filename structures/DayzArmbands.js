@@ -10,6 +10,8 @@ const { Readable } = require('stream');
 const { finished } = require('stream/promises');
 const readline = require('readline');
 
+const minute = 60000; // 1 minute in milliseconds
+
 class DayzArmbands extends Client {
 
   constructor(options, config) {
@@ -104,18 +106,33 @@ class DayzArmbands extends Client {
     const { body } = await fetch(res.data.token.url);
     await finished(Readable.fromWeb(body).pipe(stream));
   
-    const fileStream = fs.createReadStream('./logs/server-logs.ADM');
+    // const fileStream = fs.createReadStream('./logs/server-logs.ADM');
 
-    const rl = readline.createInterface({
-      input: fileStream,
-      crlfDelay: Infinity
-    });
-    let lines = [];
-    for await (const line of rl) { lines.push(line); }
+    // const rl = readline.createInterface({
+    //   input: fileStream,
+    //   crlfDelay: Infinity
+    // });
+    // let lines = [];
+    // for await (const line of rl) { lines.push(line); }
 
-    const channel = this.channels.cache.get('993272430342721597');
+    // const channel = this.channels.cache.get('993272430342721597');
 
-    channel.send({ content: lines[lines.length-1] });
+    // channel.send({ content: lines[lines.length-1] });
+  }
+
+  killfeed() {
+    
+  }
+
+  async logsUpdateTimer() {
+    setTimeout(async () => {
+      await this.updateLogs().then(() => {
+        this.killfeed(); // Check logs for killfeed
+        // this.alarms(); // check for base alarms (+ rules that may apply such as safe zone)
+        // this.adminLogs(); // check for combat logs / connect + deconnect events
+      });
+      this.logsUpdateTimer(); // restart this function
+    }, minute * 5); // restart every 5 minutes
   }
 
   async connectMongo(mongoURI, dbo) {
