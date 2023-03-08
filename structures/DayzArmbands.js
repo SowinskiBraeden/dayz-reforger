@@ -3,8 +3,11 @@ const { Collection, Client, EmbedBuilder, Routes } = require('discord.js');
 const MongoClient = require('mongodb').MongoClient;
 const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
+
 const path = require("path");
 const fs = require('fs');
+const { Readable } = require('stream');
+const { finished } = require('stream/promises');
 
 class DayzArmbands extends Client {
 
@@ -15,7 +18,7 @@ class DayzArmbands extends Client {
     this.commands = new Collection();
     this.interactionHandlers = new Collection();
     this.logger = new Logger(path.join(__dirname, "..", "logs/Logs.log"));
-    
+
     if (this.config.Token === "")
     throw new TypeError(
       "The config.js is not filled out. Please make sure nothing is blank, otherwise the bot will not work properly."
@@ -85,6 +88,20 @@ class DayzArmbands extends Client {
     });
 
     const client = this;
+  }
+
+  async updateLogs() {
+    const res = await fetch(`https://api.nitrado.net/services/${this.config.Nitrado.ServerID}/gameservers/file_server/download?file=/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, {
+      headers: {
+        "Authorization": this.config.Nitrado.Auth
+      }
+    }).then(response => 
+      response.json().then(data => data)
+    ).then(res => res);
+
+    const stream = fs.createWriteStream('./logs/server-logs.ADM');
+    const { body } = await fetch(res.data.token.url);
+    await finished(Readable.fromWeb(body).pipe(stream));
   }
 
   async connectMongo(mongoURI, dbo) {

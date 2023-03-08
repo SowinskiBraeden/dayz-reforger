@@ -9,6 +9,11 @@ module.exports = {
 	SupportServer: "https://discord.gg/KVFJCvvFtK", //Support Server Link
 	Token: process.env.token || "", //Discord Bot Token
   Scopes: ["identify", "guilds", "applications.commands"], //Discord OAuth2 Scopes
+  Nitrado: {
+    ServerID: process.env.SERVER_ID,
+    UserID: process.env.USER_ID,
+    Auth: process.env.AUTH_KEY
+  },
   IconURL: "",
   Colors: {
     Default: "#8a7c72",

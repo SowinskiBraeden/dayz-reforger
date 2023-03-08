@@ -1,7 +1,7 @@
 {
   "name": "dayz-armbands",
-  "version": "4.7.2",
-  "description": "A Discord Bot to handle DayZ server flags and armbands for in game factions.",
+  "version": "4.7.2.1",
+  "description": "A General Purpose Discord Bot for DayZ Servers.",
   "main": "index.js",
   "nodemonConfig": {
     "ignore": [
@@ -11,8 +11,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "dev": "node dev-index.js",
-    "debug": "nodemon dev-index.js"
+    "dev": "node index.js",
+    "debug": "nodemon index.js"
   },
   "author": "Braeden Sowinski",
   "license": "ISC",
