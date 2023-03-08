@@ -121,7 +121,7 @@ class DayzArmbands extends Client {
   }
 
   killfeed() {
-    
+    console.log('killfeed test')
   }
 
   async logsUpdateTimer() {

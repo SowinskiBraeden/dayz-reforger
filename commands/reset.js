@@ -1,6 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { addInventory } = require('../structures/inventory');
-const { addBank } = require('../structures/bank');
+const { addUser } = require('../structures/user');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -78,14 +77,14 @@ module.exports = {
             .setColor(client.config.Colors.Green)
             .setTitle('Successfully reset user\'s data')
 
-          let banking = await client.dbo.collection("banks").findOne({"banking.userID": interaction.member.user.id}).then(banking => banking);
+          let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
       
           let bankingReset = false;
           if (!banking) bankingReset = true
           else banking = banking.banking
 
           if (!bankingReset) {
-            const success = addBank(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
+            const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
             if (!success) {
               client.error(err);
               const embed = new EmbedBuilder()
