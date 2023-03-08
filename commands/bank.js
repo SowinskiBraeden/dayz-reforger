@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { Bank, addBank } = require('../structures/bank');
+const { User, addUser } = require('../structures/user');
 
 module.exports = {
   name: "bank",
@@ -113,14 +113,14 @@ module.exports = {
         return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) }); 
       }
 
-      let banking = await client.dbo.collection("banks").findOne({"banking.userID": interaction.member.user.id}).then(banking => banking);
+      let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
 
       if (!banking) {
         banking = {
           userID: interaction.member.user.id,
           guilds: {
             [GuildDB.serverID]: {
-              account: {
+              bankAccount: {
                 balance: GuildDB.startingBalance,
                 cash: 0.00,
               }
@@ -129,7 +129,7 @@ module.exports = {
         }
 
         // Register inventory for user  
-        let newBank = new Bank();
+        let newBank = new User();
         newBank.createBank(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, 0);
         newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
@@ -138,12 +138,12 @@ module.exports = {
       } else banking = banking.banking;
 
       if (!client.exists(banking.guilds[GuildDB.serverID])) {
-        const success = addBank(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
+        const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
         if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
       }
 
       if (args[0].name == 'deposit') {
-        if (banking.guilds[GuildDB.serverID].account.cash.toFixed(2) - args[0].options[0].value < 0) {
+        if (banking.guilds[GuildDB.serverID].bankAccount.cash.toFixed(2) - args[0].options[0].value < 0) {
           const nsf = new EmbedBuilder()
             .setDescription('**Bank Notice:** NSF. Non sufficient funds')
             .setColor(client.config.Colors.Red);
@@ -151,13 +151,13 @@ module.exports = {
           return interaction.send({ embeds: [nsf] });
         }
 
-        const newBalance = banking.guilds[GuildDB.serverID].account.balance + args[0].options[0].value;
-        const newCash = Math.abs(banking.guilds[GuildDB.serverID].account.cash.toFixed(2) - args[0].options[0].value);
+        const newBalance = banking.guilds[GuildDB.serverID].bankAccount.balance + args[0].options[0].value;
+        const newCash = Math.abs(banking.guilds[GuildDB.serverID].bankAccount.cash.toFixed(2) - args[0].options[0].value);
       
-        client.dbo.collection("banks").updateOne({ "banking.userID": interaction.member.user.id }, {
+        client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
-            [`banking.guilds.${GuildDB.serverID}.account.balance`]: newBalance,
-            [`banking.guilds.${GuildDB.serverID}.account.cash`]: newCash
+            [`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
+            [`banking.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
@@ -171,7 +171,7 @@ module.exports = {
         return interaction.send({ embeds: [successEmbed] });
 
       } else if (args[0].name == 'withdraw') {
-        if (args[0].options[0].value > banking.guilds[GuildDB.serverID].account.balance) {
+        if (args[0].options[0].value > banking.guilds[GuildDB.serverID].bankAccount.balance) {
           let nsf = new EmbedBuilder()
             .setDescription('**Bank Notice:** NSF. Non sufficient funds')
             .setColor(client.config.Colors.Red);
@@ -179,13 +179,13 @@ module.exports = {
           return interaction.send({ embeds: [nsf] });
         }
 
-        const newBalance = banking.guilds[GuildDB.serverID].account.balance - args[0].options[0].value;
-        const newCash = banking.guilds[GuildDB.serverID].account.cash + args[0].options[0].value;
+        const newBalance = banking.guilds[GuildDB.serverID].bankAccount.balance - args[0].options[0].value;
+        const newCash = banking.guilds[GuildDB.serverID].bankAccount.cash + args[0].options[0].value;
       
-        client.dbo.collection("banks").updateOne({ "banking.userID": interaction.member.user.id }, {
+        client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
-            [`banking.guilds.${GuildDB.serverID}.account.balance`]: newBalance,
-            [`banking.guilds.${GuildDB.serverID}.account.cash`]: newCash
+            [`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
+            [`banking.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
@@ -206,14 +206,14 @@ module.exports = {
           // Show target users balance
 
           let targetUserID = args[0].options[0].value.replace('<@!', '').replace('>', '');
-          let targetUserBanking = await client.dbo.collection("banks").findOne({"banking.userID": targetUserID}).then(banking => banking);
+          let targetUserBanking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
 
           if (!targetUserBanking) {
             targetUserBanking = {
               userID: targetUserID,
               guilds: {
                 [GuildDB.serverID]: {
-                  account: {
+                  bankAccount: {
                     balance: GuildDB.startingBalance,
                     cash: 0.00,
                   }
@@ -222,7 +222,7 @@ module.exports = {
             }
 
             // Register inventory for user  
-            let newBank = new Bank();
+            let newBank = new User();
             newBank.createBank(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
             newBank.save().catch(err => {
               if (err) return client.sendInternalError(interaction, err);
@@ -231,7 +231,7 @@ module.exports = {
           } else targetUserBanking = targetUserBanking.banking;
 
           if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
-            const success = addBank(targetUserBanking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
+            const success = addUser(targetUserBanking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
             if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
           }
 
@@ -240,17 +240,17 @@ module.exports = {
 
           balanceEmbed.setTitle(`${User.tag}'s Bank Records`);
           balanceEmbed.addFields(
-            { name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].account.balance}`, inline: true },
-            { name: '**Cash**', value: `$${targetUserBanking.guilds[GuildDB.serverID].account.cash}`, inline: true });
+            { name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance}`, inline: true },
+            { name: '**Cash**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash}`, inline: true });
 
         } else {
           // Show command authors balance
 
           balanceEmbed.setTitle('Personal Bank Records');
           balanceEmbed.addFields(
-            { name: '**Bank**', value: `$${banking.guilds[GuildDB.serverID].account.balance.toFixed(2)}`, inline: true },
-            { name: '**Cash**', value: `$${banking.guilds[GuildDB.serverID].account.cash.toFixed(2)}`, inline: true },
-            { name: '**Total**', value: `$${(banking.guilds[GuildDB.serverID].account.balance + banking.guilds[GuildDB.serverID].account.cash).toFixed(2)}`, inline: true });
+            { name: '**Bank**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.balance.toFixed(2)}`, inline: true },
+            { name: '**Cash**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.cash.toFixed(2)}`, inline: true },
+            { name: '**Total**', value: `$${(banking.guilds[GuildDB.serverID].bankAccount.balance + banking.guilds[GuildDB.serverID].bankAccount.cash).toFixed(2)}`, inline: true });
         }
 
         return interaction.send({ embeds: [balanceEmbed] });
@@ -258,7 +258,7 @@ module.exports = {
       } else if (args[0].name == 'give') {
          // send money from wallet
 
-        if (banking.guilds[GuildDB.serverID].account.cash.toFixed(2) - args[0].options[1].value < 0) {
+        if (banking.guilds[GuildDB.serverID].bankAccount.cash.toFixed(2) - args[0].options[1].value < 0) {
           let embed = new EmbedBuilder()
             .setTitle('Non sufficient funds! Withdraw more cash')
             .setColor(client.config.Colors.Red);
@@ -266,27 +266,27 @@ module.exports = {
           return interaction.send({ embeds: [embed] });
         }
 
-        const newCash = banking.guilds[GuildDB.serverID].account.cash - args[0].options[1].value;
+        const newCash = banking.guilds[GuildDB.serverID].bankAccount.cash - args[0].options[1].value;
       
-        client.dbo.collection("banks").updateOne({ "banking.userID": interaction.member.user.id }, {
+        client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
-            [`banking.guilds.${GuildDB.serverID}.account.cash`]: newCash
+            [`banking.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
         });
 
         const targetUserID = args[0].options[0].value.replace('<@!', '').replace('>', '');
-        let targetUserBanking = await client.dbo.collection("banks").findOne({"banking.userID": targetUserID}).then(banking => banking);
+        let targetUserBanking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
         
-        let newTargetCash = targetUserBanking.guilds[GuildDB.serverID].account.cash + args[0].options[1].value;
+        let newTargetCash = targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash + args[0].options[1].value;
 
         if (!targetUserBanking) {
           targetUserBanking = {
             userID: targetUserID,
             guilds: {
               [GuildDB.serverID]: {
-                account: {
+                bankAccount: {
                   balance: GuildDB.startingBalance,
                   cash: newTargetCash,
                 }
@@ -295,7 +295,7 @@ module.exports = {
           }
 
           // Register inventory for user  
-          let newBank = new Bank();
+          let newBank = new User();
           newBank.createBank(targetUserID, GuildDB.serverID, GuildDB.startingBalance, newTargetCash);
           newBank.save().catch(err => {
             if (err) return client.sendInternalError(interaction, err);
@@ -303,7 +303,7 @@ module.exports = {
         } else targetUserBanking = targetUserBanking.banking;
 
         if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
-          const success = addBank(targetUserBanking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
+          const success = addUser(targetUserBanking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
           if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
         }
         
@@ -317,7 +317,7 @@ module.exports = {
       } else if (args[0].name == 'transfer') {
         // send money from bank
           
-        if (banking.guilds[GuildDB.serverID].account.balance.toFixed(2) - args[0].options[1].value < 0) {
+        if (banking.guilds[GuildDB.serverID].bankAccount.balance.toFixed(2) - args[0].options[1].value < 0) {
           let embed = new EmbedBuilder()
             .setTitle('Non sufficient funds! Withdraw more cash')
             .setColor(client.config.Colors.Red);
@@ -325,21 +325,21 @@ module.exports = {
           return interaction.send({ embeds: [embed] });
         }
 
-        const newBalance = banking.guilds[GuildDB.serverID].account.balance - args[0].options[1].value;
+        const newBalance = banking.guilds[GuildDB.serverID].bankAccount.balance - args[0].options[1].value;
       
-        client.dbo.collection("banks").updateOne({"banking.userID":interaction.member.user.id},{$set:{[`banking.guilds.${GuildDB.serverID}.account.balance`]:newBalance}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]:newBalance}}, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
         });
 
         const targetUserID = args[0].options[0].value.replace('<@!', '').replace('>', '');
-        let targetUserBanking = await client.dbo.collection("banks").findOne({"banking.userID": targetUserID}).then(banking => banking);
+        let targetUserBanking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
 
         if (!targetUserBanking) {
           targetUserBanking = {
             userID: targetUserID,
             guilds: {
               [GuildDB.serverID]: {
-                account: {
+                bankAccount: {
                   balance: (GuildDB.startingBalance + args[0].options[1].value),
                   cash: 0.00,
                 }
@@ -347,14 +347,14 @@ module.exports = {
             }
           }
 
-          client.dbo.collection("banks").insertOne(targetUserBanking, function(err, res) {
+          client.dbo.collection("users").insertOne(targetUserBanking, function(err, res) {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else targetUserBanking = targetUserBanking.banking;
       
-        const newTargetBalance = targetUserBanking.guilds[GuildDB.serverID].account.balance + args[0].options[1].value;
+        const newTargetBalance = targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance + args[0].options[1].value;
 
-        client.dbo.collection("banks").updateOne({"banking.userID":targetUserID},{$set:{[`banking.guilds.${GuildDB.serverID}.account.balance`]:newTargetBalance}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]:newTargetBalance}}, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
         });
         

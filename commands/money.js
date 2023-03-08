@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { Bank, addBank } = require('../structures/bank');
+const { User, addUser } = require('../structures/user');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -77,14 +77,14 @@ module.exports = {
       if (!canUseCommand) return interaction.send({ content: 'You don\'t have the permissions to use this command.' });
 
       const targetUserID = args[0].options[1].value.replace('<@!', '').replace('>', '');
-      let banking = await client.dbo.collection("banks").findOne({"banking.userID": targetUserID}).then(banking => banking);
+      let banking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
 
       if (!banking) {
         banking = {
           userID: targetUserID,
           guilds: {
             [GuildDB.serverID]: {
-              account: {
+              bankAccount: {
                 balance: GuildDB.startingBalance,
                 cash: 0.00,
               }
@@ -93,7 +93,7 @@ module.exports = {
         }
 
         // Register inventory for user  
-        let newBank = new Bank();
+        let newBank = new User();
         newBank.createBank(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
         newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
@@ -102,15 +102,15 @@ module.exports = {
       } else banking = banking.banking;
 
       if (!client.exists(banking.guilds[GuildDB.serverID])) {
-        const success = addBank(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
+        const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
         if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
       }
 
       let newBalance = args[0].name == 'add'
-                        ? banking.guilds[GuildDB.serverID].account.balance + args[0].options[0].value
-                        : banking.guilds[GuildDB.serverID].account.balance - args[0].options[0].value;
+                        ? banking.guilds[GuildDB.serverID].bankAccount.balance + args[0].options[0].value
+                        : banking.guilds[GuildDB.serverID].bankAccount.balance - args[0].options[0].value;
     
-      client.dbo.collection("banks").updateOne({"banking.userID":targetUserID},{$set:{[`banking.guilds.${GuildDB.serverID}.account.balance`]:newBalance}}, function(err, res) {
+      client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]:newBalance}}, function(err, res) {
         if (err) return client.sendInternalError(interaction, err);
       });
     

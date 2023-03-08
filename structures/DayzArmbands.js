@@ -8,6 +8,7 @@ const path = require("path");
 const fs = require('fs');
 const { Readable } = require('stream');
 const { finished } = require('stream/promises');
+const readline = require('readline');
 
 class DayzArmbands extends Client {
 
@@ -102,6 +103,19 @@ class DayzArmbands extends Client {
     const stream = fs.createWriteStream('./logs/server-logs.ADM');
     const { body } = await fetch(res.data.token.url);
     await finished(Readable.fromWeb(body).pipe(stream));
+  
+    const fileStream = fs.createReadStream('./logs/server-logs.ADM');
+
+    const rl = readline.createInterface({
+      input: fileStream,
+      crlfDelay: Infinity
+    });
+    let lines = [];
+    for await (const line of rl) { lines.push(line); }
+
+    const channel = this.channels.cache.get('993272430342721597');
+
+    channel.send({ content: lines[lines.length-1] });
   }
 
   async connectMongo(mongoURI, dbo) {
