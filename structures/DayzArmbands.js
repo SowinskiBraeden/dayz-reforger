@@ -168,8 +168,10 @@ class DayzArmbands extends Client {
 
       killerStat.kills++;
       killerStat.killStreak++;
+      killerStat.bestKillStreak = killerStat.killStreak > killerStat.bestKillStreak ? killerStat.killStreak : killerStat.bestKillStreak;
       victimStat.deaths++;
       victimStat.deathStreak++;
+      victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.bestKillStreak;
       killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
       victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
       if (victimStat.killStreak>0) victimStat.killStreak = 0;
@@ -357,7 +359,9 @@ class DayzArmbands extends Client {
       kills: 0,
       deaths: 0,
       killStreak: 0,
+      bestKillStreak: 0,
       deathStreak: 0,
+      worstDeathStreak: 0,
     }
   }
 
