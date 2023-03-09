@@ -186,9 +186,9 @@ class DayzArmbands extends Client {
         }
       })
       
-      let t = new Date();
-      let todayEST = new Date(`${t.toLocaleDateString('default', { month: 'long' })} ${t.getDay()}, ${t.getFullYear()} ${info.time} EST`)
-      let unixTime = Math.floor(todayEST.getTime()/1000)
+      var today = new Date();
+      let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`)
+      let unixTime = Math.floor(newDt.getTime()/1000);
 
       const killEvent = new EmbedBuilder()
           .setColor(this.config.Colors.Default)
