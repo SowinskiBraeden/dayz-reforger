@@ -106,33 +106,116 @@ class DayzArmbands extends Client {
     const { body } = await fetch(res.data.token.url);
     await finished(Readable.fromWeb(body).pipe(stream));
   
-    // const fileStream = fs.createReadStream('./logs/server-logs.ADM');
-
-    // const rl = readline.createInterface({
-    //   input: fileStream,
-    //   crlfDelay: Infinity
-    // });
-    // let lines = [];
-    // for await (const line of rl) { lines.push(line); }
-
-    // const channel = this.channels.cache.get('993272430342721597');
-
-    // channel.send({ content: lines[lines.length-1] });
   }
+  
+  async killfeed(guildId) {
 
-  killfeed() {
-    console.log('killfeed test')
+    const fileStream = fs.createReadStream('./logs/server-logs.ADM');
+  
+    let logHistoryDir = path.join(__dirname, '..', 'logs', 'history-logs.ADM.json');
+    let history;
+    try {
+      history = JSON.parse(fs.readFileSync(logHistoryDir));
+    } catch (err) {
+      history = {
+        lastLog: null
+      };
+    }
+
+    const rl = readline.createInterface({
+      input: fileStream,
+      crlfDelay: Infinity
+    });
+    let lines = [];
+    for await (const line of rl) { lines.push(line); }
+    
+    const channel = this.channels.cache.get('993272430342721597');
+    let guild = await this.GetGuild(guildId);
+    if (guild.playerstats == undefined) guild.playerstats = [];
+    
+    console.log(guild.playerstats)
+
+    for (let i = lines.indexOf(history.lastLog) + 1; i < lines.length; i++) {
+      if (i == lines.length - 1) break;
+      let nextLine = lines[i + 1];
+      if (!nextLine.includes('killed by Player')) continue;
+
+      let line = lines[i];
+      let template = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+      let data = [...line.matchAll(template)][0];
+
+      let info = {
+        time: data[1],
+        victim: data[2],
+        victimID: data[3],
+        victimPOS: data[4],
+        killer: data[5],
+        killerID: data[6],
+        killerPOS: data[7],
+        bodyPart: data[8],
+        damage: data[9],
+        bullet: data[10],
+        weapon: data[11],
+        distance: data[12]
+      };
+
+      let killerStat = guild.playerstats.find(stat => stat.gamertag == info.killer)
+      let victimStat = guild.playerstats.find(stat => stat.gamertag == info.victim)
+      let killerStatIndex = guild.playerstats.indexOf(killerStat);
+      let victimStatIndex = guild.playerstats.indexOf(victimStat);
+      if (killerStat == undefined) killerStat = this.getDefaultPlayerStats(info.killer);
+      if (victimStat == undefined) victimStat = this.getDefaultPlayerStats(info.victim);
+
+      killerStat.kills++;
+      killerStat.killStreak++;
+      victimStat.deaths++;
+      victimStat.deathStreak++;
+      killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
+      victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
+      if (victimStat.killStreak>0) victimStat.killStreak = 0;
+      if (killerStat.deathStreak>0) killerStat.deathStreak = 0;
+ 
+      if (killerStatIndex == -1) guild.playerstats.push(killerStat);
+      else guild.playerstats[killerStatIndex] = killerStat;
+      if (victimStatIndex == -1) guild.playerstats.push(victimStat);
+      else guild.playerstats[victimStatIndex] = victimStat;
+
+      this.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
+        $set: {
+          "server.playerstats": guild.playerstats
+        }
+      })
+      
+      let t = new Date();
+      let todayEST = new Date(`${t.toLocaleDateString('default', { month: 'long' })} ${t.getDay()}, ${t.getFullYear()} ${info.time} EST`)
+      let unixTime = Math.floor(todayEST.getTime()/1000)
+
+      const killEvent = new EmbedBuilder()
+          .setColor(this.config.Colors.Default)
+          .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
+
+      channel.send({ embeds: [killEvent] });
+    }
+
+    if (history.lastLog == null) history.lastLog = lines[lines.length-1];
+
+    // write JSON string to a file
+    await fs.writeFileSync(logHistoryDir, JSON.stringify(history));
+    
   }
 
   async logsUpdateTimer() {
     setTimeout(async () => {
-      await this.updateLogs().then(() => {
-        this.killfeed(); // Check logs for killfeed
-        // this.alarms(); // check for base alarms (+ rules that may apply such as safe zone)
-        // this.adminLogs(); // check for combat logs / connect + deconnect events
-      });
+      this.killfeed('992982520591294524');
+      // await this.updateLogs().then(() => {
+      //   this.guilds.cache.forEach((guild) => {
+      //     this.killfeed(guild.id); // Check logs for killfeed
+      //     // this.alarms(); // check for base alarms (+ rules that may apply such as safe zone)
+      //     // this.adminLogs(); // check for combat logs / connect + deconnect events
+      //   });
+      // });
       this.logsUpdateTimer(); // restart this function
-    }, minute * 5); // restart every 5 minutes
+    }, minute * 0.5); // restart every 5 minutes
   }
 
   async connectMongo(mongoURI, dbo) {
@@ -263,6 +346,18 @@ class DayzArmbands extends Client {
       usedArmbands: [],
       excludedRoles: [],
       botAdminRoles: [],
+      playerstats: [],
+    }
+  }
+
+  getDefaultPlayerStats(gt) {
+    return {
+      gamertag: gt,
+      KDR: 0.00,
+      kills: 0,
+      deaths: 0,
+      killStreak: 0,
+      deathStreak: 0,
     }
   }
 
@@ -290,6 +385,7 @@ class DayzArmbands extends Client {
       excludedRoles: guild.server.excludedRoles,
       hasBotAdmin: guild.server.botAdminRoles.length > 0 ? true : false,
       botAdminRoles: guild.server.botAdminRoles,
+      playerstats: guild.server.playerstats,
     };
   }
 
