@@ -50,7 +50,7 @@ class DayzArmbands extends Client {
               $unset: { [`server.factionArmbands.${factionID}`]: "" },
             };
             await this.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, function (err, res) {
-              if (err) return client.sendInternalError(interaction, err);
+              if (err) return this.sendInternalError(interaction, err);
             });
           }
         }
@@ -158,7 +158,9 @@ class DayzArmbands extends Client {
       $set: {
         "server.playerstats": guild.playerstats
       }
-    })
+    }, function (err, res) {
+      if (err && this.exists(channel)) return this.sendInternalError(channel, err);
+    });
     
     let today = new Date();
     let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`)
@@ -174,12 +176,25 @@ class DayzArmbands extends Client {
   async handleAlarms(guildId, data) {
     let guild = await this.GetGuild(guildId);
     
+    if (!this.exists(guild.alarms)) {
+      guild.alarms = [];
+      this.dbo.collection("guilds").updateOne({ 'server.serverID': guildId }, {
+        $set: {
+          'server.alarms': [],
+        }
+      }, function (err, res) {
+        if (err) this.error(err);
+      });
+    }
+
     for (let i = 0; i < guild.alarms.length; i++) {
       let alarm = guild.alarms[i];
 
+      if (alarm.ignoredPlayers.includes(data.playerID)) continue;
+
       let diff = [Math.round(alarm.origin[0] - data.pos[0]), Math.round(alarm.origin[1] - data.pos[1])];
       let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2)
-      
+
       if (distance < alarm.radius) {
         const channel = this.channels.cache.get(alarm.channel);
         
@@ -193,6 +208,7 @@ class DayzArmbands extends Client {
           .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
       
         channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+        break; // we break because no need to check if they are in two alarms at once, can't be in two places at once.
       }
     }
   }
@@ -258,12 +274,14 @@ class DayzArmbands extends Client {
         $set: {
           "server.playerstats": guild.playerstats
         }
+      }, function (err, res) {
+        if (err) this.error(err);
       });
 
       this.sendConnectionLogs(guildId, {
         time: info.time,
         player: info.player,
-        conected: info.connected,
+        connected: info.connected,
         lastConnectionDate: null,
       });
     }
@@ -291,6 +309,8 @@ class DayzArmbands extends Client {
         $set: {
           "server.playerstats": guild.playerstats
         }
+      }, function (err, res) {
+        if (err) this.error(err);
       });
 
       this.sendConnectionLogs(guildId, {
@@ -331,6 +351,8 @@ class DayzArmbands extends Client {
         $set: {
           "server.playerstats": guild.playerstats
         }
+      }, function (err, res) {
+        if (err) this.error(err);
       });
     }
   }
@@ -557,6 +579,7 @@ class DayzArmbands extends Client {
       hasBotAdmin: guild.server.botAdminRoles.length > 0 ? true : false,
       botAdminRoles: guild.server.botAdminRoles,
       playerstats: guild.server.playerstats,
+      alarms: guild.server.alarms,
     };
   }
 
