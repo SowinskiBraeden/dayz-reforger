@@ -108,8 +108,234 @@ class DayzArmbands extends Client {
   
   }
   
-  async killfeed(guildId) {
+  async handleKillfeed(guildId, line) {
+    
+    let guild = await this.GetGuild(guildId);
+    if (guild.playerstats == undefined) guild.playerstats = [];
+    const channel = this.channels.cache.get(guild.killfeedChannel);
+    let template = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    let data = [...line.matchAll(template)][0];
 
+    let info = {
+      time: data[1],
+      victim: data[2],
+      victimID: data[3],
+      victimPOS: data[4],
+      killer: data[5],
+      killerID: data[6],
+      killerPOS: data[7],
+      bodyPart: data[8],
+      damage: data[9],
+      bullet: data[10],
+      weapon: data[11],
+      distance: data[12]
+    };
+
+    let killerStat = guild.playerstats.find(stat => stat.playerID == info.killerID)
+    let victimStat = guild.playerstats.find(stat => stat.playerID == info.victimID)
+    let killerStatIndex = guild.playerstats.indexOf(killerStat);
+    let victimStatIndex = guild.playerstats.indexOf(victimStat);
+    if (killerStat == undefined) killerStat = this.getDefaultPlayerStats(info.killer, info.killerID);
+    if (victimStat == undefined) victimStat = this.getDefaultPlayerStats(info.victim, info.victimID);
+
+    killerStat.kills++;
+    killerStat.killStreak++;
+    killerStat.bestKillStreak = killerStat.killStreak > killerStat.bestKillStreak ? killerStat.killStreak : killerStat.bestKillStreak;
+    victimStat.deaths++;
+    victimStat.deathStreak++;
+    victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.bestKillStreak;
+    killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
+    victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
+    if (victimStat.killStreak>0) victimStat.killStreak = 0;
+    if (killerStat.deathStreak>0) killerStat.deathStreak = 0;
+
+    if (killerStatIndex == -1) guild.playerstats.push(killerStat);
+    else guild.playerstats[killerStatIndex] = killerStat;
+    if (victimStatIndex == -1) guild.playerstats.push(victimStat);
+    else guild.playerstats[victimStatIndex] = victimStat;
+
+    this.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
+      $set: {
+        "server.playerstats": guild.playerstats
+      }
+    })
+    
+    let today = new Date();
+    let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`)
+    let unixTime = Math.floor(newDt.getTime()/1000);
+
+    const killEvent = new EmbedBuilder()
+        .setColor(this.config.Colors.Default)
+        .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
+
+    if (this.exists(channel)) channel.send({ embeds: [killEvent] });
+  }
+
+  async handleAlarms(guildId, data) {
+    let guild = await this.GetGuild(guildId);
+    
+    for (let i = 0; i < guild.alarms.length; i++) {
+      let alarm = guild.alarms[i];
+
+      let diff = [Math.round(alarm.origin[0] - data.pos[0]), Math.round(alarm.origin[1] - data.pos[1])];
+      let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2)
+      
+      if (distance < alarm.radius) {
+        const channel = this.channels.cache.get(alarm.channel);
+        
+        let today = new Date();
+        let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${data.time} EST`);
+        let unixTime = Math.floor(newDt.getTime()/1000);
+
+        let alarmEmbed = new EmbedBuilder()
+          .setColor(this.config.Colors.Default)
+          .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}**`)
+          .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
+      
+        channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+      }
+    }
+  }
+
+  async sendConnectionLogs(guildId, data) {
+    
+    let guild = await this.GetGuild(guildId);
+    if (!this.exists(guild.connectionLogsChannel)) return;
+    const channel = this.channels.cache.get(guild.connectionLogsChannel);
+
+    let today = new Date();
+    let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${data.time} EST`);
+    let unixTime = Math.floor(newDt.getTime()/1000);
+
+    let connectionLog = new EmbedBuilder()
+      .setColor(data.connected ? this.config.Colors.Green : this.config.Colors.Red)
+      .setDescription(`**${data.connected ? 'Connect' : 'Disconnect'} Event - <t:${unixTime}>\n${data.player} ${data.connected ? 'Connected' : 'Disconnected'}**`);
+
+    if (!data.connected) {
+      if (!data.lastConnectionDate == null) {
+        let oldUnixTime = Math.floor(data.lastConnectionDate.getTime()/1000);
+        let sessionTime = this.secondsToDhms(unixTime - oldUnixTime);
+        connectionLog.addFields({ name: '**Session Time**', value: `**${sessionTime}**`, inline: false });
+      } else connectionLog.addFields({ name: '**Session Time**', value: `**Unknown**`, inline: false });
+    }
+
+    if (this.exists(channel)) channel.send({ embeds: [connectionLog] });
+  }
+
+  async handlePlayerLogs(guildId, line) {
+
+    let guild = await this.GetGuild(guildId);
+    if (guild.playerstats == undefined) guild.playerstats = [];
+
+    const connectTemplate = /(.*) \| Player \"(.*)\" is connected \(id=(.*)\)/g;
+    const disconnectTemplate = /(.*) \| Player \"(.*)\"\(id=(.*)\) has been disconnected/g;
+    const positionTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
+
+    if (line.includes('connected')) {
+      let data = [...line.matchAll(connectTemplate)][0];
+
+      let info = {
+        time: data[1],
+        player: data[2],
+        playerID: data[3],
+        connected: true,
+      };
+
+      let playerStat = guild.playerstats.find(stat => stat.playerID == info.playerID)
+      let playerStatIndex = guild.playerstats.indexOf(playerStat);
+      if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
+      
+      let today = new Date();
+      let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`);
+      
+      playerStat.lastConnectionDate = newDt;
+      playerStat.connected = true;
+
+      if (playerStatIndex == -1) guild.playerstats.push(playerStat);
+      else guild.playerstats[playerStatIndex] = playerStat;
+
+      this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
+        $set: {
+          "server.playerstats": guild.playerstats
+        }
+      });
+
+      this.sendConnectionLogs(guildId, {
+        time: info.time,
+        player: info.player,
+        conected: info.connected,
+        lastConnectionDate: null,
+      });
+    }
+
+    if (line.includes('disconnected')) {
+      let data = [...line.matchAll(disconnectTemplate)][0];
+
+      let info = {
+        time: data[1],
+        player: data[2],
+        playerID: data[3],
+        connected: false
+      }
+
+      let playerStat = guild.playerstats.find(stat => stat.playerID == info.playerID)
+      let playerStatIndex = guild.playerstats.indexOf(playerStat);
+      if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
+      
+      playerStat.connected = false;
+
+      if (playerStatIndex == -1) guild.playerstats.push(playerStat);
+      else guild.playerstats[playerStatIndex] = playerStat;
+
+      this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
+        $set: {
+          "server.playerstats": guild.playerstats
+        }
+      });
+
+      this.sendConnectionLogs(guildId, {
+        time: info.time,
+        player: info.player,
+        conected: info.connected,
+        lastConnectionDate: playerStat.lastConnectionDate,
+      });
+    }
+
+    if (line.includes('pos=<')) {
+      let data = [...line.matchAll(positionTemplate)][0];
+
+      let info = {
+        time: data[1],
+        player: data[2],
+        playerID: data[3],
+        pos: data[4].split(', ').map(v => parseFloat(v)).pop()
+      };
+
+      let playerStat = guild.playerstats.find(stat => stat.playerID == info.playerID)
+      let playerStatIndex = guild.playerstats.indexOf(playerStat);
+      if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
+      
+      playerStat.pos = info.pos;
+
+      this.handleAlarms(guildId, {
+        time: info.time,
+        player: info.player,
+        playerID: info.playerID,
+        pos: info.pos,
+      });
+
+      if (playerStatIndex == -1) guild.playerstats.push(playerStat);
+      else guild.playerstats[playerStatIndex] = playerStat;
+
+      this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
+        $set: {
+          "server.playerstats": guild.playerstats
+        }
+      });
+    }
+  }
+
+  async readLogs() {
     const fileStream = fs.createReadStream('./logs/server-logs.ADM');
   
     let logHistoryDir = path.join(__dirname, '..', 'logs', 'history-logs.ADM.json');
@@ -129,86 +355,20 @@ class DayzArmbands extends Client {
     let lines = [];
     for await (const line of rl) { lines.push(line); }
     
-    const channel = this.channels.cache.get('993272430342721597');
-    let guild = await this.GetGuild(guildId);
-    if (guild.playerstats == undefined) guild.playerstats = [];
-    
-    console.log(guild.playerstats)
-
     for (let i = lines.indexOf(history.lastLog) + 1; i < lines.length; i++) {
-      if (i == lines.length - 1) break;
-      let nextLine = lines[i + 1];
-      if (!nextLine.includes('killed by Player')) continue;
-
-      let line = lines[i];
-      let template = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
-      let data = [...line.matchAll(template)][0];
-
-      let info = {
-        time: data[1],
-        victim: data[2],
-        victimID: data[3],
-        victimPOS: data[4],
-        killer: data[5],
-        killerID: data[6],
-        killerPOS: data[7],
-        bodyPart: data[8],
-        damage: data[9],
-        bullet: data[10],
-        weapon: data[11],
-        distance: data[12]
-      };
-
-      let killerStat = guild.playerstats.find(stat => stat.gamertag == info.killer)
-      let victimStat = guild.playerstats.find(stat => stat.gamertag == info.victim)
-      let killerStatIndex = guild.playerstats.indexOf(killerStat);
-      let victimStatIndex = guild.playerstats.indexOf(victimStat);
-      if (killerStat == undefined) killerStat = this.getDefaultPlayerStats(info.killer);
-      if (victimStat == undefined) victimStat = this.getDefaultPlayerStats(info.victim);
-
-      killerStat.kills++;
-      killerStat.killStreak++;
-      killerStat.bestKillStreak = killerStat.killStreak > killerStat.bestKillStreak ? killerStat.killStreak : killerStat.bestKillStreak;
-      victimStat.deaths++;
-      victimStat.deathStreak++;
-      victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.bestKillStreak;
-      killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
-      victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
-      if (victimStat.killStreak>0) victimStat.killStreak = 0;
-      if (killerStat.deathStreak>0) killerStat.deathStreak = 0;
- 
-      if (killerStatIndex == -1) guild.playerstats.push(killerStat);
-      else guild.playerstats[killerStatIndex] = killerStat;
-      if (victimStatIndex == -1) guild.playerstats.push(victimStat);
-      else guild.playerstats[victimStatIndex] = victimStat;
-
-      this.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
-        $set: {
-          "server.playerstats": guild.playerstats
-        }
-      })
-      
-      var today = new Date();
-      let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`)
-      let unixTime = Math.floor(newDt.getTime()/1000);
-
-      const killEvent = new EmbedBuilder()
-          .setColor(this.config.Colors.Default)
-          .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
-
-      channel.send({ embeds: [killEvent] });
+      if (lines[i].includes('connected') || lines[i].includes('disconnected') || lines[i].includes('pos=<')) this.handlePlayerLogs(guildId, lines[i]);
+      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) this.handleKillfeed(guildId, lines[i]);
     }
 
-    if (history.lastLog == null) history.lastLog = lines[lines.length-1];
+    history.lastLog = lines[lines.length-1];
 
     // write JSON string to a file
     await fs.writeFileSync(logHistoryDir, JSON.stringify(history));
-    
   }
 
   async logsUpdateTimer() {
     setTimeout(async () => {
-      this.killfeed('992982520591294524');
+      this.readLogs('992982520591294524');
       // await this.updateLogs().then(() => {
       //   this.guilds.cache.forEach((guild) => {
       //     this.killfeed(guild.id); // Check logs for killfeed
@@ -217,7 +377,7 @@ class DayzArmbands extends Client {
       //   });
       // });
       this.logsUpdateTimer(); // restart this function
-    }, minute * 0.5); // restart every 5 minutes
+    }, minute * 5); // restart every 5 minutes
   }
 
   async connectMongo(mongoURI, dbo) {
@@ -344,17 +504,21 @@ class DayzArmbands extends Client {
     return {
       serverID: GuildId,
       allowedChannels: [],
+      killfeedChannel: "",
+      connectionLogsChannel: "",
       factionArmbands: {},
       usedArmbands: [],
       excludedRoles: [],
       botAdminRoles: [],
       playerstats: [],
+      alarms: [],
     }
   }
 
-  getDefaultPlayerStats(gt) {
+  getDefaultPlayerStats(gt, pID) {
     return {
       gamertag: gt,
+      playerID: pID,
       KDR: 0.00,
       kills: 0,
       deaths: 0,
@@ -362,6 +526,9 @@ class DayzArmbands extends Client {
       bestKillStreak: 0,
       deathStreak: 0,
       worstDeathStreak: 0,
+      pos: [],
+      lastConnectionDate: null,
+      connected: false,
     }
   }
 

@@ -20,10 +20,12 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
-            
-      client.updateLogs()
 
-      return interaction.send({ content: 'debugging...' })
+      let alarmEmbed = new EmbedBuilder()
+        .setDescription('test des.')
+        .addFields({ name: 'Test Field', value: `[Test Data](https://www.izurvive.com/chernarusplussatmap/#location=11467.6;7452)`, inline: false })
+    
+      return interaction.send({ embeds: [alarmEmbed] });
     },
   },
 }
