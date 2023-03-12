@@ -62,6 +62,13 @@ module.exports = {
           value: "role",
           type: 8,
           required: true,
+        },
+        {
+          name: "emp-exempt",
+          description: "Is this Alarm Exempt to EMP Attacks?",
+          value: "emp-exempt",
+          type: 5,
+          required: false,
         }
       ]
     },
@@ -84,12 +91,6 @@ module.exports = {
       value: "add-player",
       type: 1,
       options: [{
-        name: "alarm-name",
-        description: "Name of the Zone Alarm to add player to",
-        value: "alarm-name",
-        type: 3,
-        required: true,
-      }, {
         name: "gamertag",
         description: "Gamertag of Player to Ignore",
         value: "gamertag",
@@ -103,20 +104,38 @@ module.exports = {
       value: "remove-player",
       type: 1,
       options: [{
-        name: "alarm-name",
-        description: "Name of the Zone Alarm to add player to",
-        value: "alarm-name",
-        type: 3,
-        required: true,
-      }, {
         name: "gamertag",
         description: "Gamertag of Player to Ignore",
         value: "gamertag",
         type: 3,
         required: true,
       }]
+    },
+    {
+      name: "set-rule",
+      description: "Add a Rule to an Alarm",
+      value: "set-rule",
+      type: 1,
+      options: [{
+        name: "rule",
+        description: "Rule to Add to an Alarm",
+        value: "rule",
+        type: 3,
+        required: true,
+        choices: [
+          { name: 'Ban on Entry', value: 'ban_on_entry' },
+          { name: 'Ban on Kill', value: 'ban_on_kill' },
+          { name: 'Ban on IED Set', value: 'ban_on_ied_set' },
+        ]
+      }]
+    },
+    {
+      name: "remove-rule",
+      description: "Remove a Rule from an Alarm",
+      value: "set-rule",
+      type: 1,
     }
-  ],  
+  ],
   SlashCommand: {
     /**
      *
@@ -143,6 +162,9 @@ module.exports = {
           channel: args[0].options[4].value,
           role: args[0].options[5].value,
           ignoredPlayers: [],
+          rules: [],
+          empExempt: client.exists(args[0].options[6]) ? args[0].options[6].value : false,
+          disabled: false, // emp related
         };
 
         client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
@@ -150,7 +172,7 @@ module.exports = {
             'server.alarms': alarm,
           }
         }, function (err, res) {
-          if (err) return client.sendInternalError(interacion, err);
+          if (err) return client.sendInternalError(interaction, err);
         });
 
         let successEmbed = new EmbedBuilder()
@@ -161,8 +183,75 @@ module.exports = {
 
       } else if (args[0].name == 'delete') {
 
-        let alarm = GuildDB.alarms.find(alarm => alarm.name == args[0].options[0].value);
-        if (!alarm) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Not Found!** Alarm ${args[0].options[0].value} is not an existing alarm name.`)] });
+        if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to Delete.')] });
+
+        let alarms = new SelectMenuBuilder()
+          .setCustomId(`DeleteAlarmSelect-${interaction.member.user.id}`)
+          .setPlaceholder(`Select an Alarm to Delete.`)
+
+        for (let i = 0; i < GuildDB.alarms.length; i++) {
+          alarms.addOptions({
+            label: GuildDB.alarm[i].name,
+            description: `Delete this Alarm`,
+            value: GuildDB.alarm[i].name
+          });
+        }
+        
+        const opt = new ActionRowBuilder().addComponents(alarms);
+
+        return interaction.send({ components: [opt], flags: (1 << 6) });
+
+      } else if (args[0].name == 'add-player' || args[0].name == 'remove-player') {
+        
+        let add = args[0].name == 'add-player';
+
+        if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription(`**Notice:** No Existing Alarms to ${add?'Add':'Remove'} Player ${add?'to':'from'}.`)] });
+
+        let alarms = new SelectMenuBuilder()
+          .setCustomId(`ManageAlarmIgnored-${add?'add':'remove'}-${args[0].options[0].value}-${interaction.member.user.id}`)
+          .setPlaceholder(`Select an Alarm to ${add?'Add':'Remove'} Player ${add?'to':'from'}.`)
+
+        for (let i = 0; i < GuildDB.alarms.length; i++) {
+          alarms.addOptions({
+            label: GuildDB.alarm[i].name,
+            description: `${add?'Add':'Remove'} Player ${add?'to':'from'} this Alarm`,
+            value: GuildDB.alarm[i].name
+          });
+        }
+        
+        const opt = new ActionRowBuilder().addComponents(alarms);
+
+        return interaction.send({ components: [opt], flags: (1 << 6) });
+      } else if (args[0].name == 'set-rule' || args[0].name == 'remove-rule') {
+
+        if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
+
+        let id = `ManageRule-${args[0].name=='set-rule'?'add':'remove'}${args[0].name=='set-rule'?`-${args[0].options[0].value}`:''}-${interaction.member.user.id}`
+
+        let alarms = new SelectMenuBuilder()
+          .setCustomId(id)
+          .setPlaceholder(`Select an Alarm to configure.`)
+
+        for (let i = 0; i < GuildDB.alarms.length; i++) {
+          alarms.addOptions({
+            label: GuildDB.alarm[i].name,
+            description: `Configure this Alarm`,
+            value: GuildDB.alarm[i].name
+          });
+        }
+        
+        const opt = new ActionRowBuilder().addComponents(alarms);
+
+        return interaction.send({ components: [opt], flags: (1 << 6) });
+      }
+    },
+  },
+
+  Interactions: {
+    DeleteAlarmSelect: {
+      run: async(client, interaction, GuildDB) => {
+
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
 
         const prompt = new EmbedBuilder()
           .setTitle(`Are you sure you want to delete this Zone Alarm?`)
@@ -171,76 +260,18 @@ module.exports = {
         const opt = new ActionRowBuilder()
           .addComponents(
             new ButtonBuilder()
-              .setCustomId(`DeleteAlarm-yes-${args[0].options[0].value}-${interaction.member.user.id}`)
+              .setCustomId(`DeleteAlarm-yes-${alarm.name}-${interaction.member.user.id}`)
               .setLabel("Yes")
               .setStyle(ButtonStyle.Danger),
             new ButtonBuilder()
-              .setCustomId(`DeleteAlarm-no-${args[0].options[0].value}-${interaction.member.user.id}`)
+              .setCustomId(`DeleteAlarm-no-${alarm.name}-${interaction.member.user.id}`)
               .setLabel("No")
               .setStyle(ButtonStyle.Success)
           )
 
-        return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
-
-      } else if (args[0].name == 'add-player') {
-        let alarm = GuildDB.alarms.find(alarm => alarm.name == args[0].options[0].value);
-        if (!alarm) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Not Found!** Alarm ${args[0].options[0].value} is not an existing alarm name.`)] });
-        let alarmIndex = GuildDB.alarms.indexOf(alarm);
-      
-        let playerStat = GuildDB.playerstats.find(stat => stat.player == args[0].options[1].value)
-        if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.')] })
-      
-        alarm.ignoredPlayers.push(playerStat.playerID);
-
-        GuildDB.alarms[alarmIndex] = alarm;
-
-        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
-          $set: {
-            'server.alarms': GuildDB.alarms,
-          }
-        }, function (err, res) {
-          if (err) return client.sendInternalError(interacion, err);
-        });
-
-        let successEmbed = new EmbedBuilder()
-          .setColor(client.config.Colors.Green)
-          .setDescription(`**Success:** Successfully added **${args[0].options[1].value}** to **${alarm.name}**`);
-
-        return interaction.send({ embeds: [successEmbed] });
-      } else if (args[0].name == 'remove-player') {
-
-        let alarm = GuildDB.alarms.find(alarm => alarm.name == args[0].options[0].value);
-        if (!alarm) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Not Found!** Alarm ${args[0].options[0].value} is not an existing alarm name.`)] });
-        let alarmIndex = GuildDB.alarms.indexOf(alarm);
-      
-        let playerStat = GuildDB.playerstats.find(stat => stat.player == args[0].options[1].value)
-        if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.')] })
-        if (!alarm.includes(playerStat.playerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This Player is not added to the Ignored Player list for the Zone Alarm **${alarm.name}**`)] })
-        
-        alarm.ignoredPlayers = alarm.ignoredPlayers.filter(function(value, index, arr){ 
-          return value != args[0].options[1].value;
-        });
-
-        GuildDB.alarms[alarmIndex] = alarm;
-
-        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
-          $set: {
-            'server.alarms': GuildDB.alarms,
-          }
-        }, function (err, res) {
-          if (err) return client.sendInternalError(interacion, err);
-        });
-
-        let successEmbed = new EmbedBuilder()
-          .setColor(client.config.Colors.Green)
-          .setDescription(`**Success:** Successfully added **${args[0].options[1].value}** to **${alarm.name}**`);
-
-        return interaction.send({ embeds: [successEmbed] });
+        return interaction.update({ embeds: [prompt], components: [opt], flags: (1 << 6) });
       }
     },
-  },
-
-  Interactions: {
     DeleteAlarm: {
       run: async(client, interaction, GuildDB) => {
 
@@ -252,7 +283,7 @@ module.exports = {
               'server.alarms': alarm,
             }
           }, function (err, res) {
-            if (err) return client.sendInternalError(interacion, err);
+            if (err) return client.sendInternalError(interaction, err);
           });
   
           let successEmbed = new EmbedBuilder()
@@ -268,6 +299,129 @@ module.exports = {
           return interaction.send({ embeds: [successEmbed] });
         }
       }
-    }
+    },
+    ManageAlarmIgnored: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return interaction.reply({
+            content: "This menu is not for you",
+            flags: (1 << 6)
+          })
+        }
+
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
+        let alarmIndex = GuildDB.alarms.indexOf(alarm);
+      
+        let playerStat = GuildDB.playerstats.find(stat => stat.player == interaction.customId.split('-')[2]);
+        if (playerStat == undefined) return interaction.update({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.')], components: [] });
+      
+        let add = interaction.customId.split('-')[1] == 'add';
+
+        if (add) alarm.ignoredPlayers.push(playerStat.playerID);
+        else alarm.ignoredPlayers = alarm.ignoredPlayers.filter((v) => { 
+          return v != playerStat.playerID;
+        });
+
+        GuildDB.alarms[alarmIndex] = alarm;
+
+        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
+          $set: {
+            'server.alarms': GuildDB.alarms,
+          }
+        }, function (err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`**Success:** Successfully ${add?'Added':'Removed'} **${interaction.customId.split('-')[1]}** ${add?'to':'from'} **${alarm.name}**`);
+
+        return interaction.update({ embeds: [successEmbed], components: [] });
+      }
+    },
+    ManageRule: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return interaction.reply({
+            content: "This menu is not for you",
+            flags: (1 << 6)
+          })
+        }
+
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
+        let alarmIndex = GuildDB.alarms.indexOf(alarm);
+
+        if (interaction.customId.split('-')[1] == 'add') {
+
+          alarm.rules.push(interaction.customId.split('-')[2]);
+          GuildDB.alarms[alarmIndex] = alarm;
+
+          client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
+            $set: {
+              'server.alarms': GuildDB.alarms,
+            }
+          }, function (err, res) {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+
+          let successEmbed = new EmbedBuilder()
+            .setColor(client.config.Colors.Green)
+            .setDescription(`**Success:** Successfully Added Rule **${interaction.customId.split('-')[2]}** to **${alarm.name}**`);
+
+          return interaction.update({ embeds: [successEmbed], components: [] });
+
+        } else if (interaction.customId.split('-')[1]=='remove') {
+
+          let alarmRules = new SelectMenuBuilder()
+            .setCustomId(`DeleteAlarmRule-${alarm.name}-${interaction.member.user.id}`)
+            .setPlaceholder(`Select Rule to Remove from ${alarm.name}`);
+
+          for (let i = 0; i < alarm.rules.length; i++) {
+            alarmRules.addOptions({
+              label: alarm.rules[i],
+              description: `Select this Rule to remove it.`,
+              value: alarm.rules[i]
+            });
+          }
+          
+          const opt = new ActionRowBuilder().addComponents(alarmRules);
+
+          return interaction.update({ components: [opt], flags: (1 << 6) });
+        }
+      }
+    },
+    DeleteAlarmRule: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return interaction.reply({
+            content: "This menu is not for you",
+            flags: (1 << 6)
+          })
+        }
+
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.customId.split('-')[1]);
+        let alarmIndex = GuildDB.alarms.indexOf(alarm);
+
+        alarm.rules = alarm.rules.filter((v) => {
+          return v != interaction.values[0];
+        });
+
+        GuildDB.alarms[alarmIndex] = alarm;
+
+        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
+          $set: {
+            'server.alarms': GuildDB.alarms,
+          }
+        }, function (err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`**Success:** Successfully Removed Rule **${interaction.values[0]}** from **${interaction.customId.split('-')[1]}**`);
+
+        return interaction.update({ embeds: [successEmbed], components: [] });
+      }
+    },
   } 
 }

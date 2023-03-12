@@ -189,6 +189,7 @@ class DayzArmbands extends Client {
 
     for (let i = 0; i < guild.alarms.length; i++) {
       let alarm = guild.alarms[i];
+      if (alarm.disabled) continue; // ignore if alarm is disabled due to emp
 
       if (alarm.ignoredPlayers.includes(data.playerID)) continue;
 
