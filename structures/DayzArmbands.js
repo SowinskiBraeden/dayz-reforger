@@ -156,6 +156,57 @@ class DayzArmbands extends Client {
     if (victimStat.killStreak>0) victimStat.killStreak = 0;
     if (killerStat.deathStreak>0) killerStat.deathStreak = 0;
 
+    let receivedBounty = null;
+    if (victimStat.bounties.length > 0 && killerStat.discordID != "") {
+      let totalBounty = 0;
+      for (let i = 0; i < victimStat.bounties.length; i++) {
+        totalBounty += victimStat.bounties[i].value;
+      }
+
+      let banking = await this.dbo.collection("users").findOne({"user.userID": killerStat.discordID}).then(banking => banking);
+
+      if (!banking) {
+        banking = {
+          userID: interaction.member.user.id,
+          guilds: {
+            [guild.serverID]: {
+              bankAccount: {
+                balance: guild.startingBalance,
+                cash: 0.00,
+              }
+            }
+          }
+        }
+
+        // Register inventory for user  
+        let newBank = new User();
+        newBank.createBank(interaction.member.user.id, guild.serverID, guild.startingBalance, 0);
+        newBank.save().catch(err => {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+        
+      } else banking = banking.banking;
+
+      if (!this.exists(banking.guilds[guild.serverID])) {
+        const success = addUser(banking.guilds, guild.serverID, interaction.member.user.id, this, guild.startingBalance);
+        if (!success) return this.sendError(guild.connectionLogsChannel, 'Failed to add bank');
+      }
+
+      const newBalance = banking.guilds[guild.serverID].bankAccount.balance + totalBounty;
+      
+      this.dbo.collection("users").updateOne({ "user.userID": killerStat.discordID }, {
+        $set: {
+          [`banking.guilds.${guild.serverID}.bankAccount.balance`]: newBalance,
+        }
+      }, function(err, res) {
+        if (err) return this.sendError(guild.connectionLogsChannel, err);
+      });        
+
+      receivedBounty = new EmbedBuilder()
+        .setColor(this.config.Colors.Default)
+        .setDescription(`<@${killerStat.discordID}> received **$${totalBounty.toFixed(2)}** in bounty rewards.`);
+    }
+
     if (killerStatIndex == -1) guild.playerstats.push(killerStat);
     else guild.playerstats[killerStatIndex] = killerStat;
     if (victimStatIndex == -1) guild.playerstats.push(victimStat);
@@ -178,6 +229,7 @@ class DayzArmbands extends Client {
         .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
 
     if (this.exists(channel)) channel.send({ embeds: [killEvent] });
+    if (this.exists(receivedBounty) && this.exists(channel)) channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
   }
 
   async handleAlarms(guildId, data) {
@@ -572,6 +624,7 @@ class DayzArmbands extends Client {
       pos: [],
       lastConnectionDate: null,
       connected: false,
+      bounties: [],
     }
   }
 
