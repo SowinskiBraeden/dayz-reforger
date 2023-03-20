@@ -35,6 +35,7 @@ class DayzArmbands extends Client {
     this.LoadEvents();
 
     this.Ready = false;
+    this.activePlayersTick = 0;
 
     this.ws.on("INTERACTION_CREATE", async (interaction) => {
       const start = new Date().getTime();
@@ -428,7 +429,33 @@ class DayzArmbands extends Client {
     }
   }
 
-  async readLogs() {
+  async handleActivePlayersList(guildId) {
+    this.activePlayersTick = 0; // reset hour tick
+
+    let guild = await this.GetGuild(guildId);
+    if (!this.exists(guild.playerstats)) guild.playerstats = [];
+    if (!this.exists(guild.activePlayersChannel)) return;
+
+    const channel = this.channels.cache.get(guild.activePlayersChannel);
+
+    let activePlayers = guild.playerstats.filter(p => p.connected);
+
+    if (activePlayers.length == 0) return;
+
+    let des = ``;
+    for (let i = 0; i < activePlayers.length; i++) {
+      des += `**- ${activePlayers[i].gamertag}\n`;
+    }
+
+    const activePlayersEmbed = new EmbedBuilder()
+      .setColor(this.config.Colors.Default)
+      .setTitle(`Online List - ${activePlayers.length} Player${activePlayers.length>1?'s':''} Online`)
+      .setDescription(des);
+
+    return channel.send({ embeds: [activePlayersEmbed] });
+  }
+
+  async readLogs(guildId) {
     const fileStream = fs.createReadStream('./logs/server-logs.ADM');
   
     let logHistoryDir = path.join(__dirname, '..', 'logs', 'history-logs.ADM.json');
@@ -461,14 +488,15 @@ class DayzArmbands extends Client {
 
   async logsUpdateTimer() {
     setTimeout(async () => {
-      this.readLogs('992982520591294524');
-      // await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(() => {
-      //   this.guilds.cache.forEach((guild) => {
-      //     this.killfeed(guild.id); // Check logs for killfeed
-      //     // this.alarms(); // check for base alarms (+ rules that may apply such as safe zone)
-      //     // this.adminLogs(); // check for combat logs / connect + deconnect events
-      //   });
-      // });
+      this.activePlayersTick++;
+      
+      await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(() => {
+        this.guilds.cache.forEach(async (guild) => {
+          await this.readLogs(guild.id).then(() => {
+            if (this.activePlayersTick == 12) this.handleActivePlayersList(guild.id);
+          });
+        });
+      });
       this.logsUpdateTimer(); // restart this function
     }, minute * 5); // restart every 5 minutes
   }
@@ -599,6 +627,7 @@ class DayzArmbands extends Client {
       allowedChannels: [],
       killfeedChannel: "",
       connectionLogsChannel: "",
+      activePlayersChannel: "",
       welcomeChannel: "",
       factionArmbands: {},
       usedArmbands: [],
@@ -657,6 +686,7 @@ class DayzArmbands extends Client {
       killfeedChannel: guild.server.killfeedChannel,
       connectionLogsChannel: guild.server.connectionLogsChannel,
       welcomeChannel: guild.server.welcomeChannel,
+      activePlayersChannel: guild.server.activePlayersChannel,
     };
   }
 

@@ -91,6 +91,20 @@ module.exports = {
       }]
     },
     {
+      name: "active_players_channel",
+      description: "Set the channel for active players update",
+      value: "active_players_channel",
+      type: 1,
+      options: [{
+        name: "channel",
+        description: "The channel to configure",
+        value: "channel",
+        type: 7,
+        channel_types: [0], // Restrict to text channel
+        required: true,
+      }]
+    },
+    {
       name: "linked_gt_role",
       description: "Access Role to give to users",
       value: "linked_gt_role",
@@ -378,6 +392,19 @@ module.exports = {
   
         const successEmbed = new EmbedBuilder()
           .setDescription(`Successfully set <#${channel}> as the Welcome Channel.`)
+          .setColor(client.config.Colors.Green);
+  
+        return interaction.send({ embeds: [successEmbed] });    
+
+      } else if (args[0].name == 'active_players_channel') {
+        const channel = args[0].options[0].value;
+  
+        client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.activePlayersChannel": channel}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        const successEmbed = new EmbedBuilder()
+          .setDescription(`Successfully set <#${channel}> as the Active Players Channel.`)
           .setColor(client.config.Colors.Green);
   
         return interaction.send({ embeds: [successEmbed] });    
