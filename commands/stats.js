@@ -23,7 +23,7 @@ module.exports = {
       const end = new Date().getTime();
       const stats = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setTitle('QuarksBot Statistics')
+        .setTitle('DayZ Reforger Bot Statistics')
         .addFields(
           { name: 'Guilds', value: `${client.guilds.cache.size}`, inline: true },
           { name: 'Users', value: `${client.users.cache.size}`, inline: true },

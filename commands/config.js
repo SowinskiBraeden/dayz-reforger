@@ -49,6 +49,61 @@ module.exports = {
       ]
     },
     {
+      name: "killfeed_channel",
+      description: "Set the Killfeed Channel",
+      value: "killfeed_channel",
+      type: 1,
+      options: [{
+        name: "channel",
+        description: "The channel to configure",
+        value: "channel",
+        type: 7,
+        channel_types: [0], // Restrict to text channel
+        required: true,
+      }]
+    },
+    {
+      name: "admin_logs_channel",
+      description: "Set the Admin Logs Channel",
+      value: "admin_logs_channel",
+      type: 1,
+      options: [{
+        name: "channel",
+        description: "The channel to configure",
+        value: "channel",
+        type: 7,
+        channel_types: [0], // Restrict to text channel
+        required: true,
+      }]
+    },
+    {
+      name: "welcome_channel",
+      description: "Set the channel for users to gain access",
+      value: "welcome_channel",
+      type: 1,
+      options: [{
+        name: "channel",
+        description: "The channel to configure",
+        value: "channel",
+        type: 7,
+        channel_types: [0], // Restrict to text channel
+        required: true,
+      }]
+    },
+    {
+      name: "linked_gt_role",
+      description: "Access Role to give to users",
+      value: "linked_gt_role",
+      type: 1,
+      options: [{
+        name: "role",
+        description: "Role to configure",
+        value: "role",
+        type: 8,
+        required: true,
+      }]
+    },
+    {
       name: "bot_admin_role",
       description: "Set/remove bot admin role",
       value: "bot_admin_role",
@@ -288,6 +343,58 @@ module.exports = {
           );
 
         return interaction.send({ embeds: [settingsEmbed] });
+      } else if (args[0].name == 'killfeed_channel') {
+        const channel = args[0].options[0].value;
+
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.killfeedChannel": channel}}, function(err, res) {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+    
+          const successEmbed = new EmbedBuilder()
+            .setDescription(`Successfully added <#${channel}> as the Killfeed Channel.`)
+            .setColor(client.config.Colors.Green);
+    
+          return interaction.send({ embeds: [successEmbed] });    
+
+      } else if (args[0].name == 'admin_logs_channel') {
+        const channel = args[0].options[0].value;
+  
+        client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.connectionLogsChannel": channel}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        const successEmbed = new EmbedBuilder()
+          .setDescription(`Successfully set <#${channel}> as the Admin Logs Channel.`)
+          .setColor(client.config.Colors.Green);
+  
+        return interaction.send({ embeds: [successEmbed] });    
+
+      } else if (args[0].name == 'welcome_channel') {
+        const channel = args[0].options[0].value;
+  
+        client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.welcomeChannel": channel}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        const successEmbed = new EmbedBuilder()
+          .setDescription(`Successfully set <#${channel}> as the Welcome Channel.`)
+          .setColor(client.config.Colors.Green);
+  
+        return interaction.send({ embeds: [successEmbed] });    
+
+      } else if (args[0].name == 'linked_gt_role') {
+        const role = args[0].options[0].value;
+  
+        client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.linkedGamertagRole": role}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        const successEmbed = new EmbedBuilder()
+          .setDescription(`Successfully set <@&${role}> to give to users who link their gamertag.`)
+          .setColor(client.config.Colors.Green);
+  
+        return interaction.send({ embeds: [successEmbed] });    
+
       }
     },
   },

@@ -2,7 +2,7 @@ const package = require('../package.json');
 require('dotenv').config();
 
 module.exports = {
-	Dev: "PROD.",                     
+	Dev: process.env.Dev || "DEV.",                     
 	Version: package.version, // (major).(feature).(revision/bug/refactoring)
   Admins: ["362791661274660874", "329371697570381824"], // Admins of the bot
   ServerID: "1050215624053374976",
@@ -17,7 +17,8 @@ module.exports = {
   IconURL: "",
   Colors: {
     Default: "#8a7c72",
-    Red: "#ba0f0f",
+    DarkRed: "#ba0f0f",
+    Red: "#f55c5c",
     Green: "#32a852",
     Yellow: "#ffb01f"
   },

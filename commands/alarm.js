@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -51,9 +51,10 @@ module.exports = {
         },
         {
           name: "channel",
-          description: "Channel for Zone Alarm Pings",
+          description: "The channel to configure",
           value: "channel",
           type: 7,
+          channel_types: [0], // Restrict to text channel
           required: true,
         },
         {
@@ -66,7 +67,14 @@ module.exports = {
         {
           name: "emp-exempt",
           description: "Is this Alarm Exempt to EMP Attacks?",
-          value: "emp-exempt",
+          value: false,
+          type: 5,
+          required: false,
+        },
+        {
+          name: "show-player-coords",
+          description: "Show a players coords when in the zone",
+          value: true,
           type: 5,
           required: false,
         }
@@ -112,29 +120,41 @@ module.exports = {
       }]
     },
     {
-      name: "set-rule",
-      description: "Add a Rule to an Alarm",
-      value: "set-rule",
+      name: "disable",
+      description: "Disable an Zone Alarm",
+      value: "disable",
       type: 1,
-      options: [{
-        name: "rule",
-        description: "Rule to Add to an Alarm",
-        value: "rule",
-        type: 3,
-        required: true,
-        choices: [
-          { name: 'Ban on Entry', value: 'ban_on_entry' },
-          { name: 'Ban on Kill', value: 'ban_on_kill' },
-          { name: 'Ban on IED Set', value: 'ban_on_ied_set' },
-        ]
-      }]
     },
     {
-      name: "remove-rule",
-      description: "Remove a Rule from an Alarm",
-      value: "set-rule",
+      name: "enable",
+      description: "Enable an Zone Alarm",
+      value: "enable",
       type: 1,
     }
+    // {
+    //   name: "set-rule",
+    //   description: "Add a Rule to an Alarm",
+    //   value: "set-rule",
+    //   type: 1,
+    //   options: [{
+    //     name: "rule",
+    //     description: "Rule to Add to an Alarm",
+    //     value: "rule",
+    //     type: 3,
+    //     required: true,
+    //     choices: [
+    //       { name: 'Ban on Entry', value: 'ban_on_entry' },
+    //       { name: 'Ban on Kill', value: 'ban_on_kill' },
+    //       { name: 'Ban on IED Set', value: 'ban_on_ied_set' },
+    //     ]
+    //   }]
+    // },
+    // {
+    //   name: "remove-rule",
+    //   description: "Remove a Rule from an Alarm",
+    //   value: "remove-rule",
+    //   type: 1,
+    // }
   ],
   SlashCommand: {
     /**
@@ -164,7 +184,8 @@ module.exports = {
           ignoredPlayers: [],
           rules: [],
           empExempt: client.exists(args[0].options[6]) ? args[0].options[6].value : false,
-          disabled: false, // emp related
+          showPlayerCoord: client.exists(args[0].options[7]) ? args[0].options[7].value : true,
+          disabled: false,
         };
 
         client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
@@ -243,6 +264,37 @@ module.exports = {
         const opt = new ActionRowBuilder().addComponents(alarms);
 
         return interaction.send({ components: [opt], flags: (1 << 6) });
+
+      } else if (args[0].name == 'enable' || args[0].name == 'disable') {
+
+        if (GuildDB.alarms.length == 0)  return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
+
+        let disable = args[0].name == 'disable' ? true : false;
+
+        let alarms = new SelectMenuBuilder()
+          .setCustomId(`EnableOrDisableAlarm-${disable ? 'disable' : 'enable'}-${interaction.member.user.id}`)
+          .setPlaceholder(`Select an Alarm to ${disable ? 'disable' : 'enable'}.`);
+
+        for (let i = 0; i < GuildDB.alarms.length; i++) {
+          if (disable && !GuildDB.alarms[i].disabled) {
+            alarms.addOptions({
+              label: GuildDB.alarm[i].name,
+              description: `Disable this alarm`,
+              value: GuildDB.alarm[i].name,
+            })
+          } else if (!disable && GuildDB.alarms[i].disabled) {
+            alarms.addOptions({
+              label: GuildDB.alarm[i].name,
+              description: `Enable this alarm`,
+              value: GuildDB.alarm[i].name,
+            })
+          }
+        }
+
+        const opt = new ActionRowBuilder().addComponents(alarms);
+
+        return interaction.send({ components: [opt], flags: (1 << 6) });
+
       }
     },
   },
@@ -423,5 +475,35 @@ module.exports = {
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     },
+    EnableOrDisableAlarm: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return interaction.reply({
+            content: "This menu is not for you",
+            flags: (1 << 6)
+          })
+        }
+
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
+        let alarmIndex = GuildDB.alarms.indexOf(alarm);
+        let disable = interaction.customId.split('-')[1] == 'disable' ? true : false;
+        alarm.disabled = disable;
+        GuildDB.alarms[alarmIndex] = alarm
+
+        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
+          $set: {
+            'server.alarms': GuildDB.alarms,
+          }
+        }, function (err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`**Success:** Successfully ${disable ? 'disabled' : 'enabled'} the Alarm **${interaction.values[0]}**`);
+
+        return interaction.update({ embeds: [successEmbed], components: [] });
+      }
+    }
   } 
 }

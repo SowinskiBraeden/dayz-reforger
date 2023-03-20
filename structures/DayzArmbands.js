@@ -85,7 +85,7 @@ class DayzArmbands extends Client {
         try {
           cmd.SlashCommand.run(this, interaction, args, { GuildDB }, start); // start is only used in ping / stats command
         } catch (err) {
-          this.sendInternalError(err);
+          this.sendInternalError(interaction, err);
         }
       }
     });
@@ -93,19 +93,26 @@ class DayzArmbands extends Client {
     const client = this;
   }
 
-  async updateLogs() {
-    const res = await fetch(`https://api.nitrado.net/services/${this.config.Nitrado.ServerID}/gameservers/file_server/download?file=/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, {
+  async downloadFile(file, outputDir) {
+    const res = await fetch(`https://api.nitrado.net/services/${this.config.Nitrado.ServerID}/gameservers/file_server/download?file=${file}`, {
       headers: {
         "Authorization": this.config.Nitrado.Auth
       }
     }).then(response => 
       response.json().then(data => data)
     ).then(res => res);
-
-    const stream = fs.createWriteStream('./logs/server-logs.ADM');
+  
+    const stream = fs.createWriteStream(outputDir);
     const { body } = await fetch(res.data.token.url);
     await finished(Readable.fromWeb(body).pipe(stream));
-  
+  }
+
+  async handleBanList(gamertag) {
+    await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/ban.txt`, './logs/ban.txt').then(() => {
+      fs.appendFile('./logs/ban.txt', gamertag, (err) => {
+        if (err) throw err;
+      });    
+    });
   }
   
   async handleKillfeed(guildId, line) {
@@ -198,18 +205,29 @@ class DayzArmbands extends Client {
 
       if (distance < alarm.radius) {
         const channel = this.channels.cache.get(alarm.channel);
-        
+
         let today = new Date();
         let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${data.time} EST`);
         let unixTime = Math.floor(newDt.getTime()/1000);
+        
+        // if (alarm.rules.includes['ban_on_entry']) {
+          
 
+
+        //   let alarmEmbed = new EmbedBuilder()
+        //     .setColor(this.config.Colors.Default)
+        //     .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned.__`)
+        //     .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
+        
+        //   channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+        // } else {
         let alarmEmbed = new EmbedBuilder()
           .setColor(this.config.Colors.Default)
           .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}**`)
           .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
       
-        channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
-        break; // we break because no need to check if they are in two alarms at once, can't be in two places at once.
+        return channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+        // }
       }
     }
   }
@@ -392,7 +410,7 @@ class DayzArmbands extends Client {
   async logsUpdateTimer() {
     setTimeout(async () => {
       this.readLogs('992982520591294524');
-      // await this.updateLogs().then(() => {
+      // await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(() => {
       //   this.guilds.cache.forEach((guild) => {
       //     this.killfeed(guild.id); // Check logs for killfeed
       //     // this.alarms(); // check for base alarms (+ rules that may apply such as safe zone)
@@ -488,8 +506,8 @@ class DayzArmbands extends Client {
       if (err) this.error(err);
       else
         files.forEach((file) => {
-          const event = require(EventsDir + "/" + file);;
-          if (file.split(".")[0] == 'interactionCreate') this.on(file.split(".")[0], i => event(this, i));
+          const event = require(EventsDir + "/" + file);
+          if (['interactionCreate','guildMemberAdd'].includes(file.split(".")[0])) this.on(file.split(".")[0], i => event(this, i));
           else this.on(file.split(".")[0], event.bind(null, this));
           this.logger.log("Event Loaded: " + file.split(".")[0]);
         });
@@ -529,6 +547,7 @@ class DayzArmbands extends Client {
       allowedChannels: [],
       killfeedChannel: "",
       connectionLogsChannel: "",
+      welcomeChannel: "",
       factionArmbands: {},
       usedArmbands: [],
       excludedRoles: [],
@@ -542,6 +561,7 @@ class DayzArmbands extends Client {
     return {
       gamertag: gt,
       playerID: pID,
+      discordID: "",
       KDR: 0.00,
       kills: 0,
       deaths: 0,
@@ -581,6 +601,9 @@ class DayzArmbands extends Client {
       botAdminRoles: guild.server.botAdminRoles,
       playerstats: guild.server.playerstats,
       alarms: guild.server.alarms,
+      killfeedChannel: guild.server.killfeedChannel,
+      connectionLogsChannel: guild.server.connectionLogsChannel,
+      welcomeChannel: guild.server.welcomeChannel,
     };
   }
 

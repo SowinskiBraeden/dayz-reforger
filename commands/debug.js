@@ -21,11 +21,13 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
 
-      let alarmEmbed = new EmbedBuilder()
-        .setDescription('test des.')
-        .addFields({ name: 'Test Field', value: `[Test Data](https://www.izurvive.com/chernarusplussatmap/#location=11467.6;7452)`, inline: false })
+      if (client.config.Dev != 'DEV.') return interaction.send({ content: 'This command is not available to Production Version.' });
+
+      let embed = new EmbedBuilder()
+        .setColor(client.config.Colors.Default)
+        .setDescription(`**Welcome** <@${interaction.member.user.id}> to **DayZ Reforger**\nTo gain access please use the command </gamertag-link:1>`);
     
-      return interaction.send({ embeds: [alarmEmbed] });
+      interaction.send({ embeds: [embed] });
     },
   },
 }
