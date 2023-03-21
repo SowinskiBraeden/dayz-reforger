@@ -81,7 +81,7 @@ module.exports = {
       
           let bankingReset = false;
           if (!banking) bankingReset = true
-          else banking = banking.banking
+          else banking = banking.user
 
           if (!bankingReset) {
             const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);

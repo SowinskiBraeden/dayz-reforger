@@ -3,6 +3,7 @@ const { Collection, Client, EmbedBuilder, Routes } = require('discord.js');
 const MongoClient = require('mongodb').MongoClient;
 const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
+const mongoose = require('mongoose');
 
 const path = require("path");
 const fs = require('fs');
@@ -186,7 +187,7 @@ class DayzArmbands extends Client {
           if (err) return client.sendInternalError(interaction, err);
         });
         
-      } else banking = banking.banking;
+      } else banking = banking.user;
 
       if (!this.exists(banking.guilds[guild.serverID])) {
         const success = addUser(banking.guilds, guild.serverID, interaction.member.user.id, this, guild.startingBalance);
@@ -310,6 +311,30 @@ class DayzArmbands extends Client {
     if (this.exists(channel)) channel.send({ embeds: [connectionLog] });
   }
 
+  async detectCombatLog(guildId, data) {
+    if (data.lastDamageDate == null) return;
+    
+    let today = new Date();
+    let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`);
+  
+    let diffMs = (newDt - data.lastDamageDate)
+    let diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+
+    if (diffMins > 5) return;
+
+    let guild = await this.GetGuild(guildId);
+    if (!this.exists(guild.connectionLogsChannel)) return;
+    const channel = this.channels.cache.get(guild.connectionLogsChannel);
+
+    let unixTime = Math.floor(newDt.getTime()/1000);
+
+    let combatLog = new EmbedBuilder()
+      .setColor(this.config.Colors.Red)
+      .setDescription(`**NOTICE:**\n**${info.player}** has combat logged at <t:${unixTime}> when fighting **${info.lastHitBy}**`);
+  
+    return channel.send({ embeds: {combatLog} });
+  }
+
   async handlePlayerLogs(guildId, line) {
 
     let guild = await this.GetGuild(guildId);
@@ -318,6 +343,7 @@ class DayzArmbands extends Client {
     const connectTemplate = /(.*) \| Player \"(.*)\" is connected \(id=(.*)\)/g;
     const disconnectTemplate = /(.*) \| Player \"(.*)\"\(id=(.*)\) has been disconnected/g;
     const positionTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
+    const damangeTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP: (.*)\] hit by Player \"(.*)\"\(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
 
     if (line.includes('connected')) {
       let data = [...line.matchAll(connectTemplate)][0];
@@ -388,8 +414,15 @@ class DayzArmbands extends Client {
       this.sendConnectionLogs(guildId, {
         time: info.time,
         player: info.player,
-        conected: info.connected,
+        connected: info.connected,
         lastConnectionDate: playerStat.lastConnectionDate,
+      });
+
+      this.detectCombatLog(guildId, {
+        time: info.time,
+        player: info.player,
+        lastDamageDate: playerStat.lastDamageDate,
+        lastHitBy: playerStat.lastHitBy,
       });
     }
 
@@ -419,6 +452,37 @@ class DayzArmbands extends Client {
       if (playerStatIndex == -1) guild.playerstats.push(playerStat);
       else guild.playerstats[playerStatIndex] = playerStat;
 
+      this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
+        $set: {
+          "server.playerstats": guild.playerstats
+        }
+      }, function (err, res) {
+        if (err) this.error(err);
+      });
+    }
+
+    if (line.includes('hit by Player')) {
+      let data = [...line.matchAll(damangeTemplate)];
+
+      let info = {
+        time: data[1],
+        player: data[2],
+        playerID: data[3],
+      }
+
+      let playerStat = guild.playerstats.find(stat => stat.playerID == info.playerID)
+      let playerStatIndex = guild.playerstats.indexOf(playerStat);
+      if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
+
+      let today = new Date();
+      let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`);
+
+      playerStats.lastDamageDate = newDt;
+      playerStats.lastHitBy = data[6];
+
+      if (playerStatIndex == -1) guild.playerstats.push(playerStat);
+      else guild.playerstatus[playerStatIndex] = playerStat;
+      
       this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
         $set: {
           "server.playerstats": guild.playerstats
@@ -524,6 +588,7 @@ class DayzArmbands extends Client {
       // Connect to Mongo database.
       this.db = await MongoClient.connect(mongoURI, {connectTimeoutMS: 1000});
       this.dbo = this.db.db(dbo);
+      mongoose.connect(`${mongoURI}/${dbo}`);
       this.log('Successfully connected to mongoDB');
       databaselogs.connected = true;
       databaselogs.attempts = 0; // reset attempts
@@ -635,6 +700,7 @@ class DayzArmbands extends Client {
       botAdminRoles: [],
       playerstats: [],
       alarms: [],
+      incomeRoles: []
     }
   }
 
@@ -652,6 +718,8 @@ class DayzArmbands extends Client {
       worstDeathStreak: 0,
       pos: [],
       lastConnectionDate: null,
+      lastDamageDate: null,
+      lastHitBy: null,
       connected: false,
       bounties: [],
     }

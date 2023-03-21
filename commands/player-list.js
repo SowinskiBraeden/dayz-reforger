@@ -1,10 +1,10 @@
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
-  name: "stats",
-  debug: true,
-  global: true,
-  description: "check bot statistics",
+  name: "player-list",
+  debug: false,
+  global: false,
+  description: "get current online players",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

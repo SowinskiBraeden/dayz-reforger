@@ -15,8 +15,6 @@ userSchema.methods.createUser = function (userID, guildID, startingBalance, cash
       balance: startingBalance,
       cash: cash,
     },
-    faction: "",
-    gamertag: ""
   };
 };
 
