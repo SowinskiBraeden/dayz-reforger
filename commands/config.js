@@ -178,7 +178,65 @@ module.exports = {
       description: "View current settings configuration",
       value: "view",
       type: 1,
-    }
+    },
+    {
+      name: "starting_balance",
+      description: "Set the starting balance",
+      value: "starting_balance",
+      type: 1,
+      options: [{
+        name: "amount",
+        description: "The amount to set the starting balance",
+        value: "amount",
+        type: 10,
+        min_value: 0.01,
+        required: true,
+      }]
+    },
+    {
+      name: "income_role",
+      description: "Add/update a role to earn income on /collect-income command",
+      value: "set_income_role",
+      type: 2,
+      options: [
+        {
+          name: "set",
+          description: "Set role",
+          value: "set",
+          type: 1,
+          options: [
+            {
+              name: "role",
+              description: "Role to set",
+              value: "role",
+              type: 8,
+              required: true,
+            },
+            {
+              name: "amount",
+              description: "The amount to collect",
+              value: 120.00,
+              type: 10,
+              min_value: 0.01,
+              required: true,
+            }
+          ]
+        },
+        {
+          name: "remove",
+          description: "Remove role",
+          value: "remove",
+          type: 1,
+          options: [{
+            name: "role",
+            description: "Role to remove",
+            value: "role",
+            type: 8,
+            required: true,
+          }]
+        },
+      ],
+    },
   ],  
   SlashCommand: {
     /**
@@ -422,6 +480,88 @@ module.exports = {
   
         return interaction.send({ embeds: [successEmbed] });    
 
+      } else if (args[0].name == 'starting_balance') {
+        client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.startingBalance":args[0].options[0].value}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`Successfully set $${args[0].options[0].value.toFixed(2)} as starting balance`);
+        
+        return interaction.send({ embeds: [successEmbed] });
+
+      } else if (args[0].name == 'income_role') {
+        if (args[0].options[0].name== 'set') {
+          const roleId = args[0].options[0].options[0].value
+
+          if (args[0].options[0].options[1].value <= 0) {
+            let embed = new EmbedBuilder()
+              .setDescription('**Error Notice:** Amount cannot be $0 or less than $0.')
+              .setColor(client.config.Colors.Red);
+    
+            return interaction.send({ embeds: [embed] });
+          }
+    
+          const searchIndex = GuildDB.incomeRoles.findIndex((role) => role.role==roleId);
+          if (searchIndex == -1) {
+            const newIncome = {
+              role: roleId,
+              income: args[0].options[0].options[1].value,
+            }
+    
+            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$push: {"server.incomeRoles":newIncome}}, function(err, res) {
+              if (err) return client.sendInternalError(interaction, err);
+            });
+          } else {
+            client.dbo.collection("guilds").updateOne({
+              "server.serverID": GuildDB.serverID,
+              "server.incomeRoles.role": roleId
+            },
+            {
+              $set: {
+                "server.incomeRoles.$.income": args[0].options[0].options[1].value
+              }
+            }, function(err, res) {
+              if (err) return client.sendInternalError(interaction, err);
+            });
+          }
+          const perform = searchIndex == -1 ? 'set' : 'updated';
+    
+          const successEmbed = new EmbedBuilder()
+            .setDescription(`Successfully ${perform} <@&${roleId}>'s income to $${args[0].options[0].options[1].value}`)
+            .setColor(client.config.Colors.Green);
+    
+          return interaction.send({ embeds: [successEmbed] });    
+
+        } else if (args[0].options[0].name== 'remove') {
+          const searchIndex = GuildDB.incomeRoles.findIndex((role) => role.role==roleId);
+          if (searchIndex == -1) {
+            const errorEmbed = new EmbedBuilder()
+              .setDescription('**Error Notice:** Role not found')
+              .setColor(client.config.Colors.Red);
+
+            return interaction.send({ embeds: [errorEmbed] }); 
+          } else {
+            const prompt = new EmbedBuilder()
+            .setTitle(`Are you sure you want to remove this role as an income?`)
+            .setColor(client.config.Colors.Default)
+
+            const opt = new ActionRowBuilder()
+              .addComponents(
+                new ButtonBuilder()
+                  .setCustomId(`RemoveIncomeRole-yes-${interaction.member.user.id}`)
+                  .setLabel("Yes")
+                  .setStyle(ButtonStyle.Danger),
+                new ButtonBuilder()
+                  .setCustomId(`RemoveIncomeRole-no-${interaction.member.user.id}`)
+                  .setLabel("No")
+                  .setStyle(ButtonStyle.Success)
+              )
+
+            return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
+          }
+        }
       }
     },
   },
