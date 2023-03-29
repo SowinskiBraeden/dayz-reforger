@@ -38,7 +38,7 @@ module.exports = {
         });
       }
 
-      let playerStat = GuildDB.playerstats.find(stat => stat.player == args[0].value );
+      let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == args[0].value );
       if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.')] });
 
       playerStat.discordID = interaction.member.user.id;
