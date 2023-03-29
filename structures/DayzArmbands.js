@@ -576,8 +576,8 @@ class DayzArmbands extends Client {
         })
       });
       this.logsUpdateTimer(); // restart this function
-    // }, minute * 5); // restart every 5 minutes
-    }, minute / 4);
+    }, minute * 5); // restart every 5 minutes
+    // }, minute / 4);
   }
 
   async connectMongo(mongoURI, dbo) {
