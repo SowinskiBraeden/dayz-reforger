@@ -39,17 +39,16 @@ module.exports = {
       }
 
       let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == args[0].value );
-      if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.')] });
+      if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
       playerStat.discordID = interaction.member.user.id;
       
       let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
-      let playerstats = GuildDB.playerstats;
-      playerstats[playerStatIndex] = playerStatIndex;
+      GuildDB.playerstats[playerStatIndex] = playerStat;
 
-      client.dbo.collectin("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, {
+      client.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, {
         $set: {
-          'server.playerstats': playerstats,
+          'server.playerstats': GuildDB.playerstats,
         }
       })
 
@@ -59,7 +58,7 @@ module.exports = {
 
       let connectedEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`Successfully connected \` ${playerstats.gamertag} \` as your gamertag.`);
+        .setDescription(`Successfully connected \` ${playerStat.gamertag} \` as your gamertag.`);
 
       return interaction.send({ embeds: [connectedEmbed] })
     },
