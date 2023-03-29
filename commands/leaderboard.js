@@ -51,7 +51,7 @@ module.exports = {
         if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
       })
       
-      let limit = args[1].value > a.length ? a.length : args[1].value;
+      let limit = args[1].value > leaderboard.length ? leaderboard.length : args[1].value;
       
       let leaderboardEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default);
