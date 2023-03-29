@@ -182,7 +182,7 @@ class DayzArmbands extends Client {
 
         // Register inventory for user  
         let newBank = new User();
-        newBank.createBank(interaction.member.user.id, guild.serverID, guild.startingBalance, 0);
+        newBank.createUser(interaction.member.user.id, guild.serverID, guild.startingBalance, 0);
         newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
         });

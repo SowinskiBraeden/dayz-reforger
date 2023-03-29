@@ -130,7 +130,7 @@ module.exports = {
 
         // Register inventory for user  
         let newBank = new User();
-        newBank.createBank(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, 0);
+        newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, 0);
         newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
         });
@@ -223,7 +223,7 @@ module.exports = {
 
             // Register inventory for user  
             let newBank = new User();
-            newBank.createBank(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
+            newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
             newBank.save().catch(err => {
               if (err) return client.sendInternalError(interaction, err);
             });
@@ -296,7 +296,7 @@ module.exports = {
 
           // Register inventory for user  
           let newBank = new User();
-          newBank.createBank(targetUserID, GuildDB.serverID, GuildDB.startingBalance, newTargetCash);
+          newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, newTargetCash);
           newBank.save().catch(err => {
             if (err) return client.sendInternalError(interaction, err);
           });
