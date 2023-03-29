@@ -29,7 +29,7 @@ module.exports = {
 
       if (!client.exists(GuildDB.playerstats)) {
         GuildDB.playerstats = [{}];
-        this.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
+        client.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
           $set: {
             "server.playerstats": []
           }
