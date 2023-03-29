@@ -554,12 +554,10 @@ class DayzArmbands extends Client {
     setTimeout(async () => {
       this.activePlayersTick++;
       
-      await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(() => {
-        this.guilds.cache.forEach(async (guild) => {
-          await this.readLogs(guild.id).then(() => {
-            if (this.activePlayersTick == 12) this.handleActivePlayersList(guild.id);
-          });
-        });
+      await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
+        await this.readLogs('1019008625269801032').then(() => {
+          if (this.activePlayersTick == 12) this.handleActivePlayersList(guild.id);
+        })
       });
       this.logsUpdateTimer(); // restart this function
     }, minute * 5); // restart every 5 minutes
