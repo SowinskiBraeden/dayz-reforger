@@ -29,12 +29,12 @@ module.exports = {
 
       if (!client.exists(GuildDB.playerstats)) {
         GuildDB.playerstats = [{}];
-        client.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
+        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
           $set: {
             "server.playerstats": []
           }
         }, function (err, res) {
-          if (err && this.exists(channel)) return this.sendInternalError(channel, err);
+          if (err) return this.sendInternalError(interaction, err);
         });
       }
 
