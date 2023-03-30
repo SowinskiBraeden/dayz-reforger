@@ -118,6 +118,19 @@ module.exports = {
       }]
     },
     {
+      name: "member_role",
+      description: "Role to give users when they join.",
+      value: "member_role",
+      type: 1,
+      options: [{
+        name: "role",
+        description: "Role to configure",
+        value: "role",
+        type: 8,
+        required: true,
+      }]
+    },
+    {
       name: "bot_admin_role",
       description: "Set/remove bot admin role",
       value: "bot_admin_role",
@@ -480,6 +493,19 @@ module.exports = {
   
         return interaction.send({ embeds: [successEmbed] });    
 
+      } else if (args[0].name == 'member_role') {
+        const role = args[0].options[0].value;
+  
+        client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.memberRole": role}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        const successEmbed = new EmbedBuilder()
+          .setDescription(`Successfully set <@&${role}> to give to users who link they join.`)
+          .setColor(client.config.Colors.Green);
+  
+        return interaction.send({ embeds: [successEmbed] }); 
+        
       } else if (args[0].name == 'starting_balance') {
         client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.startingBalance":args[0].options[0].value}}, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);

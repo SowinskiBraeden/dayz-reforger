@@ -50,11 +50,19 @@ module.exports = {
         $set: {
           'server.playerstats': GuildDB.playerstats,
         }
-      })
+      });
 
-      const role = interaction.guild.roles.cache.get(GuildDB.linkedGamertagRole);
-      const member = interaction.guild.members.cache.get(interaction.member.user.id);
-      member.roles.add(role);
+      if (client.exists(GuildDB.linkedGamertagRole)) {
+        let role = interaction.guild.roles.cache.get(GuildDB.linkedGamertagRole);
+        let member = interaction.guild.members.cache.get(interaction.member.user.id);
+        member.roles.add(role);
+      }
+
+      if (client.exists(GuildDB.memberRole)) {
+        let role = interaction.guild.roles.cache.get(GuildDB.memberRole);
+        let member = interaction.guild.members.cache.get(interaction.member.user.id);
+        member.roles.add(role);
+      }
 
       let connectedEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default)

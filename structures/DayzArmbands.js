@@ -719,6 +719,7 @@ class DayzArmbands extends Client {
       incomeRoles: [],
       linkedGamertagRole: "",
       startingBalance: 500,
+      memberRole: "",
     }
   }
 
@@ -776,6 +777,7 @@ class DayzArmbands extends Client {
       linkedGamertagRole: guild.server.linkedGamertagRole,
       incomeRoles: guild.server.incomeRoles,
       startingBalance: guild.server.startingBalance,
+      memberRole: guild.server.memberRole,
     };
   }
 
