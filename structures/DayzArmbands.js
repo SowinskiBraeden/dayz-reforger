@@ -117,14 +117,14 @@ class DayzArmbands extends Client {
     });
   }
   
-  async handleKillfeed(guildId, line) {
+  async handleKillfeed(guildId, stats, line) {
     
     let guild = await this.GetGuild(guildId);
-    if (guild.playerstats == undefined) guild.playerstats = [];
     const channel = this.channels.cache.get(guild.killfeedChannel);
+
     let template = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let data = [...line.matchAll(template)][0];
-
+    
     let info = {
       time: data[1],
       victim: data[2],
@@ -139,16 +139,16 @@ class DayzArmbands extends Client {
       weapon: data[11],
       distance: data[12]
     };
-
+    
     if (!this.exists(info.victim) || !this.exists(info.victimID) || !this.exists(info.killer) || !this.exists(info.killerID)) return;
 
-    let killerStat = guild.playerstats.find(stat => stat.playerID == info.killerID)
-    let victimStat = guild.playerstats.find(stat => stat.playerID == info.victimID)
-    let killerStatIndex = guild.playerstats.indexOf(killerStat);
-    let victimStatIndex = guild.playerstats.indexOf(victimStat);
+    let killerStat = stats.find(stat => stat.playerID == info.killerID)
+    let victimStat = stats.find(stat => stat.playerID == info.victimID)
+    let killerStatIndex = stats.indexOf(killerStat);
+    let victimStatIndex = stats.indexOf(victimStat);
     if (killerStat == undefined) killerStat = this.getDefaultPlayerStats(info.killer, info.killerID);
     if (victimStat == undefined) victimStat = this.getDefaultPlayerStats(info.victim, info.victimID);
-
+    
     killerStat.kills++;
     killerStat.killStreak++;
     killerStat.bestKillStreak = killerStat.killStreak > killerStat.bestKillStreak ? killerStat.killStreak : killerStat.bestKillStreak;
@@ -159,7 +159,7 @@ class DayzArmbands extends Client {
     victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
     if (victimStat.killStreak>0) victimStat.killStreak = 0;
     if (killerStat.deathStreak>0) killerStat.deathStreak = 0;
-
+    
     let receivedBounty = null;
     if (victimStat.bounties.length > 0 && killerStat.discordID != "") {
       let totalBounty = 0;
@@ -168,12 +168,12 @@ class DayzArmbands extends Client {
       }
 
       let banking = await this.dbo.collection("users").findOne({"user.userID": killerStat.discordID}).then(banking => banking);
-
+      
       if (!banking) {
         banking = {
-          userID: interaction.member.user.id,
+          userID: killerStat.discordID,
           guilds: {
-            [guild.serverID]: {
+            [guildId]: {
               bankAccount: {
                 balance: guild.startingBalance,
                 cash: 0.00,
@@ -184,23 +184,23 @@ class DayzArmbands extends Client {
 
         // Register inventory for user  
         let newBank = new User();
-        newBank.createUser(interaction.member.user.id, guild.serverID, guild.startingBalance, 0);
+        newBank.createUser(killerStat.discordID, guildId, guild.startingBalance, 0);
         newBank.save().catch(err => {
-          if (err) return client.sendInternalError(interaction, err);
+          if (err) return this.sendInternalError(interaction, err);
         });
         
       } else banking = banking.user;
 
-      if (!this.exists(banking.guilds[guild.serverID])) {
-        const success = addUser(banking.guilds, guild.serverID, interaction.member.user.id, this, guild.startingBalance);
+      if (!this.exists(banking.guilds[guildId])) {
+        const success = addUser(banking.guilds, guildId, killer.discordID, this, guild.startingBalance);
         if (!success) return this.sendError(guild.connectionLogsChannel, 'Failed to add bank');
       }
 
-      const newBalance = banking.guilds[guild.serverID].bankAccount.balance + totalBounty;
+      const newBalance = banking.guilds[guildId].bankAccount.balance + totalBounty;
       
       await this.dbo.collection("users").updateOne({ "user.userID": killerStat.discordID }, {
         $set: {
-          [`banking.guilds.${guild.serverID}.bankAccount.balance`]: newBalance,
+          [`banking.guilds.${guildId}.bankAccount.balance`]: newBalance,
         }
       }, function(err, res) {
         if (err) return this.sendError(guild.connectionLogsChannel, err);
@@ -211,30 +211,23 @@ class DayzArmbands extends Client {
         .setDescription(`<@${killerStat.discordID}> received **$${totalBounty.toFixed(2)}** in bounty rewards.`);
     }
 
-    if (killerStatIndex == -1) guild.playerstats.push(killerStat);
-    else guild.playerstats[killerStatIndex] = killerStat;
-    if (victimStatIndex == -1) guild.playerstats.push(victimStat);
-    else guild.playerstats[victimStatIndex] = victimStat;
-
-    await this.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
-      $set: {
-        "server.playerstats": guild.playerstats
-      }
-    }, function (err, res) {
-      if (err && this.exists(channel)) return this.sendInternalError(channel, err);
-    });
+    if (killerStatIndex == -1) stats.push(killerStat);
+    else stats[killerStatIndex] = killerStat;
+    if (victimStatIndex == -1) stats.push(victimStat);
+    else stats[victimStatIndex] = victimStat;
     
     let today = new Date();
     let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`)
     let unixTime = Math.floor(newDt.getTime()/1000);
 
     const killEvent = new EmbedBuilder()
-        .setColor(this.config.Colors.Default)
-        .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
-
+      .setColor(this.config.Colors.Default)
+      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
+      
     if (this.exists(channel)) channel.send({ embeds: [killEvent] });
     if (this.exists(receivedBounty) && this.exists(channel)) channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
-    return;
+    
+    return stats;
   }
 
   async handleAlarms(guildId, data) {
@@ -254,7 +247,6 @@ class DayzArmbands extends Client {
     for (let i = 0; i < guild.alarms.length; i++) {
       let alarm = guild.alarms[i];
       if (alarm.disabled) continue; // ignore if alarm is disabled due to emp
-
       if (alarm.ignoredPlayers.includes(data.playerID)) continue;
 
       let diff = [Math.round(alarm.origin[0] - data.pos[0]), Math.round(alarm.origin[1] - data.pos[1])];
@@ -338,10 +330,7 @@ class DayzArmbands extends Client {
     return channel.send({ embeds: {combatLog} });
   }
 
-  async handlePlayerLogs(guildId, line) {
-
-    let guild = await this.GetGuild(guildId);
-    if (guild.playerstats == undefined) guild.playerstats = [];
+  async handlePlayerLogs(guildId, stats, line) {
 
     const connectTemplate = /(.*) \| Player \"(.*)\" is connected \(id=(.*)\)/g;
     const disconnectTemplate = /(.*) \| Player \"(.*)\"\(id=(.*)\) has been disconnected/g;
@@ -361,8 +350,8 @@ class DayzArmbands extends Client {
 
       if (!this.exists(info.player) || !this.exists(info.playerID)) return;
 
-      let playerStat = guild.playerstats.find(stat => stat.playerID == info.playerID)
-      let playerStatIndex = guild.playerstats.indexOf(playerStat);
+      let playerStat = stats.find(stat => stat.playerID == info.playerID)
+      let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
       
       let today = new Date();
@@ -371,16 +360,8 @@ class DayzArmbands extends Client {
       playerStat.lastConnectionDate = newDt;
       playerStat.connected = true;
 
-      if (playerStatIndex == -1) guild.playerstats.push(playerStat);
-      else guild.playerstats[playerStatIndex] = playerStat;
-
-      await this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
-        $set: {
-          "server.playerstats": guild.playerstats
-        }
-      }, function (err, res) {
-        if (err) this.error(err);
-      });
+      if (playerStatIndex == -1) stats.push(playerStat);
+      else stats[playerStatIndex] = playerStat;
 
       this.sendConnectionLogs(guildId, {
         time: info.time,
@@ -403,22 +384,14 @@ class DayzArmbands extends Client {
 
       if (!this.exists(info.player) || !this.exists(info.playerID)) return;
 
-      let playerStat = guild.playerstats.find(stat => stat.playerID == info.playerID)
-      let playerStatIndex = guild.playerstats.indexOf(playerStat);
+      let playerStat = stats.find(stat => stat.playerID == info.playerID)
+      let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
       
       playerStat.connected = false;
 
-      if (playerStatIndex == -1) guild.playerstats.push(playerStat);
-      else guild.playerstats[playerStatIndex] = playerStat;
-
-      await this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
-        $set: {
-          "server.playerstats": guild.playerstats
-        }
-      }, function (err, res) {
-        if (err) this.error(err);
-      });
+      if (playerStatIndex == -1) stats.push(playerStat);
+      else stats[playerStatIndex] = playerStat;
 
       this.sendConnectionLogs(guildId, {
         time: info.time,
@@ -448,8 +421,8 @@ class DayzArmbands extends Client {
 
       if (!this.exists(info.player) || !this.exists(info.playerID)) return;
 
-      let playerStat = guild.playerstats.find(stat => stat.playerID == info.playerID)
-      let playerStatIndex = guild.playerstats.indexOf(playerStat);
+      let playerStat = stats.find(stat => stat.playerID == info.playerID)
+      let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
       
       playerStat.pos = info.pos;
@@ -461,16 +434,8 @@ class DayzArmbands extends Client {
         pos: info.pos,
       });
 
-      if (playerStatIndex == -1) guild.playerstats.push(playerStat);
-      else guild.playerstats[playerStatIndex] = playerStat;
-
-      await this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
-        $set: {
-          "server.playerstats": guild.playerstats
-        }
-      }, function (err, res) {
-        if (err) this.error(err);
-      });
+      if (playerStatIndex == -1) stats.push(playerStat);
+      else stats[playerStatIndex] = playerStat;
     }
 
     if (line.includes('hit by Player')) {
@@ -485,8 +450,8 @@ class DayzArmbands extends Client {
 
       if (!this.exists(info.player) || !this.exists(info.playerID)) return;
 
-      let playerStat = guild.playerstats.find(stat => stat.playerID == info.playerID)
-      let playerStatIndex = guild.playerstats.indexOf(playerStat);
+      let playerStat = stats.find(stat => stat.playerID == info.playerID)
+      let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
 
       let today = new Date();
@@ -495,18 +460,11 @@ class DayzArmbands extends Client {
       playerStat.lastDamageDate = newDt;
       playerStat.lastHitBy = data[6];
 
-      if (playerStatIndex == -1) guild.playerstats.push(playerStat);
-      else guild.playerstatus[playerStatIndex] = playerStat;
-      
-      await this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
-        $set: {
-          "server.playerstats": guild.playerstats
-        }
-      }, function (err, res) {
-        if (err) this.error(err);
-      });
+      if (playerStatIndex == -1) stats.push(playerStat);
+      else stats[playerStatIndex] = playerStat;
     }
-    return;
+
+    return stats;
   }
 
   async handleActivePlayersList(guildId) {
@@ -554,11 +512,23 @@ class DayzArmbands extends Client {
     });
     let lines = [];
     for await (const line of rl) { lines.push(line); }
+
+    let guild = await this.GetGuild(guildId);
+    if (!this.exists(guild.playerstats)) guild.playerstats = [];
+    let s = guild.playerstats;
     
     for (let i = lines.indexOf(history.lastLog) + 1; i < lines.length; i++) {
-      if (lines[i].includes('connected') || lines[i].includes('disconnected') || lines[i].includes('pos=<') || lines[1].includes['hit by Player']) await this.handlePlayerLogs(guildId, lines[i]);
-      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) await this.handleKillfeed(guildId, lines[i]);
+      if (lines[i].includes('connected') || lines[i].includes('disconnected') || lines[i].includes('pos=<') || lines[1].includes['hit by Player']) s = await this.handlePlayerLogs(guildId, s, lines[i]);
+      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) s = await this.handleKillfeed(guildId, s, lines[i]);
     }
+
+    await this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
+      $set: {
+        "server.playerstats": s
+      }
+    }, function (err, res) {
+      if (err) this.error(err);
+    });
 
     history.lastLog = lines[lines.length-1];
 
