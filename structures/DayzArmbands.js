@@ -568,11 +568,12 @@ class DayzArmbands extends Client {
 
   async logsUpdateTimer() {
     setTimeout(async () => {
+      // console.log('---- tick ----')
       this.activePlayersTick++;
       
       await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
-        await this.readLogs('1019008625269801032').then(() => {
-          if (this.activePlayersTick == 12) this.handleActivePlayersList('1019008625269801032');
+        await this.readLogs(this.config.Guild).then(() => {
+          if (this.activePlayersTick == 12) this.handleActivePlayersList(this.config.Guild);
         })
       });
       this.logsUpdateTimer(); // restart this function
