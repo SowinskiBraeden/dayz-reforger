@@ -23,7 +23,7 @@ class DayzArmbands extends Client {
     this.interactionHandlers = new Collection();
     this.logger = new Logger(path.join(__dirname, "..", "logs/Logs.log"));
 
-    if (this.config.Token === "")
+    if (this.config.Token === "" || this.config.GuildID === "")
     throw new TypeError(
       "The config.js is not filled out. Please make sure nothing is blank, otherwise the bot will not work properly."
     );
@@ -572,8 +572,8 @@ class DayzArmbands extends Client {
       this.activePlayersTick++;
       
       await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
-        await this.readLogs(this.config.Guild).then(() => {
-          if (this.activePlayersTick == 12) this.handleActivePlayersList(this.config.Guild);
+        await this.readLogs(this.config.GuildID).then(() => {
+          if (this.activePlayersTick == 12) this.handleActivePlayersList(this.config.GuildID);
         })
       });
       this.logsUpdateTimer(); // restart this function
