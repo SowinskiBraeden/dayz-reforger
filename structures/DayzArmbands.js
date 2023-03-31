@@ -124,6 +124,7 @@ class DayzArmbands extends Client {
 
     let template = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let data = [...line.matchAll(template)][0];
+    if (!data) return stats;
     
     let info = {
       time: data[1],
@@ -339,7 +340,7 @@ class DayzArmbands extends Client {
 
     if (line.includes(' connected')) {
       let data = [...line.matchAll(connectTemplate)][0];
-      if (!data) return;
+      if (!data) return stats;
 
       let info = {
         time: data[1],
@@ -373,7 +374,7 @@ class DayzArmbands extends Client {
 
     if (line.includes(' disconnected')) {
       let data = [...line.matchAll(disconnectTemplate)][0];
-      if (!data) return;
+      if (!data) return stats;
 
       let info = {
         time: data[1],
@@ -410,7 +411,7 @@ class DayzArmbands extends Client {
 
     if (line.includes('pos=<')) {
       let data = [...line.matchAll(positionTemplate)][0];
-      if (!data) return;
+      if (!data) return stats;
 
       let info = {
         time: data[1],
@@ -440,7 +441,7 @@ class DayzArmbands extends Client {
 
     if (line.includes('hit by Player')) {
       let data = [...line.matchAll(damangeTemplate)];
-      if (!data) return;
+      if (!data) return stats;
 
       let info = {
         time: data[1],
