@@ -507,6 +507,8 @@ class DayzArmbands extends Client {
       };
     }
 
+    let logIndex = lines.indexOf(history.lastLog) == -1 ? 0 : lines.indexOf(history.lastLog);
+
     const rl = readline.createInterface({
       input: fileStream,
       crlfDelay: Infinity
@@ -518,7 +520,7 @@ class DayzArmbands extends Client {
     if (!this.exists(guild.playerstats)) guild.playerstats = [];
     let s = guild.playerstats;
     
-    for (let i = lines.indexOf(history.lastLog) + 1; i < lines.length; i++) {
+    for (let i = logIndex + 1; i < lines.length; i++) {
       if (lines[i].includes('connected') || lines[i].includes('disconnected') || lines[i].includes('pos=<') || lines[1].includes['hit by Player']) s = await this.handlePlayerLogs(guildId, s, lines[i]);
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) s = await this.handleKillfeed(guildId, s, lines[i]);
     }
