@@ -430,6 +430,8 @@ class DayzArmbands extends Client {
       
       playerStat.lastPos = playerStat.pos;
       playerStat.pos = info.pos;
+      playerStat.lastTime = playerStat.time;
+      playerStat.time = `${info.time} EST`;
 
       this.handleAlarms(guildId, {
         time: info.time,
@@ -710,8 +712,10 @@ class DayzArmbands extends Client {
       bestKillStreak: 0,
       deathStreak: 0,
       worstDeathStreak: 0,
-      lastPos: [],
       pos: [],
+      lastPos: [],
+      time: null,
+      lastTime: null,
       lastConnectionDate: null,
       lastDamageDate: null,
       lastHitBy: null,
