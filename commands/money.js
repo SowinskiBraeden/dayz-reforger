@@ -99,7 +99,7 @@ module.exports = {
           if (err) return client.sendInternalError(interaction, err);
         });
         
-      } else banking = banking.banking;
+      } else banking = banking.user;
 
       if (!client.exists(banking.guilds[GuildDB.serverID])) {
         const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);

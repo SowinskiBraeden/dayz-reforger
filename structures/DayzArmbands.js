@@ -22,6 +22,7 @@ class DayzArmbands extends Client {
     this.commands = new Collection();
     this.interactionHandlers = new Collection();
     this.logger = new Logger(path.join(__dirname, "..", "logs/Logs.log"));
+    this.timer = this.config.Dev == 'PROD.' ? minute * 5 : minute / 4;
 
     if (this.config.Token === "" || this.config.GuildID === "")
     throw new TypeError(
@@ -543,7 +544,7 @@ class DayzArmbands extends Client {
 
   async logsUpdateTimer() {
     setTimeout(async () => {
-      console.log('---- tick ----')
+      if (this.config.Dev != 'PROD.') console.log('---- tick ----');
       this.activePlayersTick++;
       
       await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
@@ -552,8 +553,7 @@ class DayzArmbands extends Client {
         })
       });
       this.logsUpdateTimer(); // restart this function
-    // }, minute * 5); // restart every 5 minutes
-    }, minute / 4);
+    }, this.timer); // restart every 5 minutes during production
   }
 
   async connectMongo(mongoURI, dbo) {
