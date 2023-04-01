@@ -249,8 +249,8 @@ module.exports = {
 
           balanceEmbed.setTitle('Personal Bank Records');
           balanceEmbed.addFields(
-            { name: '**Bank**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
             { name: '**Cash**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
+            { name: '**Bank**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
             { name: '**Total**', value: `$${(banking.guilds[GuildDB.serverID].bankAccount.balance + banking.guilds[GuildDB.serverID].bankAccount.cash).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true });
         }
 
