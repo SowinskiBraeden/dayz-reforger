@@ -240,8 +240,9 @@ module.exports = {
 
           balanceEmbed.setTitle(`${User.tag}'s Bank Records`);
           balanceEmbed.addFields(
-            { name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance}`, inline: true },
-            { name: '**Cash**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash}`, inline: true });
+            { name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance.toFixed(2).toLocaleString()}`, inline: true },
+            { name: '**Cash**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash.toFixed(2).toLocaleString()}`, inline: true },
+            { name: '**Total**', value: `$${(targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance + targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash).toFixed(2).toLocaleString()}`, inline: true });
 
         } else {
           // Show command authors balance
