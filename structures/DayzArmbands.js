@@ -96,6 +96,13 @@ class DayzArmbands extends Client {
     const client = this;
   }
 
+  async getDateEST(time) {
+    let t = new Date(); // Get current date (PST)
+    let e = new Date(t.getTime() + 180*60*1000); // Convert to EST
+    let n = new Date(`${e.toLocaleDateString('default',{month:'long'})} ${e.getDate()}, ${e.getFullYear()} ${time}`) // Apply given time to EST date
+    return n;
+  }
+
   async downloadFile(file, outputDir) {
     const res = await fetch(`https://api.nitrado.net/services/${this.config.Nitrado.ServerID}/gameservers/file_server/download?file=${file}`, {
       headers: {
@@ -218,8 +225,7 @@ class DayzArmbands extends Client {
     if (victimStatIndex == -1) stats.push(victimStat);
     else stats[victimStatIndex] = victimStat;
     
-    let today = new Date();
-    let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`)
+    let newDt = await this.getDateEST(info.time);
     let unixTime = Math.floor(newDt.getTime()/1000);
 
     const killEvent = new EmbedBuilder()
@@ -257,8 +263,7 @@ class DayzArmbands extends Client {
       if (distance < alarm.radius) {
         const channel = this.channels.cache.get(alarm.channel);
 
-        let today = new Date();
-        let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${data.time} EST`);
+        let newDt = await this.getDateEST(data.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
         
         // if (alarm.rules.includes['ban_on_entry']) {
@@ -289,8 +294,7 @@ class DayzArmbands extends Client {
     if (!this.exists(guild.connectionLogsChannel)) return;
     const channel = this.channels.cache.get(guild.connectionLogsChannel);
 
-    let today = new Date();
-    let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${data.time} EST`);
+    let newDt = await this.getDateEST(data.time);
     let unixTime = Math.floor(newDt.getTime()/1000);
 
     let connectionLog = new EmbedBuilder()
@@ -311,9 +315,8 @@ class DayzArmbands extends Client {
   async detectCombatLog(guildId, data) {
     if (data.lastDamageDate == null) return;
     
-    let today = new Date();
-    let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${data.time} EST`);
-  
+    let newDt = await this.getDateEST(data.time);
+
     let diffMs = (newDt - data.lastDamageDate)
     let diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
 
@@ -358,8 +361,7 @@ class DayzArmbands extends Client {
       let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
       
-      let today = new Date();
-      let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`);
+      let newDt = await this.getDateEST(data.time);
       
       playerStat.lastConnectionDate = newDt;
       playerStat.connected = true;
@@ -462,8 +464,7 @@ class DayzArmbands extends Client {
       let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
 
-      let today = new Date();
-      let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`);
+      let newDt = await this.getDateEST(data.time);
 
       playerStat.lastDamageDate = newDt;
       playerStat.lastHitBy = attackerID;
