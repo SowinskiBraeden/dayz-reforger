@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
   name: "admin-gamertag-link",
