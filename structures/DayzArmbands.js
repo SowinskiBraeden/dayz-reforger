@@ -453,6 +453,7 @@ class DayzArmbands extends Client {
         time: data[1],
         player: data[2],
         playerID: data[3],
+        attackerID: data[6]
       }
 
       if (!this.exists(info.player) || !this.exists(info.playerID)) return stats;
@@ -465,7 +466,7 @@ class DayzArmbands extends Client {
       let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`);
 
       playerStat.lastDamageDate = newDt;
-      playerStat.lastHitBy = data[7];
+      playerStat.lastHitBy = attackerID;
 
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
@@ -489,7 +490,7 @@ class DayzArmbands extends Client {
 
     let des = ``;
     for (let i = 0; i < activePlayers.length; i++) {
-      des += `**- ${activePlayers[i].gamertag}\n`;
+      des += `**- ${activePlayers[i].gamertag}**\n`;
     }
 
     const activePlayersEmbed = new EmbedBuilder()
