@@ -140,8 +140,8 @@ class DayzArmbands extends Client {
       weapon: data[11],
       distance: data[12]
     };
-    
-    if (!this.exists(info.victim) || !this.exists(info.victimID) || !this.exists(info.killer) || !this.exists(info.killerID)) return;
+
+    if (!this.exists(info.victim) || !this.exists(info.victimID) || !this.exists(info.killer) || !this.exists(info.killerID)) return stats;
 
     let killerStat = stats.find(stat => stat.playerID == info.killerID)
     let victimStat = stats.find(stat => stat.playerID == info.victimID)
@@ -158,8 +158,8 @@ class DayzArmbands extends Client {
     victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.bestKillStreak;
     killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
     victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
-    if (victimStat.killStreak>0) victimStat.killStreak = 0;
-    if (killerStat.deathStreak>0) killerStat.deathStreak = 0;
+    victimStat.killStreak = 0;
+    killerStat.deathStreak = 0;
     
     let receivedBounty = null;
     if (victimStat.bounties.length > 0 && killerStat.discordID != "") {
@@ -223,10 +223,10 @@ class DayzArmbands extends Client {
 
     const killEvent = new EmbedBuilder()
       .setColor(this.config.Colors.Default)
-      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
-      
-    if (this.exists(channel)) channel.send({ embeds: [killEvent] });
-    if (this.exists(receivedBounty) && this.exists(channel)) channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
+      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
+
+    if (this.exists(channel)) await channel.send({ embeds: [killEvent] });
+    if (this.exists(receivedBounty) && this.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
     
     return stats;
   }
@@ -276,7 +276,7 @@ class DayzArmbands extends Client {
           .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}**`)
           .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
       
-        return channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+        return await channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
         // }
       }
     }
@@ -304,7 +304,7 @@ class DayzArmbands extends Client {
       } else connectionLog.addFields({ name: '**Session Time**', value: `**Unknown**`, inline: false });
     }
 
-    if (this.exists(channel)) channel.send({ embeds: [connectionLog] });
+    if (this.exists(channel)) await channel.send({ embeds: [connectionLog] });
   }
 
   async detectCombatLog(guildId, data) {
@@ -336,7 +336,8 @@ class DayzArmbands extends Client {
     const connectTemplate = /(.*) \| Player \"(.*)\" is connected \(id=(.*)\)/g;
     const disconnectTemplate = /(.*) \| Player \"(.*)\"\(id=(.*)\) has been disconnected/g;
     const positionTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
-    const damangeTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP: (.*)\] hit by Player \"(.*)\"\(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    const damageTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    const deadTemplate = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
 
     if (line.includes(' connected')) {
       let data = [...line.matchAll(connectTemplate)][0];
@@ -349,7 +350,7 @@ class DayzArmbands extends Client {
         connected: true,
       };
 
-      if (!this.exists(info.player) || !this.exists(info.playerID)) return;
+      if (!this.exists(info.player) || !this.exists(info.playerID)) return stats;
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID)
       let playerStatIndex = stats.indexOf(playerStat);
@@ -383,7 +384,7 @@ class DayzArmbands extends Client {
         connected: false
       }
 
-      if (!this.exists(info.player) || !this.exists(info.playerID)) return;
+      if (!this.exists(info.player) || !this.exists(info.playerID)) return stats;
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID)
       let playerStatIndex = stats.indexOf(playerStat);
@@ -420,7 +421,7 @@ class DayzArmbands extends Client {
         pos: data[4].split(', ').map(v => parseFloat(v))
       };
 
-      if (!this.exists(info.player) || !this.exists(info.playerID)) return;
+      if (!this.exists(info.player) || !this.exists(info.playerID)) return stats;
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID)
       let playerStatIndex = stats.indexOf(playerStat);
@@ -440,7 +441,7 @@ class DayzArmbands extends Client {
     }
 
     if (line.includes('hit by Player')) {
-      let data = [...line.matchAll(damangeTemplate)];
+      let data = line.includes('(DEAD)') ? [...line.matchAll(deadTemplate)][0] : [...line.matchAll(damageTemplate)][0];
       if (!data) return stats;
 
       let info = {
@@ -449,7 +450,7 @@ class DayzArmbands extends Client {
         playerID: data[3],
       }
 
-      if (!this.exists(info.player) || !this.exists(info.playerID)) return;
+      if (!this.exists(info.player) || !this.exists(info.playerID)) return stats;
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID)
       let playerStatIndex = stats.indexOf(playerStat);
@@ -459,7 +460,7 @@ class DayzArmbands extends Client {
       let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`);
 
       playerStat.lastDamageDate = newDt;
-      playerStat.lastHitBy = data[6];
+      playerStat.lastHitBy = data[7];
 
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
@@ -506,22 +507,22 @@ class DayzArmbands extends Client {
         lastLog: null
       };
     }
-
-    let logIndex = lines.indexOf(history.lastLog) == -1 ? 0 : lines.indexOf(history.lastLog);
-
+    
     const rl = readline.createInterface({
       input: fileStream,
       crlfDelay: Infinity
     });
     let lines = [];
     for await (const line of rl) { lines.push(line); }
-
+    
+    let logIndex = lines.indexOf(history.lastLog) == -1 ? 0 : lines.indexOf(history.lastLog);
+    
     let guild = await this.GetGuild(guildId);
     if (!this.exists(guild.playerstats)) guild.playerstats = [];
     let s = guild.playerstats;
-    
+
     for (let i = logIndex + 1; i < lines.length; i++) {
-      if (lines[i].includes('connected') || lines[i].includes('disconnected') || lines[i].includes('pos=<') || lines[1].includes['hit by Player']) s = await this.handlePlayerLogs(guildId, s, lines[i]);
+      if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes['hit by Player']) s = await this.handlePlayerLogs(guildId, s, lines[i]);
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) s = await this.handleKillfeed(guildId, s, lines[i]);
     }
 
@@ -541,7 +542,7 @@ class DayzArmbands extends Client {
 
   async logsUpdateTimer() {
     setTimeout(async () => {
-      // console.log('---- tick ----')
+      console.log('---- tick ----')
       this.activePlayersTick++;
       
       await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
@@ -550,8 +551,8 @@ class DayzArmbands extends Client {
         })
       });
       this.logsUpdateTimer(); // restart this function
-    }, minute * 5); // restart every 5 minutes
-    // }, minute / 4);
+    // }, minute * 5); // restart every 5 minutes
+    }, minute / 4);
   }
 
   async connectMongo(mongoURI, dbo) {
