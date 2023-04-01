@@ -312,7 +312,7 @@ class DayzArmbands extends Client {
     if (data.lastDamageDate == null) return;
     
     let today = new Date();
-    let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${info.time} EST`);
+    let newDt = new Date(`${today.toLocaleDateString('default', { month: 'long' })} ${today.getDate()}, ${today.getFullYear()} ${data.time} EST`);
   
     let diffMs = (newDt - data.lastDamageDate)
     let diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
@@ -322,14 +322,15 @@ class DayzArmbands extends Client {
     let guild = await this.GetGuild(guildId);
     if (!this.exists(guild.connectionLogsChannel)) return;
     const channel = this.channels.cache.get(guild.connectionLogsChannel);
+    if (!channel) return;
 
     let unixTime = Math.floor(newDt.getTime()/1000);
 
     let combatLog = new EmbedBuilder()
       .setColor(this.config.Colors.Red)
-      .setDescription(`**NOTICE:**\n**${info.player}** has combat logged at <t:${unixTime}> when fighting **${info.lastHitBy}**`);
+      .setDescription(`**NOTICE:**\n**${data.player}** has combat logged at <t:${unixTime}> when fighting **${data.lastHitBy}**`);
   
-    return channel.send({ embeds: {combatLog} });
+    return channel.send({ embeds: [combatLog] });
   }
 
   async handlePlayerLogs(guildId, stats, line) {
