@@ -552,8 +552,8 @@ class DayzArmbands extends Client {
       this.activePlayersTick++;
       
       await this.downloadFile(`/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
-        await this.readLogs(this.config.GuildID).then(() => {
-          if (this.activePlayersTick == 12) this.handleActivePlayersList(this.config.GuildID);
+        await this.readLogs(this.config.GuildID).then(async () => {
+          if (this.activePlayersTick == 12) await this.handleActivePlayersList(this.config.GuildID);
         })
       });
       this.logsUpdateTimer(); // restart this function
