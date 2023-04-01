@@ -115,7 +115,7 @@ module.exports = {
       });
     
       const successEmbed = new EmbedBuilder()
-        .setDescription(`Successfully ${args[0].name == 'add' ? 'added' : 'removed'} **$${args[0].options[0].value.toFixed(2).toLocaleString()}** ${args[0] == 'add' ? 'to' : 'from'} <@${targetUserID}>'s balance`)
+        .setDescription(`Successfully ${args[0].name == 'add' ? 'added' : 'removed'} **$${args[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** ${args[0] == 'add' ? 'to' : 'from'} <@${targetUserID}>'s balance`)
         .setColor(client.config.Colors.Green);
 
       return interaction.send({ embeds: [successEmbed] });

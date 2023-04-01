@@ -165,7 +165,7 @@ module.exports = {
 
         const successEmbed = new EmbedBuilder()
           .setTitle('Bank Notice:')
-          .setDescription(`Successfully deposited **$${args[0].options[0].value.toFixed(2).toLocaleString()}**\nUse \`/bank balance\` to view your balance`)
+          .setDescription(`Successfully deposited **$${args[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}**\nUse \`/bank balance\` to view your balance`)
           .setColor(client.config.Colors.Green);
         
         return interaction.send({ embeds: [successEmbed] });
@@ -193,7 +193,7 @@ module.exports = {
         
         const successEmbed = new EmbedBuilder()
           .setTitle('Bank Notice:')
-          .setDescription(`Successfully withdrew **$${args[0].options[0].value.toFixed(2).toLocaleString()}**\nUse \`/bank balance\` to view your cash balance`)
+          .setDescription(`Successfully withdrew **$${args[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}**\nUse \`/bank balance\` to view your cash balance`)
           .setColor(client.config.Colors.Green);
         
         return interaction.send({ embeds: [successEmbed] });
@@ -240,18 +240,18 @@ module.exports = {
 
           balanceEmbed.setTitle(`${User.tag}'s Bank Records`);
           balanceEmbed.addFields(
-            { name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance.toFixed(2).toLocaleString()}`, inline: true },
-            { name: '**Cash**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash.toFixed(2).toLocaleString()}`, inline: true },
-            { name: '**Total**', value: `$${(targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance + targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash).toFixed(2).toLocaleString()}`, inline: true });
+            { name: '**Cash**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
+            { name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
+            { name: '**Total**', value: `$${(targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance + targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true });
 
         } else {
           // Show command authors balance
 
           balanceEmbed.setTitle('Personal Bank Records');
           balanceEmbed.addFields(
-            { name: '**Bank**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.balance.toFixed(2).toLocaleString()}`, inline: true },
-            { name: '**Cash**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.cash.toFixed(2).toLocaleString()}`, inline: true },
-            { name: '**Total**', value: `$${(banking.guilds[GuildDB.serverID].bankAccount.balance + banking.guilds[GuildDB.serverID].bankAccount.cash).toFixed(2).toLocaleString()}`, inline: true });
+            { name: '**Bank**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
+            { name: '**Cash**', value: `$${banking.guilds[GuildDB.serverID].bankAccount.cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
+            { name: '**Total**', value: `$${(banking.guilds[GuildDB.serverID].bankAccount.balance + banking.guilds[GuildDB.serverID].bankAccount.cash).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true });
         }
 
         return interaction.send({ embeds: [balanceEmbed] });
@@ -310,7 +310,7 @@ module.exports = {
         
         const successEmbed = new EmbedBuilder()
           .setTitle('Success')
-          .setDescription(`Successfully gave <@${targetUserID}> **$${args[0].options[1].value.toFixed(2).toLocaleString()}**`)
+          .setDescription(`Successfully gave <@${targetUserID}> **$${args[0].options[1].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}**`)
           .setColor(client.config.Colors.Green);
 
         return interaction.send({ embeds: [successEmbed] });
@@ -361,7 +361,7 @@ module.exports = {
         
         const successEmbed = new EmbedBuilder()
           .setTitle('Bank Notice:')
-          .setDescription(`Successfully transfered <@${targetUserID}> **$${args[0].options[1].value.toFixed(2).toLocaleString()}**`)
+          .setDescription(`Successfully transfered <@${targetUserID}> **$${args[0].options[1].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}**`)
           .setColor(client.config.Colors.Green);
 
         return interaction.send({ embeds: [successEmbed] });        
