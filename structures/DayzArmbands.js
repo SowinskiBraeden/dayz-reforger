@@ -467,7 +467,7 @@ class DayzArmbands extends Client {
       let newDt = await this.getDateEST(data.time);
 
       playerStat.lastDamageDate = newDt;
-      playerStat.lastHitBy = attackerID;
+      playerStat.lastHitBy = info.attackerID;
 
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
