@@ -202,7 +202,7 @@ class DayzArmbands extends Client {
       
       await this.dbo.collection("users").updateOne({ "user.userID": killerStat.discordID }, {
         $set: {
-          [`banking.guilds.${guildId}.bankAccount.balance`]: newBalance,
+          [`user.guilds.${guildId}.bankAccount.balance`]: newBalance,
         }
       }, function(err, res) {
         if (err) return this.sendError(guild.connectionLogsChannel, err);

@@ -110,7 +110,7 @@ module.exports = {
                         ? banking.guilds[GuildDB.serverID].bankAccount.balance + args[0].options[0].value
                         : banking.guilds[GuildDB.serverID].bankAccount.balance - args[0].options[0].value;
     
-      client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]:newBalance}}, function(err, res) {
+      client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.bankAccount.balance`]:newBalance}}, function(err, res) {
         if (err) return client.sendInternalError(interaction, err);
       });
     

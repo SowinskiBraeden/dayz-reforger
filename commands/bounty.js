@@ -92,7 +92,7 @@ module.exports = {
       
         client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
-            [`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
+            [`user.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);

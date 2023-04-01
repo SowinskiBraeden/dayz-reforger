@@ -156,8 +156,8 @@ module.exports = {
       
         client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
-            [`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
-            [`banking.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
+            [`user.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
+            [`user.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
@@ -184,8 +184,8 @@ module.exports = {
       
         client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
-            [`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
-            [`banking.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
+            [`user.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
+            [`user.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
@@ -228,7 +228,7 @@ module.exports = {
               if (err) return client.sendInternalError(interaction, err);
             });
             
-          } else targetUserBanking = targetUserBanking.banking;
+          } else targetUserBanking = targetUserBanking.user;
 
           if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
             const success = addUser(targetUserBanking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
@@ -270,7 +270,7 @@ module.exports = {
       
         client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
-            [`banking.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
+            [`user.guilds.${GuildDB.serverID}.bankAccount.cash`]: newCash
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
@@ -300,7 +300,7 @@ module.exports = {
           newBank.save().catch(err => {
             if (err) return client.sendInternalError(interaction, err);
           });
-        } else targetUserBanking = targetUserBanking.banking;
+        } else targetUserBanking = targetUserBanking.user;
 
         if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
           const success = addUser(targetUserBanking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
@@ -327,7 +327,7 @@ module.exports = {
 
         const newBalance = banking.guilds[GuildDB.serverID].bankAccount.balance - args[0].options[1].value;
       
-        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]:newBalance}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.bankAccount.balance`]:newBalance}}, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -350,11 +350,11 @@ module.exports = {
           client.dbo.collection("users").insertOne(targetUserBanking, function(err, res) {
             if (err) return client.sendInternalError(interaction, err);
           });
-        } else targetUserBanking = targetUserBanking.banking;
+        } else targetUserBanking = targetUserBanking.user;
       
         const newTargetBalance = targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance + args[0].options[1].value;
 
-        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`banking.guilds.${GuildDB.serverID}.bankAccount.balance`]:newTargetBalance}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.bankAccount.balance`]:newTargetBalance}}, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
         });
         
