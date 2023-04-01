@@ -427,6 +427,7 @@ class DayzArmbands extends Client {
       let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
       
+      playerStat.lastPos = playerStat.pos;
       playerStat.pos = info.pos;
 
       this.handleAlarms(guildId, {
@@ -709,6 +710,7 @@ class DayzArmbands extends Client {
       bestKillStreak: 0,
       deathStreak: 0,
       worstDeathStreak: 0,
+      lastPos: [],
       pos: [],
       lastConnectionDate: null,
       lastDamageDate: null,
