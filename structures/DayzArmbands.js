@@ -530,6 +530,16 @@ class DayzArmbands extends Client {
     let s = guild.playerstats;
 
     for (let i = logIndex + 1; i < lines.length; i++) {
+      let c = s.find(p => p.connected);
+      for (let j = 0; j < c.length; j++) {
+        let inLog = false;
+        let connected = true;
+        if (lines[i].includes(c[j].gamertag)) {
+          inLog = true;
+          connected = lines[i].includes(' connected') ? true : lines[i].includes('disconnected') ? false : connected;
+        }
+        if (!inLog || !connected) s[j].connected = false;
+      }
       if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes['hit by Player']) s = await this.handlePlayerLogs(guildId, s, lines[i]);
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) s = await this.handleKillfeed(guildId, s, lines[i]);
     }
