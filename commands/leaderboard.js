@@ -23,6 +23,7 @@ module.exports = {
       { name: "deaths", value: "deaths" },
       { name: "deathstreak", value: "deathstreak" },
       { name: "worst_deathstreak", value: "worst_deathstreak" },
+      { name: "longest_kill", value: "longest_kill" },
     ]
   }, {
     name: "limit",
@@ -49,6 +50,7 @@ module.exports = {
         if (category == 'deaths') return b.deaths - a.deaths;
         if (category == 'deathstreak') return b.deathStreak - a.deathSreak;
         if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
+        if (category == 'longest_kill') return b.longestKill - a.longestKill;
       })
       
       let limit = args[1].value > leaderboard.length ? leaderboard.length : args[1].value;
@@ -61,17 +63,19 @@ module.exports = {
         category == 'best_killstreak' ? "Best Killstreak Leaderboard" :
         category == 'deaths' ? "Total Deaths Leaderboard" :
         category == 'deathstreak' ? "Current Deathstreak Leaderboard" :
-        category == 'worst_deathstreak' ? "Worst Deathstreak Leaderboard" : 'N/A Error';
+        category == 'worst_deathstreak' ? "Worst Deathstreak Leaderboard" : 
+        category == 'longest_kill' ? "Longest Kill Leaderboard" : 'N/A Error';
 
       leaderboardEmbed.setTitle(`**${title} - DayZ Reforger**`);
 
       for (let i = 0; i < limit; i++) {
-        let stats = category == 'kills' ? `${leaderboard[i].kills} Kill${leaderboard[i].kills > 1 ? 's' : ''}` :
+        let stats = category == 'kills' ? `${leaderboard[i].kills} Kill${leaderboard[i].kills>1||leaderboard[i].kills==0?'s':''}` :
                     category == 'killstreak' ? `${leaderboard[i].killStreak} Player Killstreak` :
                     category == 'best_killstreak' ? `${leaderboard[i].bestKillStreak} Player Killstreak` :
-                    category == 'deaths' ? `${leaderboard[i].deaths} Death${leaderboard[i].deaths > 1 ? 's' : ''}` :
+                    category == 'deaths' ? `${leaderboard[i].deaths} Death${leaderboard[i].deaths>1||leaderboard[i].deaths==0?'s':''}` :
                     category == 'deathstreak' ? `${leaderboard[i].deathStreak} Deathstreak` :
-                    category == 'worst_deathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` : 'N/A Error';
+                    category == 'worst_deathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
+                    category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 'N/A Error';
         
         leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });
       }

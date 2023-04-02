@@ -161,6 +161,7 @@ class DayzArmbands extends Client {
     killerStat.kills++;
     killerStat.killStreak++;
     killerStat.bestKillStreak = killerStat.killStreak > killerStat.bestKillStreak ? killerStat.killStreak : killerStat.bestKillStreak;
+    killerStat.longestKill = parseFloat(info.distance) > killerStat.longestKill ? parseFloat(info.distance) : killerStat.longestKill;
     victimStat.deaths++;
     victimStat.deathStreak++;
     victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.bestKillStreak;
@@ -713,6 +714,7 @@ class DayzArmbands extends Client {
       deaths: 0,
       killStreak: 0,
       bestKillStreak: 0,
+      longestKill: 0,
       deathStreak: 0,
       worstDeathStreak: 0,
       pos: [],
