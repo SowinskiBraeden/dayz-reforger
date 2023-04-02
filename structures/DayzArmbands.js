@@ -303,7 +303,7 @@ class DayzArmbands extends Client {
       .setDescription(`**${data.connected ? 'Connect' : 'Disconnect'} Event - <t:${unixTime}>\n${data.player} ${data.connected ? 'Connected' : 'Disconnected'}**`);
 
     if (!data.connected) {
-      if (!data.lastConnectionDate == null) {
+      if (!(data.lastConnectionDate == null)) {
         let oldUnixTime = Math.floor(data.lastConnectionDate.getTime()/1000);
         let sessionTime = this.secondsToDhms(unixTime - oldUnixTime);
         connectionLog.addFields({ name: '**Session Time**', value: `**${sessionTime}**`, inline: false });
@@ -362,7 +362,7 @@ class DayzArmbands extends Client {
       let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
       
-      let newDt = await this.getDateEST(data.time);
+      let newDt = await this.getDateEST(info.time);
       
       playerStat.lastConnectionDate = newDt;
       playerStat.connected = true;
@@ -465,7 +465,7 @@ class DayzArmbands extends Client {
       let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
 
-      let newDt = await this.getDateEST(data.time);
+      let newDt = await this.getDateEST(info.time);
 
       playerStat.lastDamageDate = newDt;
       playerStat.lastHitBy = info.attackerID;
