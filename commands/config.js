@@ -320,7 +320,7 @@ module.exports = {
       } else if (args[0].name == 'bot_admin_role') {
         
           if (args[0].options[0].value == 'add') {
-            const roleId = args[0].options[0].options[0].value;
+            const roleId = args[0].options[1].value;
   
             client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$push: {"server.botAdminRoles": roleId}}, function(err, res) {
               if (err) return client.sendInternalError(interaction, err);
