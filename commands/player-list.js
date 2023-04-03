@@ -29,7 +29,7 @@ module.exports = {
       }
 
       const activePlayersEmbed = new EmbedBuilder()
-        .setColor(this.config.Colors.Default)
+        .setColor(client.config.Colors.Default)
         .setTitle(`Online List - ${activePlayers.length} Player${(activePlayers.length>1||activePlayers.length==0)?'s':''} Online`)
         .setDescription(des);
 

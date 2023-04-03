@@ -34,7 +34,7 @@ module.exports = {
             "server.playerstats": []
           }
         }, function (err, res) {
-          if (err) return this.sendInternalError(interaction, err);
+          if (err) return client.sendInternalError(interaction, err);
         });
       }
 

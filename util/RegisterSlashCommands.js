@@ -9,7 +9,7 @@ const { REST } = require('@discordjs/rest');
  */
 module.exports = {
   // Register guild commands  
-  RegisterGuildCommands: async function(client, guild) {
+  RegisterGuildCommands: async (client, guild) => {
     const commands = [];
     const commandFiles = fs.readdirSync(path.join(__dirname, "..", "commands")).filter(file => file.endsWith('.js'));
 
@@ -39,7 +39,7 @@ module.exports = {
   },
 
   // Register global commands
-  RegisterGlobalCommands: async function(client) {    
+  RegisterGlobalCommands: async (client) => {
     const commands = [];
     const commandFiles = fs.readdirSync(path.join(__dirname, "..", "commands")).filter(file => file.endsWith('.js'));
 
