@@ -334,6 +334,8 @@ class DayzArmbands extends Client {
       .setColor(this.config.Colors.Red)
       .setDescription(`**NOTICE:**\n**${data.player}** has combat logged at <t:${unixTime}> when fighting **${data.lastHitBy}**`);
   
+    if (client.exists(guild.adminRole)) channel.send({ content: `<@&${guild.adminRole}>` });
+
     return channel.send({ embeds: [combatLog] });
   }
 
