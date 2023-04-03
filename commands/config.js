@@ -156,6 +156,19 @@ module.exports = {
       ]
     },
     {
+      name: "admin_role",
+      description: "Discord Server's dedicated admin role",
+      value: "admin_role",
+      type: 1,
+      options: [{
+        name: "role",
+        description: "Role to configure",
+        value: "role",
+        type: 8,
+        required: true,
+      }]
+    },
+    {
       name: "exclude",
       description: "Exclude roles from users to use to claim a flag.",
       value: "exclude",
@@ -360,6 +373,17 @@ module.exports = {
 
             return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
           }
+
+      } else if (args[0].name == 'admin_role') {
+        client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.adminRole": args[0].options[0].value}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        const successEmbed = new EmbedBuilder()
+          .setDescription(`Successfully set <@&${roleId}> as the server admin role..`)
+          .setColor(client.config.Colors.Green);
+  
+        return interaction.send({ embeds: [successEmbed] });    
 
       } else if (args[0].name == 'exclude') {
 
