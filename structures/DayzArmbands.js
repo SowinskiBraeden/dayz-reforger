@@ -133,7 +133,7 @@ class DayzArmbands extends Client {
     let s = guild.playerstats;
 
     for (let i = logIndex + 1; i < lines.length; i++) {
-      let c = s.find(p => p.connected);
+      let c = s.find(p => p.connected == true);
       for (let j = 0; j < c.length; j++) {
         let inLog = false;
         let connected = true;

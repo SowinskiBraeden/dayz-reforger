@@ -211,9 +211,9 @@ module.exports = {
 
         for (let i = 0; i < GuildDB.alarms.length; i++) {
           alarms.addOptions({
-            label: GuildDB.alarm[i].name,
+            label: GuildDB.alarms[i].name,
             description: `Delete this Alarm`,
-            value: GuildDB.alarm[i].name
+            value: GuildDB.alarms[i].name
           });
         }
         
