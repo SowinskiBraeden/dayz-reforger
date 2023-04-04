@@ -21,7 +21,7 @@
     "colors": "^1.4.0",
     "concat-stream": "^2.0.0",
     "discord-bitfield-calculator": "^1.0.0",
-    "discord.js": "^14.3.0",
+    "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "form-data": "^4.0.0",
     "mongodb": "^4.12.1",
