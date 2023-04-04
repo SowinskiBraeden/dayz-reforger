@@ -381,7 +381,7 @@ module.exports = {
         });
   
         const successEmbed = new EmbedBuilder()
-          .setDescription(`Successfully set <@&${roleId}> as the server admin role..`)
+          .setDescription(`Successfully set <@&${args[0].options[0].value}> as the server admin role..`)
           .setColor(client.config.Colors.Green);
   
         return interaction.send({ embeds: [successEmbed] });    
@@ -662,7 +662,7 @@ module.exports = {
     
         const successEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
-          .setTitle(`Successfully ${action} <@&${roleId}> as the bot admin role.`)
+          .setDescription(`**Successfully ${action} <@&${roleId}> as the bot admin role.**`)
     
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
