@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { User, addUser } = require('../structures/user');
+const { KillInAlarm } = require('./AlarmsHandler');
 
 module.exports = {
   
@@ -26,6 +27,8 @@ module.exports = {
       weapon: data[11],
       distance: data[12]
     };
+
+    KillInAlarm(client, guildId, info); // check if kill happened in a no kill zone
 
     if (!client.exists(info.victim) || !client.exists(info.victimID) || !client.exists(info.killer) || !client.exists(info.killerID)) return stats;
 
