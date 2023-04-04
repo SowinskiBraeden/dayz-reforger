@@ -652,10 +652,10 @@ module.exports = {
           })
         }
         let action = '';
+        let roleId = interaction.customId.split('-')[2];
         if (interaction.customId.split('-')[1]=='yes') {
-          let role = interaction.customId.split('-')[2];
           action = 'removed';
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull: {"server.botAdminRoles": role}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull: {"server.botAdminRoles": roleId}}, function(err, res) {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
