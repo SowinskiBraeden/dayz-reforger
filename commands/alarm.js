@@ -130,31 +130,30 @@ module.exports = {
       description: "Enable an Zone Alarm",
       value: "enable",
       type: 1,
+    },
+    {
+      name: "set-rule",
+      description: "Add a Rule to an Alarm",
+      value: "set-rule",
+      type: 1,
+      options: [{
+        name: "rule",
+        description: "Rule to Add to an Alarm",
+        value: "rule",
+        type: 3,
+        required: true,
+        choices: [
+          { name: 'Ban on Entry', value: 'ban_on_entry' },
+          { name: 'Ban on Kill', value: 'ban_on_kill' }
+        ]
+      }]
+    },
+    {
+      name: "remove-rule",
+      description: "Remove a Rule from an Alarm",
+      value: "remove-rule",
+      type: 1,
     }
-    // {
-    //   name: "set-rule",
-    //   description: "Add a Rule to an Alarm",
-    //   value: "set-rule",
-    //   type: 1,
-    //   options: [{
-    //     name: "rule",
-    //     description: "Rule to Add to an Alarm",
-    //     value: "rule",
-    //     type: 3,
-    //     required: true,
-    //     choices: [
-    //       { name: 'Ban on Entry', value: 'ban_on_entry' },
-    //       { name: 'Ban on Kill', value: 'ban_on_kill' },
-    //       { name: 'Ban on IED Set', value: 'ban_on_ied_set' },
-    //     ]
-    //   }]
-    // },
-    // {
-    //   name: "remove-rule",
-    //   description: "Remove a Rule from an Alarm",
-    //   value: "remove-rule",
-    //   type: 1,
-    // }
   ],
   SlashCommand: {
     /**
