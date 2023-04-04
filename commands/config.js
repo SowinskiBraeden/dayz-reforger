@@ -348,7 +348,7 @@ module.exports = {
 
         } else if (args[0].options[0].value== 'remove') {
 
-          if (!GuildDB.botADminRoles.includes(args[0].options[1].value)) {
+          if (!GuildDB.botAdminRoles.includes(args[0].options[1].value)) {
             const noRole = new EmbedBuilder()
               .setColor(client.config.Colors.Yellow)
               .setDescription(`**Notice:**\n> The role <@&${args[0].options[1].value}> has not been configured as a bot admin.`);
