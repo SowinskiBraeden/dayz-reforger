@@ -233,9 +233,9 @@ module.exports = {
 
         for (let i = 0; i < GuildDB.alarms.length; i++) {
           alarms.addOptions({
-            label: GuildDB.alarm[i].name,
+            label: GuildDB.alarms[i].name,
             description: `${add?'Add':'Remove'} Player ${add?'to':'from'} this Alarm`,
-            value: GuildDB.alarm[i].name
+            value: GuildDB.alarms[i].name
           });
         }
         
@@ -254,9 +254,9 @@ module.exports = {
 
         for (let i = 0; i < GuildDB.alarms.length; i++) {
           alarms.addOptions({
-            label: GuildDB.alarm[i].name,
+            label: GuildDB.alarms[i].name,
             description: `Configure this Alarm`,
-            value: GuildDB.alarm[i].name
+            value: GuildDB.alarms[i].name
           });
         }
         
@@ -277,15 +277,15 @@ module.exports = {
         for (let i = 0; i < GuildDB.alarms.length; i++) {
           if (disable && !GuildDB.alarms[i].disabled) {
             alarms.addOptions({
-              label: GuildDB.alarm[i].name,
+              label: GuildDB.alarms[i].name,
               description: `Disable this alarm`,
-              value: GuildDB.alarm[i].name,
+              value: GuildDB.alarms[i].name,
             })
           } else if (!disable && GuildDB.alarms[i].disabled) {
             alarms.addOptions({
-              label: GuildDB.alarm[i].name,
+              label: GuildDB.alarms[i].name,
               description: `Enable this alarm`,
-              value: GuildDB.alarm[i].name,
+              value: GuildDB.alarms[i].name,
             })
           }
         }
