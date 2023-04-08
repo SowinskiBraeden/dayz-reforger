@@ -13,6 +13,7 @@ const { HandleKillfeed } = require('../util/KillfeedHandler');
 const path = require("path");
 const fs = require('fs');
 const readline = require('readline');
+const { HandleAlarms } = require("../util/AlarmsHandler");
 
 const minute = 60000; // 1 minute in milliseconds
 
@@ -133,11 +134,11 @@ class DayzArmbands extends Client {
     let s = guild.playerstats;
 
     for (let i = logIndex + 1; i < lines.length; i++) {
-      let c = s.find(p => p.connected == true);
-      for (let j = 0; j < c.length; j++) {
+      for (let j = 0; j < s.length; j++) {
+        if (!s[j].connected) continue;
         let inLog = false;
         let connected = true;
-        if (lines[i].includes(c[j].gamertag)) {
+        if (lines[i].includes(s[j].gamertag)) {
           inLog = true;
           connected = lines[i].includes(' connected') ? true : lines[i].includes('disconnected') ? false : connected;
         }

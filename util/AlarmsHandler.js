@@ -4,7 +4,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = {
 
   HandleAlarms: async (client, guildId, data) => {
-  
+
     let guild = await client.GetGuild(guildId);
 
     for (let i = 0; i < guild.alarms.length; i++) {
@@ -39,7 +39,6 @@ module.exports = {
           .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
       
         return await channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
-        // }
       }
     }
   },
