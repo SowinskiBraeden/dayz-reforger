@@ -144,6 +144,7 @@ class DayzArmbands extends Client {
         }
         if (!inLog || !connected) s[j].connected = false;
       }
+      if (lines[i].includes("Unknown")) continue;
       if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes['hit by Player']) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]);
     }
