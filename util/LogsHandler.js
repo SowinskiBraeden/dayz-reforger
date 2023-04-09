@@ -123,8 +123,8 @@ module.exports = {
         time: data[1],
         player: data[2],
         playerID: data[3],
-        attacker: data[5],
-        attackerID: data[6]
+        attacker: data[6],
+        attackerID: data[7]
       }
 
       if (!client.exists(info.player) || !client.exists(info.playerID)) return stats;
