@@ -200,7 +200,12 @@ class DayzArmbands extends Client {
       // Connect to Mongo database.
       this.db = await MongoClient.connect(mongoURI, {connectTimeoutMS: 1000});
       this.dbo = this.db.db(dbo);
-      mongoose.connect(`${mongoURI}/${dbo}`);
+      mongoose.connect(`mongodb://${mongoURI.split('@')[1]}/${dbo}`, {
+        authSource: "admin",
+        user: mongoURI.split('//')[1].split(':')[0],
+        pass: mongoURI.split('//')[1].split(':')[1].split('@')[0],
+        useNewUrlParser: true, 
+      }).catch(e=>this.error(e));
       this.log('Successfully connected to mongoDB');
       databaselogs.connected = true;
       databaselogs.attempts = 0; // reset attempts
