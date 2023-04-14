@@ -16,6 +16,11 @@ module.exports = {
     ).then(res => res);
   
     const stream = fs.createWriteStream(outputDir);
+    if (!res.data.token) {
+      client.error(`Error downloading File "${filename}":`);
+      client.error(res);
+      return;
+    }
     const { body } = await fetch(res.data.token.url);
     await finished(Readable.fromWeb(body).pipe(stream));
   },
