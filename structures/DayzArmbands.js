@@ -164,16 +164,16 @@ class DayzArmbands extends Client {
     await fs.writeFileSync(logHistoryDir, JSON.stringify(history));
   }
 
-  async logsUpdateTimer() {
+  async logsUpdateTimer(c) {
     let t = new Date();
-    this.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
-    this.activePlayersTick++;
+    c.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
+    c.activePlayersTick++;
     
-    await DownloadNitradoFile(this, `/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
-      this.log('...Downloaded logs...');
-      await this.readLogs(this.config.GuildID).then(async () => {
-        this.log('...Analyzed logs...');
-        if (this.activePlayersTick == 12) await HandleActivePlayersList(this, this.config.GuildID);
+    await DownloadNitradoFile(c, `/games/${c.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
+      c.channels.log('...Downloaded logs...');
+      await c.readLogs(c.config.GuildID).then(async () => {
+        c.log('...Analyzed logs...');
+        if (c.activePlayersTick == 12) await HandleActivePlayersList(c, c.config.GuildID);
       })
     });
   }
