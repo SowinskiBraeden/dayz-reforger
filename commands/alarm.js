@@ -85,13 +85,6 @@ module.exports = {
       description: "Delete a Zone Alarm",
       value: "delete",
       type: 1,
-      options: [{
-        name: "name",
-        description: "Name of the Zone Alarm to Delete",
-        value: "name",
-        type: 3,
-        required: true,
-      }]
     },
     {
       name: "add-player",
@@ -341,13 +334,13 @@ module.exports = {
             .setColor(client.config.Colors.Green)
             .setDescription(`**Success:** Successfully Deleted **${interaction.customId.split('-')[2]}**`);
   
-          return interaction.send({ embeds: [successEmbed] });
+          return interaction.update({ embeds: [successEmbed], components: [] });
         } else {
           let successEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`The Zone Alarm **${interaction.customId.split('-')[2]}** will not be deleted.`);
   
-          return interaction.send({ embeds: [successEmbed] });
+          return interaction.update({ embeds: [successEmbed], components: []});
         }
       }
     },
