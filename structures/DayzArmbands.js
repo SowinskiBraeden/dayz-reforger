@@ -170,7 +170,7 @@ class DayzArmbands extends Client {
     c.activePlayersTick++;
     
     await DownloadNitradoFile(c, `/games/${c.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
-      c.channels.log('...Downloaded logs...');
+      c.log('...Downloaded logs...');
       await c.readLogs(c.config.GuildID).then(async () => {
         c.log('...Analyzed logs...');
         if (c.activePlayersTick == 12) await HandleActivePlayersList(c, c.config.GuildID);
