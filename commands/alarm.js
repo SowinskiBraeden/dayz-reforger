@@ -385,7 +385,7 @@ module.exports = {
 
         let successEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
-          .setDescription(`**Success:** Successfully ${add?'Added':'Removed'} **${interaction.customId.split('-')[1]}** ${add?'to':'from'} **${alarm.name}**`);
+          .setDescription(`**Success:** Successfully ${add?'Added':'Removed'} **${interaction.customId.split('-')[2]}** ${add?'to':'from'} **${alarm.name}**`);
 
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
