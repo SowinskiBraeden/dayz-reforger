@@ -363,7 +363,7 @@ module.exports = {
         let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
         let alarmIndex = GuildDB.alarms.indexOf(alarm);
       
-        let playerStat = GuildDB.playerstats.find(stat => stat.player == interaction.customId.split('-')[2]);
+        let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == interaction.customId.split('-')[2]);
         if (playerStat == undefined) return interaction.update({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.')], components: [] });
       
         let add = interaction.customId.split('-')[1] == 'add';
