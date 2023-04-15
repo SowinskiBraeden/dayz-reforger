@@ -16,7 +16,7 @@ module.exports = {
     ).then(res => res);
   
     const stream = fs.createWriteStream(outputDir);
-    if (!res.data.token) {
+    if (!res.data || !res.data.token) {
       client.error(`Error downloading File "${filename}":`);
       client.error(res);
       return;

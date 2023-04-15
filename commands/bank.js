@@ -236,9 +236,9 @@ module.exports = {
           }
 
           // This lame line of code to get username without ping on discord
-          const User = client.users.cache.get(targetUserID);
+          const DiscordUser = client.users.cache.get(targetUserID);
 
-          balanceEmbed.setTitle(`${User.tag}'s Bank Records`);
+          balanceEmbed.setTitle(`${DiscordUser.tag.split("#")[0]}'s Bank Records`);
           balanceEmbed.addFields(
             { name: '**Cash**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.cash.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
             { name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].bankAccount.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },

@@ -165,20 +165,17 @@ class DayzArmbands extends Client {
   }
 
   async logsUpdateTimer() {
-    setTimeout(async () => {
-      let t = new Date();
-      this.log(`Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`);
-      this.activePlayersTick++;
-      
-      await DownloadNitradoFile(this, `/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
-        this.log('Downloaded logs');
-	await this.readLogs(this.config.GuildID).then(async () => {
-          this.log('Analyzed logs');
-	  if (this.activePlayersTick == 12) await HandleActivePlayersList(this, this.config.GuildID);
-        })
+    let t = new Date();
+    this.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
+    this.activePlayersTick++;
+    
+    await DownloadNitradoFile(this, `/games/${this.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async () => {
+      this.log('...Downloaded logs...');
+      await this.readLogs(this.config.GuildID).then(async () => {
+        this.log('...Analyzed logs...');
+        if (this.activePlayersTick == 12) await HandleActivePlayersList(this, this.config.GuildID);
       })
-      this.logsUpdateTimer(); // restart this function
-    }, this.timer); // restart every 5 minutes during production
+    });
   }
 
   async connectMongo(mongoURI, dbo) {
