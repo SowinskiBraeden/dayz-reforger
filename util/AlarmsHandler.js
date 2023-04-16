@@ -72,7 +72,7 @@ module.exports = {
       let uav = uavs[i];
 
       let now = new Date();
-      let diff = Math.round((now.getTime() - uav.createDate.getTime()) / 1000 / 60); // diff minutes
+      let diff = Math.round((now.getTime() - uav.creationDate.getTime()) / 1000 / 60); // diff minutes
   
       if (diff <= 30) continue;
     
