@@ -78,6 +78,12 @@ module.exports = {
     
       uavs.splice(i, 1);
       update = true;
+
+      let expired = new EmbedBuilder().setColor(client.config.Colors.Red).setDescription("**Low Battery**\nUAV has run out of battery and is no longer active.");
+
+      client.users.fetch(uav.owner, false).then((user) => {
+        user.send({ embeds: [expired] });
+      });
     }
 
     if (update) {
