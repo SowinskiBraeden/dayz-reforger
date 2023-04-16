@@ -50,7 +50,7 @@ module.exports = {
 
       if (distance < uav.radius) {
         let newDt = await client.getDateEST(data.time);
-        let unixTime = Math.floor(newDt.getTIme()/1000);
+        let unixTime = Math.floor(newDt.getTime()/1000);
 
         let uavEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
