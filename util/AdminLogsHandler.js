@@ -35,7 +35,7 @@ module.exports = {
 
     // If diff is greater than 5 minutes, not a combat log
     // or if death after last combat and death was before logout event
-    if (diffMins > 5 || (data.lastDamageDate < data.lastDeathDate && data.lastDeathDate < newDt)) return;
+    if (diff > 5 || (data.lastDamageDate < data.lastDeathDate && data.lastDeathDate < newDt)) return;
 
     let guild = await client.GetGuild(guildId);
     if (!client.exists(guild.connectionLogsChannel)) return;
