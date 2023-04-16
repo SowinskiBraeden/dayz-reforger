@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
 
-  HandleAlarms: async (client, guildId, data) => {
+  HandleAlarmsAndUAVs: async (client, guildId, data) => {
 
     let guild = await client.GetGuild(guildId);
 
@@ -40,6 +40,50 @@ module.exports = {
       
         return await channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
       }
+    }
+
+    for (let i = 0; i < guild.uavs.length; i++) {
+      let uav = guild.uavs[i];
+
+      let diff = [Math.round(uav.origin[0] - data.pos[0]), Math.round(alarm.origin[1] - data.pos[1])];
+      let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2);
+
+      if (distance < uav.radius) {
+        let newDt = await client.getDateEST(data.time);
+        let unixTime = Math.floor(newDt.getTIme()/1000);
+
+        let uavEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Default)
+          .setDescription(`**UAV Detection - <t:${unixTime}>**\n**${data.player}** was spotted in the UAV zone at **[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`)
+      
+        client.users.fetch(uav.owner, false).then((user) => {
+          user.send({ embeds: [uavEmbed] });
+        });
+      }
+    }
+  },
+
+  HandleExpiredUAVs: async (client, guildId) => {
+    let guild = await client.GetGuild(guildId);
+    let uavs = guild.uavs;
+    let update = false;
+
+    for (let i = 0; i < uavs.length; i++) {
+      let uav = uavs[i];
+
+      let now = new Date();
+      let diff = Math.round((now.getTime() - uav.createDate.getTime()) / 1000 / 60); // diff minutes
+  
+      if (diff <= 30) continue;
+    
+      uavs.splice(i, 1);
+      update = true;
+    }
+
+    if (update) {
+      client.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {$set: { "server.uavs": uavs }}, function (err, res) {
+        if (err) return client.sendInternalError(interaction, err);
+      });
     }
   },
 

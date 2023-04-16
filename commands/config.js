@@ -220,6 +220,20 @@ module.exports = {
       }]
     },
     {
+      name: "uav-price",
+      description: "Configure the price of a UAV",
+      value: "uav-price",
+      type: 1,
+      options: [{
+        name: "amount",
+        description: "The amount to set the UAV price",
+        value: "amount",
+        type: 10,
+        min_value: 0.01,
+        required: true,
+      }]
+    },
+    {
       name: "income_role",
       description: "Add/update a role to earn income on /collect-income command",
       value: "set_income_role",
@@ -613,6 +627,16 @@ module.exports = {
             return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
           }
         }
+      } else if (args[0].name == 'uav-price') {
+        client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.uavPrice":args[0].options[0].value}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`Successfully set $${args[0].options[0].value.toFixed(2)} as UAV price`);
+        
+        return interaction.send({ embeds: [successEmbed] });
       }
     },
   },

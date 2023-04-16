@@ -9,11 +9,11 @@ const mongoose = require('mongoose');
 const { DownloadNitradoFile } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed } = require('../util/KillfeedHandler');
+const { HandleExpiredUAVs } = require('../util/AlarmsHandler');
 
 const path = require("path");
 const fs = require('fs');
 const readline = require('readline');
-const { HandleAlarms } = require("../util/AlarmsHandler");
 
 const minute = 60000; // 1 minute in milliseconds
 
@@ -173,6 +173,7 @@ class DayzArmbands extends Client {
       c.log('...Downloaded logs...');
       await c.readLogs(c.config.GuildID).then(async () => {
         c.log('...Analyzed logs...');
+        HandleExpiredUAVs(c, c.config.GuildID);
         if (c.activePlayersTick == 12) await HandleActivePlayersList(c, c.config.GuildID);
       })
     });
@@ -318,9 +319,11 @@ class DayzArmbands extends Client {
       botAdminRoles: [],
       playerstats: [],
       alarms: [],
+      uavs: [],
       incomeRoles: [],
       linkedGamertagRole: "",
       startingBalance: 500,
+      uavPrice: 50000,
       memberRole: "",
       adminRole: "",
     }
@@ -378,6 +381,7 @@ class DayzArmbands extends Client {
       botAdminRoles: guild.server.botAdminRoles,
       playerstats: guild.server.playerstats,
       alarms: guild.server.alarms,
+      uavs: guild.server.uavs,
       killfeedChannel: guild.server.killfeedChannel,
       connectionLogsChannel: guild.server.connectionLogsChannel,
       welcomeChannel: guild.server.welcomeChannel,
@@ -385,6 +389,7 @@ class DayzArmbands extends Client {
       linkedGamertagRole: guild.server.linkedGamertagRole,
       incomeRoles: guild.server.incomeRoles,
       startingBalance: guild.server.startingBalance,
+      uavPrice: guild.server.uavPrice,
       memberRole: guild.server.memberRole,
       adminRole: guild.server.adminRole,
     };

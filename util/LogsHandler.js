@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { HandleAlarms } = require('./AlarmsHandler');
+const { HandleAlarmsAndUAVs } = require('./AlarmsHandler');
 const { SendConnectionLogs, DetectCombatLog } = require('./AdminLogsHandler');
 
 module.exports = {
@@ -105,7 +105,7 @@ module.exports = {
       playerStat.lastTime = playerStat.time;
       playerStat.time = `${info.time} EST`;
 
-      HandleAlarms(client, guildId, {
+      HandleAlarmsAndUAVs(client, guildId, {
         time: info.time,
         player: info.player,
         playerID: info.playerID,
