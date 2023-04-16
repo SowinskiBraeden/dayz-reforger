@@ -45,7 +45,7 @@ module.exports = {
     for (let i = 0; i < guild.uavs.length; i++) {
       let uav = guild.uavs[i];
 
-      let diff = [Math.round(uav.origin[0] - data.pos[0]), Math.round(alarm.origin[1] - data.pos[1])];
+      let diff = [Math.round(uav.origin[0] - data.pos[0]), Math.round(uav.origin[1] - data.pos[1])];
       let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2);
 
       if (distance < uav.radius) {
