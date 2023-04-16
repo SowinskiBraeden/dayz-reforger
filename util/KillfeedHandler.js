@@ -28,6 +28,9 @@ module.exports = {
       distance: data[12]
     };
 
+    let newDt = await client.getDateEST(info.time);
+    let unixTime = Math.floor(newDt.getTime()/1000);
+
     KillInAlarm(client, guildId, info); // check if kill happened in a no kill zone
 
     if (!client.exists(info.victim) || !client.exists(info.victimID) || !client.exists(info.killer) || !client.exists(info.killerID)) return stats;
@@ -49,8 +52,9 @@ module.exports = {
     killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
     victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
     victimStat.killStreak = 0;
+    victimStat.lastDeathDate = newDt;
     killerStat.deathStreak = 0;
-    
+
     let receivedBounty = null;
     if (victimStat.bounties.length > 0 && killerStat.discordID != "") {
       let totalBounty = 0;
@@ -107,9 +111,6 @@ module.exports = {
     if (victimStatIndex == -1) stats.push(victimStat);
     else stats[victimStatIndex] = victimStat;
     
-    let newDt = await client.getDateEST(info.time);
-    let unixTime = Math.floor(newDt.getTime()/1000);
-
     const killEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
       .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);

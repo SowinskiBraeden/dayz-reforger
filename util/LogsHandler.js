@@ -79,6 +79,7 @@ module.exports = {
         player: info.player,
         lastDamageDate: playerStat.lastDamageDate,
         lastHitBy: playerStat.lastHitBy,
+        lastDeathDate: playerStat.lastDeathDate,
       });
     }
 
