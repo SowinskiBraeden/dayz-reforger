@@ -41,7 +41,7 @@ class DayzArmbands extends Client {
     this.LoadEvents();
 
     this.Ready = false;
-    this.activePlayersTick = 0;
+    this.activePlayersTick = 11;
 
     this.ws.on("INTERACTION_CREATE", async (interaction) => {
       const start = new Date().getTime();
