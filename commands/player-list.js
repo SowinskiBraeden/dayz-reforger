@@ -20,10 +20,10 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
-        
-      let activePlayers = GuildDB.playerstats.filter(p => p.connected);
 
-      let des = ``;
+      let activePlayers = GuildDB.playerstats.filter(p => p.connected == true);
+
+      let des = activePlayers.length > 0 ? `` : `**No Players Online**`;
       for (let i = 0; i < activePlayers.length; i++) {
         des += `**- ${activePlayers[i].gamertag}\n`;
       }

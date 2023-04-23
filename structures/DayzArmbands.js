@@ -135,19 +135,43 @@ class DayzArmbands extends Client {
     let s = guild.playerstats;
 
     for (let i = logIndex + 1; i < lines.length; i++) {
-      for (let j = 0; j < s.length; j++) {
-        if (!s[j].connected) continue;
-        let inLog = false;
-        let connected = true;
-        if (lines[i].includes(s[j].gamertag)) {
-          inLog = true;
-          connected = lines[i].includes(' connected') ? true : lines[i].includes('disconnected') ? false : connected;
-        }
-        if (!inLog || !connected) s[j].connected = false;
-      }
       if (lines[i].includes("Unknown")) continue;
       if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes['hit by Player']) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]);
+    }
+
+    const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
+    s.map(p => p.connected = false) // make all connections false
+
+    for (let i = lines.length; i > 0; i--) {
+      if (lines[i].includes('PlayerList log:')) {
+        for (let j = i + 1; i < lines.length; j++) {
+          let line = lines[j];
+          if (line.includes('| ####')) break;
+
+          let data = [...line.matchAll(playerTemplate)][0];
+          if (!data) continue;
+
+          let info = {
+            time: data[1],
+            player: data[2],
+            playerID: data[3],
+          };
+
+          if (!this.exists(info.player) || !this.exists(info.playerID)) continue;
+
+          let playerStat = s.find(stat => stat.playerID == info.playerID)
+          let playerStatIndex = s.indexOf(playerStat);
+          if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
+
+          playerStat.connected = true;
+
+          if (playerStatIndex == -1) s.push(playerStat);
+          else s[playerStatIndex] = playerStat;
+
+        }
+        break;
+      }
     }
 
     await this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {

@@ -32,7 +32,6 @@ module.exports = {
       let newDt = await client.getDateEST(info.time);
       
       playerStat.lastConnectionDate = newDt;
-      playerStat.connected = true;
 
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
@@ -59,13 +58,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return stats;
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID)
-      let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
-      
-      playerStat.connected = false;
-
-      if (playerStatIndex == -1) stats.push(playerStat);
-      else stats[playerStatIndex] = playerStat;
 
       SendConnectionLogs(client, guildId, {
         time: info.time,
@@ -155,7 +148,7 @@ module.exports = {
 
     const channel = client.channels.cache.get(guild.activePlayersChannel);
 
-    let activePlayers = guild.playerstats.filter(p => p.connected);
+    let activePlayers = guild.playerstats.filter(p => p.connected == true);
 
     if (activePlayers.length == 0) return;
 
