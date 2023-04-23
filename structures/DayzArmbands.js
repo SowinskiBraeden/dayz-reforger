@@ -143,7 +143,7 @@ class DayzArmbands extends Client {
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
     s.map(p => p.connected = false) // make all connections false
 
-    for (let i = lines.length; i > 0; i--) {
+    for (let i = lines.length - 1; i > 0; i--) {
       if (lines[i].includes('PlayerList log:')) {
         for (let j = i + 1; i < lines.length; j++) {
           let line = lines[j];
