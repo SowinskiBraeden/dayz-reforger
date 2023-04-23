@@ -609,8 +609,8 @@ module.exports = {
             return interaction.send({ embeds: [errorEmbed] }); 
           } else {
             const prompt = new EmbedBuilder()
-            .setTitle(`Are you sure you want to remove this role as an income?`)
-            .setColor(client.config.Colors.Default)
+              .setTitle(`Are you sure you want to remove this role as an income?`)
+              .setColor(client.config.Colors.Default)
 
             const opt = new ActionRowBuilder()
               .addComponents(
@@ -663,7 +663,7 @@ module.exports = {
           .setColor(client.config.Colors.Green)
           .setTitle(`Success: You ${action} the channel.`)
     
-        return interactino.update({ embeds: [successEmbed], components: [] });
+        return interaction.update({ embeds: [successEmbed], components: [] });
       }
     },
 

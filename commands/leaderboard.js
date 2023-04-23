@@ -31,6 +31,7 @@ module.exports = {
     value: "limit",
     type: 4,
     min_value: 1,
+    max_value: 25,
     required: true,
   }],
   SlashCommand: {
