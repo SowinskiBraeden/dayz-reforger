@@ -17,6 +17,7 @@ module.exports = {
     type: 3,
     required: true,
     choices: [
+      { name: "money", value: "money" },
       { name: "kills", value: "kills" }, 
       { name: "killstreak", value: "killstreak" },
       { name: "best_killstreak", value: "best_killstreak" },
@@ -44,15 +45,32 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
       let category = args[0].value;
-      let leaderboard = GuildDB.playerstats.sort(function(a, b){
-        if (category == 'kills') return b.kills - a.kills;
-        if (category == 'killstreak') return b.killStreak - a.killStreak;
-        if (category == 'best_killstreak') return b.bestKillStreak - a.bestKillStreak;
-        if (category == 'deaths') return b.deaths - a.deaths;
-        if (category == 'deathstreak') return b.deathStreak - a.deathSreak;
-        if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
-        if (category == 'longest_kill') return b.longestKill - a.longestKill;
-      })
+
+      let leaderboard;
+      if (category == 'money') {
+
+        let users = client.dbo.collection("users").find({}).toArray();
+
+        users.map(u => u.user.guilds[GuildDB.serverID].bankAccount.total = a.user.guilds[GuildDB.serverID].bankAccount.balance + a.user.guilds[GuildDB.serverID].bankAccount.cash);
+
+        leaderboard = users.sort(function(a, b) {
+          return b.user.guilds[GuildDB.serverID].bankAccount.total - a.users.guild[GuildDB.serverID].bankAccount.total;
+        });
+
+      } else {
+        
+        leaderboard = GuildDB.playerstats.sort(function(a, b){
+          if (category == 'kills') return b.kills - a.kills;
+          if (category == 'killstreak') return b.killStreak - a.killStreak;
+          if (category == 'best_killstreak') return b.bestKillStreak - a.bestKillStreak;
+          if (category == 'deaths') return b.deaths - a.deaths;
+          if (category == 'deathstreak') return b.deathStreak - a.deathSreak;
+          if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
+          if (category == 'longest_kill') return b.longestKill - a.longestKill;
+        });
+
+      }
+
       
       let limit = args[1].value > leaderboard.length ? leaderboard.length : args[1].value;
       
@@ -65,7 +83,8 @@ module.exports = {
         category == 'deaths' ? "Total Deaths Leaderboard" :
         category == 'deathstreak' ? "Current Deathstreak Leaderboard" :
         category == 'worst_deathstreak' ? "Worst Deathstreak Leaderboard" : 
-        category == 'longest_kill' ? "Longest Kill Leaderboard" : 'N/A Error';
+        category == 'longest_kill' ? "Longest Kill Leaderboard" : 
+        category == 'money' ? "Money Leaderboard" : 'N/A Error';
 
       leaderboardEmbed.setTitle(`**${title} - DayZ Reforger**`);
 
@@ -76,9 +95,12 @@ module.exports = {
                     category == 'deaths' ? `${leaderboard[i].deaths} Death${leaderboard[i].deaths>1||leaderboard[i].deaths==0?'s':''}` :
                     category == 'deathstreak' ? `${leaderboard[i].deathStreak} Deathstreak` :
                     category == 'worst_deathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
-                    category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 'N/A Error';
+                    category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 
+                    category == 'money' ? `${leaderboard[i].user.guilds[GuildDB.serverID].bankAccount.total}` : 'N/A Error';
         
-        leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });
+        let tag = category == 'money' ? `<@${leaderboard[i].user.userID}>` : leaderboard[i].gamertag;
+
+        leaderboardEmbed.addFields({ name: `**${i+1}. ${tag}**`, value: `**${stats}**`, inline: category == 'money' ? false : true });
       }
 
       return interaction.send({ embeds: [leaderboardEmbed] });
