@@ -49,12 +49,12 @@ module.exports = {
       let leaderboard;
       if (category == 'money') {
 
-        let users = client.dbo.collection("users").find({}).toArray();
+        let users = await client.dbo.collection("users").find({}).toArray();
 
-        users.map(u => u.user.guilds[GuildDB.serverID].bankAccount.total = a.user.guilds[GuildDB.serverID].bankAccount.balance + a.user.guilds[GuildDB.serverID].bankAccount.cash);
+        users.map(u => u.user.guilds[GuildDB.serverID].bankAccount.total = u.user.guilds[GuildDB.serverID].bankAccount.balance + u.user.guilds[GuildDB.serverID].bankAccount.cash);
 
         leaderboard = users.sort(function(a, b) {
-          return b.user.guilds[GuildDB.serverID].bankAccount.total - a.users.guild[GuildDB.serverID].bankAccount.total;
+          return b.user.guilds[GuildDB.serverID].bankAccount.total - a.user.guilds[GuildDB.serverID].bankAccount.total;
         });
 
       } else {
@@ -88,6 +88,7 @@ module.exports = {
 
       leaderboardEmbed.setTitle(`**${title} - DayZ Reforger**`);
 
+      let des = ``;
       for (let i = 0; i < limit; i++) {
         let stats = category == 'kills' ? `${leaderboard[i].kills} Kill${leaderboard[i].kills>1||leaderboard[i].kills==0?'s':''}` :
                     category == 'killstreak' ? `${leaderboard[i].killStreak} Player Killstreak` :
@@ -96,13 +97,14 @@ module.exports = {
                     category == 'deathstreak' ? `${leaderboard[i].deathStreak} Deathstreak` :
                     category == 'worst_deathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
                     category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 
-                    category == 'money' ? `${leaderboard[i].user.guilds[GuildDB.serverID].bankAccount.total}` : 'N/A Error';
-        
-        let tag = category == 'money' ? `<@${leaderboard[i].user.userID}>` : leaderboard[i].gamertag;
+                    category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].bankAccount.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A Error';
 
-        leaderboardEmbed.addFields({ name: `**${i+1}. ${tag}**`, value: `**${stats}**`, inline: category == 'money' ? false : true });
+        if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
+        else leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });
       }
 
+      if (category == 'money') leaderboardEmbed.setDescription(des);
+      
       return interaction.send({ embeds: [leaderboardEmbed] });
     },
   },

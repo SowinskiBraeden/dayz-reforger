@@ -100,6 +100,10 @@ class DayzArmbands extends Client {
     const client = this;
   }
 
+
+  log(Text) { this.logger.log(Text); }
+  error(Text) { this.logger.error(Text); }
+
   async getDateEST(time) {
     let t = new Date(); // Get current date (PST)
     let e = new Date(t.getTime() + 180*60*1000); // Convert to EST to ensure the date is correct for the applied EST time
@@ -418,9 +422,6 @@ class DayzArmbands extends Client {
       adminRole: guild.server.adminRole,
     };
   }
-
-  log(Text) { this.logger.log(Text); }
-  error(Text) { this.logger.error(Text); }
 
   build() {
     this.login(this.config.Token);
