@@ -9,5 +9,5 @@ module.exports = async (client, member) => {
     .setColor(client.config.Colors.Default)
     .setDescription(`**Welcome** <@${member.user.id}> to **DayZ Reforger**\nTo gain access please use the command </gamertag-link:1087116946442559609>`);
 
-  channel.send({ embeds: [embed] });
+  channel.send({ content: `<@${member.user.id}>`, embeds: [embed] });
 };
