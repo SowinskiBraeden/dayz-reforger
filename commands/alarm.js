@@ -234,7 +234,7 @@ module.exports = {
         
         const opt = new ActionRowBuilder().addComponents(alarms);
 
-        return interaction.send({ components: [opt], flags: (1 << 6) });
+        return interaction.send({ components: [opt] });
       } else if (args[0].name == 'set-rule' || args[0].name == 'remove-rule') {
 
         if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
