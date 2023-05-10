@@ -6,11 +6,11 @@ module.exports = {
 
   HandlePlayerLogs: async (client, guildId, stats, line) => {
 
-    const connectTemplate = /(.*) \| Player \"(.*)\" is connected \(id=(.*)\)/g;
+    const connectTemplate    = /(.*) \| Player \"(.*)\" is connected \(id=(.*)\)/g;
     const disconnectTemplate = /(.*) \| Player \"(.*)\"\(id=(.*)\) has been disconnected/g;
-    const positionTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
-    const damageTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
-    const deadTemplate = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    const positionTemplate   = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
+    const damageTemplate     = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    const deadTemplate       = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
 
     if (line.includes(' connected')) {
       let data = [...line.matchAll(connectTemplate)][0];
@@ -98,6 +98,11 @@ module.exports = {
       playerStat.lastTime = playerStat.time;
       playerStat.time = `${info.time} EST`;
 
+      if (playerStatIndex == -1) stats.push(playerStat);
+      else stats[playerStatIndex] = playerStat;
+
+      if (line.includes('hit by') || line.includes('killed by')) return; // prevent additional information from being fed to Alarms & UAVs
+
       HandleAlarmsAndUAVs(client, guildId, {
         time: info.time,
         player: info.player,
@@ -105,8 +110,6 @@ module.exports = {
         pos: info.pos,
       });
 
-      if (playerStatIndex == -1) stats.push(playerStat);
-      else stats[playerStatIndex] = playerStat;
     }
 
     if (line.includes('hit by Player')) {

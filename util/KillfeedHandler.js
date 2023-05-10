@@ -9,27 +9,45 @@ module.exports = {
     let guild = await client.GetGuild(guildId);
     const channel = client.channels.cache.get(guild.killfeedChannel);
 
-    let template = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
-    let data = [...line.matchAll(template)][0];
+    let template           = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0] hit by explosion \((.*)\)/g;
+    
+    let killedByPlayer = line.includes('hit by Player') ? true : false;
+
+    let data = killedByPlayer ? [...line.matchAll(template)][0] : [...line.matchAll(explosionTemplate)];
     if (!data) return stats;
     
+    // Create base data
     let info = {
-      time: data[1],
-      victim: data[2],
-      victimID: data[3],
+      time:      data[1],
+      victim:    data[2],
+      victimID:  data[3],
       victimPOS: data[4],
-      killer: data[5],
-      killerID: data[6],
-      killerPOS: data[7],
-      bodyPart: data[8],
-      damage: data[9],
-      bullet: data[10],
-      weapon: data[11],
-      distance: data[12]
-    };
+    }; 
+
+    // Add additional data
+    if (killedByPlayer) {
+      info.killer    = data[5];
+      info.killerID  = data[6];
+      info.killerPOS = data[7];
+      info.bodyPart  = data[8];
+      info.damage    = data[9];
+      info.bullet    = data[10];
+      info.weapon    = data[11];
+      info.distance  = data[12];
+    } else info.explosive = data[5];
 
     let newDt = await client.getDateEST(info.time);
     let unixTime = Math.floor(newDt.getTime()/1000);
+
+    if (!killedByPlayer) {
+      const killEvent = new EmbedBuilder()
+        .setColor(client.config.Colors.Default)
+        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** blew up from a **${info.explosive}.**>`);
+
+      if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
+      return stats;
+    }
 
     KillInAlarm(client, guildId, info); // check if kill happened in a no kill zone
 
