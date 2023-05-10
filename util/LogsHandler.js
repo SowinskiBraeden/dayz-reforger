@@ -101,7 +101,7 @@ module.exports = {
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
 
-      if (line.includes('hit by') || line.includes('killed by')) return; // prevent additional information from being fed to Alarms & UAVs
+      if (line.includes('hit by') || line.includes('killed by')) return stats; // prevent additional information from being fed to Alarms & UAVs
 
       HandleAlarmsAndUAVs(client, guildId, {
         time: info.time,
