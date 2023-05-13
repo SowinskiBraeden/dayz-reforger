@@ -10,11 +10,11 @@ module.exports = {
     const channel = client.channels.cache.get(guild.killfeedChannel);
 
     let template           = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
-    let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0] hit by explosion \((.*)\)/g;
+    let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by  with (.*)/g;
     
     let killedByPlayer = line.includes('hit by Player') ? true : false;
 
-    let data = killedByPlayer ? [...line.matchAll(template)][0] : [...line.matchAll(explosionTemplate)];
+    let data = killedByPlayer ? [...line.matchAll(template)][0] : [...line.matchAll(explosionTemplate)][0];
     if (!data) return stats;
     
     // Create base data
@@ -35,7 +35,7 @@ module.exports = {
       info.bullet    = data[10];
       info.weapon    = data[11];
       info.distance  = data[12];
-    } else info.explosive = data[5];
+    } else info.causeOfDeath = data[5];
 
     let newDt = await client.getDateEST(info.time);
     let unixTime = Math.floor(newDt.getTime()/1000);
@@ -43,7 +43,7 @@ module.exports = {
     if (!killedByPlayer) {
       const killEvent = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** blew up from a **${info.explosive}.**>`);
+        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${info.causeOfDeath}.**>`);
 
       if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
       return stats;
