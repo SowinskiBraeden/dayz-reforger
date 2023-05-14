@@ -43,7 +43,7 @@ module.exports = {
     if (!killedByPlayer) {
       const killEvent = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${info.causeOfDeath}.**>`);
+        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${info.causeOfDeath}.**`);
 
       if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
       return stats;
