@@ -106,9 +106,11 @@ module.exports = {
         return interaction.send({ embeds: [success] })
 
       } else {
-        let s = hoursBetweenDates * 60;
-        let timeTillIncome = client.secondsToDhms(s);
-
+        let date = banking.guilds[GuildDB.serverID].lastIncome;
+        date.setHours(date.getHours() + GuildDB.incomeLimiter);
+        diff = (date - now) / 1000;
+        let timeTillIncome = client.secondsToDhms(diff);
+        
         const error = new EmbedBuilder()
           .setColor(client.config.Colors.Red)
           .setDescription(`You've already collected your income this week. Wait **${timeTillIncome}** to collect again.`);
