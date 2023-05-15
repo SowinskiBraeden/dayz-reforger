@@ -92,7 +92,7 @@ module.exports = {
           }
         }
 
-        // Register inventory for user  
+        // Register bank for user  
         let newBank = new User();
         await newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
         await newBank.save().catch(err => {
