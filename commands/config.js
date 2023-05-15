@@ -281,11 +281,11 @@ module.exports = {
       name: "income_limiter",
       description: "Change the number of hours to wait before collecting income",
       value: "income_limiter",
-      type: 2,
+      type: 1,
       options: [{
         name: "hours",
         description: "Number of hours till income can be collected",
-        value: 168,
+        value: 168.00,
         type: 10,
         required: true,
       }]
