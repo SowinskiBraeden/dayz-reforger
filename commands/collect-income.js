@@ -106,10 +106,12 @@ module.exports = {
         return interaction.send({ embeds: [success] })
 
       } else {
+        let s = hoursBetweenDates * 60;
+        let timeTillIncome = client.secondsToDhms(s);
+
         const error = new EmbedBuilder()
-          .setColor(client.config.Colors.Default)
-          .setTitle('Take a rest...')
-          .setDescription(`You've already worked a full day today. Take a rest and work tomorrow.`)
+          .setColor(client.config.Colors.Red)
+          .setDescription(`You've already collected your income this week. Wait **${timeTillIncome}** to collect again.`);
 
         return interaction.send({ embeds: [error] })
       }
