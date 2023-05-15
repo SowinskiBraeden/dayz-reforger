@@ -351,6 +351,7 @@ class DayzArmbands extends Client {
       alarms: [],
       uavs: [],
       incomeRoles: [],
+      incomeLimiter: 168, // # of hours in 7 days
       linkedGamertagRole: "",
       startingBalance: 500,
       uavPrice: 50000,
@@ -418,6 +419,7 @@ class DayzArmbands extends Client {
       activePlayersChannel: guild.server.activePlayersChannel,
       linkedGamertagRole: guild.server.linkedGamertagRole,
       incomeRoles: guild.server.incomeRoles,
+      incomeLimiter: guild.server.incomeLimiter,
       startingBalance: guild.server.startingBalance,
       uavPrice: guild.server.uavPrice,
       memberRole: guild.server.memberRole,

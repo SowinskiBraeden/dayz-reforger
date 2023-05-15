@@ -277,6 +277,19 @@ module.exports = {
         },
       ],
     },
+    {
+      name: "income_limiter",
+      description: "Change the number of hours to wait before collecting income",
+      value: "income_limiter",
+      type: 2,
+      options: [{
+        name: "hours",
+        description: "Number of hours till income can be collected",
+        value: 168,
+        type: 10,
+        required: true,
+      }]
+    }
   ],  
   SlashCommand: {
     /**
@@ -627,6 +640,18 @@ module.exports = {
             return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
           }
         }
+      } else if (args[0].name == 'income_limiter') {
+
+        client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.incomeLimiter":args[0].options[0].value}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+  
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`Successfully set **${args[0].options[0].value} hours** as the wait time to collect income.`);
+        
+        return interaction.send({ embeds: [successEmbed] });
+
       } else if (args[0].name == 'uav-price') {
         client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.uavPrice":args[0].options[0].value}}, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
