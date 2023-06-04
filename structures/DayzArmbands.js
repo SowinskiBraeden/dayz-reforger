@@ -143,7 +143,8 @@ class DayzArmbands extends Client {
       if ((i - 1) >= 0 && lines[i] == lines[i-1]) continue;
       if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes('hit by Player')) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
       if (lines[i].includes('killed by  with')) s = await HandleKillfeed(this, guildId, s, lines[i]);
-      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]);
+      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]);
+      if (lines[i].includes('killed by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]);
     }
 
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;

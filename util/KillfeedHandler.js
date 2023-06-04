@@ -9,13 +9,20 @@ module.exports = {
     let guild = await client.GetGuild(guildId);
     const channel = client.channels.cache.get(guild.killfeedChannel);
 
+    let templateKilled     = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) with (.*) from (.*) meters /g;
     let template           = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let templateDEAD       = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by  with (.*)/g;
     
-    let killedByPlayer = line.includes('hit by Player') ? true : false;
+    let killedBy = line.includes('hit by Player') && line.includes('(DEAD)') ? 1 :
+                   line.includes('hit by Player') ? 2 :
+                   line.includes('killed by Player') ? 3 : 4;
 
-    let data = killedByPlayer && line.includes('(DEAD)') ? [...line.matchAll(templateDEAD)][0] : killedByPlayer ? [...line.matchAll(template)][0] : [...line.matchAll(explosionTemplate)][0];
+    let data = killedBy == 1 ? [...line.matchAll(templateDEAD)][0] : 
+               killedBy == 2 ? [...line.matchAll(template)][0] :
+               killedBy == 3 ? [...line.matchAll(templateKilled)][0] :
+               killedBy [...line.matchAll(explosionTemplate)][0];
+
     if (!data) return stats;
     
     // Create base data
@@ -27,7 +34,7 @@ module.exports = {
     }; 
 
     // Add additional data
-    if (killedByPlayer) {
+    if (killedBy == 1 || killedBy == 2) {
       info.killer    = data[6];
       info.killerID  = data[7];
       info.killerPOS = data[8];
@@ -36,6 +43,12 @@ module.exports = {
       info.bullet    = data[11];
       info.weapon    = data[12];
       info.distance  = data[13];
+    } else if (killedBy == 3) {
+      info.killer    = data[5];
+      info.killerID  = data[6];
+      info.killerPOS = data[7];
+      info.weapon    = data[8];
+      info.distance  = data[9];
     } else info.causeOfDeath = data[5];
 
     let newDt = await client.getDateEST(info.time);
@@ -132,7 +145,7 @@ module.exports = {
     
     const killEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
-      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart.split('(')[0]} \`\n> **Damage:** \` ${info.damage} \`\n **Killer\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
+      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart != undefined ? info.bodyPart.split('(')[0] : 'N/A'} \`\n> **Damage:** \` ${info.damage != undefined ? info.damage : 'N/A'} \`\n **Killer\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}**`);
 
     if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
     if (client.exists(receivedBounty) && client.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
