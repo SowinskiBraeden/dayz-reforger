@@ -21,7 +21,7 @@ module.exports = {
     let data = killedBy == 1 ? [...line.matchAll(templateDEAD)][0] : 
                killedBy == 2 ? [...line.matchAll(template)][0] :
                killedBy == 3 ? [...line.matchAll(templateKilled)][0] :
-               killedBy [...line.matchAll(explosionTemplate)][0];
+               killedBy == 4 ? [...line.matchAll(explosionTemplate)][0];
 
     if (!data) return stats;
     
