@@ -9,12 +9,13 @@ module.exports = {
     let guild = await client.GetGuild(guildId);
     const channel = client.channels.cache.get(guild.killfeedChannel);
 
-    let template           = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    let template           = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    let templateDEAD       = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by  with (.*)/g;
     
     let killedByPlayer = line.includes('hit by Player') ? true : false;
 
-    let data = killedByPlayer ? [...line.matchAll(template)][0] : [...line.matchAll(explosionTemplate)][0];
+    let data = killedByPlayer && line.includes('(DEAD)') ? [...line.matchAll(templateDEAD)][0] : killedByPlayer ? [...line.matchAll(template)][0] : [...line.matchAll(explosionTemplate)][0];
     if (!data) return stats;
     
     // Create base data
