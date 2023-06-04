@@ -9,7 +9,7 @@ module.exports = {
     let guild = await client.GetGuild(guildId);
     const channel = client.channels.cache.get(guild.killfeedChannel);
 
-    let template           = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    let template           = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by  with (.*)/g;
     
     let killedByPlayer = line.includes('hit by Player') ? true : false;
@@ -27,14 +27,14 @@ module.exports = {
 
     // Add additional data
     if (killedByPlayer) {
-      info.killer    = data[5];
-      info.killerID  = data[6];
-      info.killerPOS = data[7];
-      info.bodyPart  = data[8];
-      info.damage    = data[9];
-      info.bullet    = data[10];
-      info.weapon    = data[11];
-      info.distance  = data[12];
+      info.killer    = data[6];
+      info.killerID  = data[7];
+      info.killerPOS = data[8];
+      info.bodyPart  = data[9];
+      info.damage    = data[10];
+      info.bullet    = data[11];
+      info.weapon    = data[12];
+      info.distance  = data[13];
     } else info.causeOfDeath = data[5];
 
     let newDt = await client.getDateEST(info.time);
