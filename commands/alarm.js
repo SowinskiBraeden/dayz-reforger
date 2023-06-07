@@ -146,6 +146,41 @@ module.exports = {
       description: "Remove a Rule from an Alarm",
       value: "remove-rule",
       type: 1,
+    },
+    {
+      name: "rename",
+      description: "Rename an Alarm",
+      value: "rename",
+      type: 1,
+      options: [{
+        name: "name",
+        description: "New Alarm Name",
+        value: "name",
+        type: 3,
+        required: true,
+      }]
+    },
+    {
+      name: "move-origin",
+      description: "Move an alarms origin to new coordinates",
+      value: "move-origin",
+      type: 1,
+      options: [{
+        name: "x-coord",
+        description: "X Coordinate of the origin",
+        value: "x-coord",
+        type: 10,
+        min_value: 0.01,
+        required: true,
+      },
+      {
+        name: "y-coord",
+        description: "Y Coordinate of the origin",
+        value: "y-coord",
+        type: 10,
+        min_value: 0.01,
+        required: true,
+      }]
     }
   ],
   SlashCommand: {
@@ -281,6 +316,50 @@ module.exports = {
               value: GuildDB.alarms[i].name,
             })
           }
+        }
+
+        const opt = new ActionRowBuilder().addComponents(alarms);
+
+        return interaction.send({ components: [opt], flags: (1 << 6) });
+
+      } else if (args[0].name == 'rename') {
+
+        if (GuildDB.alarms.length == 0)  return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
+
+        let disable = args[0].name == 'disable' ? true : false;
+
+        let alarms = new SelectMenuBuilder()
+          .setCustomId(`RenameAlarm-${args[0].options[0].value}-${interaction.member.user.id}`)
+          .setPlaceholder(`Select an Alarm to rename.`);
+
+        for (let i = 0; i < GuildDB.alarms.length; i++) {
+          alarms.addOptions({
+            label: GuildDB.alarms[i].name,
+            description: `Rename this alarm`,
+            value: GuildDB.alarms[i].name,
+          })
+        }
+
+        const opt = new ActionRowBuilder().addComponents(alarms);
+
+        return interaction.send({ components: [opt], flags: (1 << 6) });
+
+      } else if (args[0].name == 'move-origin') {
+
+        if (GuildDB.alarms.length == 0)  return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
+
+        let disable = args[0].name == 'disable' ? true : false;
+
+        let alarms = new SelectMenuBuilder()
+          .setCustomId(`MoveOrigin-${args[0].options[0].value}-${args[0].options[1].value}-${interaction.member.user.id}`)
+          .setPlaceholder(`Select an Alarm to ${disable ? 'disable' : 'enable'}.`);
+
+        for (let i = 0; i < GuildDB.alarms.length; i++) {
+          alarms.addOptions({
+            label: GuildDB.alarms[i].name,
+            description: `Move the Origin of this Alarm`,
+            value: GuildDB.alarms[i].name,
+          })
         }
 
         const opt = new ActionRowBuilder().addComponents(alarms);
@@ -496,6 +575,69 @@ module.exports = {
 
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
+    },
+
+    MoveOrigin: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return interaction.reply({
+            content: "This menu is not for you",
+            flags: (1 << 6)
+          })
+        }
+
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
+        let alarmIndex = GuildDB.alarms.indexOf(alarm);
+        let origin = [parseFloat(interaction.customId.split('-')[1]), parseFloat(interaction.customId.split('-')[2])];
+        alarm.origin = origin;
+        GuildDB.alarms[alarmIndex] = alarm
+
+        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
+          $set: {
+            'server.alarms': GuildDB.alarms,
+          }
+        }, function (err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`**Success:** Successfully moved alarm to new **[origin](https://www.izurvive.com/chernarusplussatmap/#location=${origin[0]};${origin[1]})**`);
+
+        return interaction.update({ embeds: [successEmbed], components: [] });
+      }
     }
+
+    RenameAlarm: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return interaction.reply({
+            content: "This menu is not for you",
+            flags: (1 << 6)
+          })
+        }
+
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
+        let alarmIndex = GuildDB.alarms.indexOf(alarm);
+        let oldName = alarm.name;
+        alarm.name = interaction.customId.split('-')[1];
+        GuildDB.alarms[alarmIndex] = alarm
+
+        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
+          $set: {
+            'server.alarms': GuildDB.alarms,
+          }
+        }, function (err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`**Success:** Successfully renamed the Alarm **${oldName}** to **${alarm.name}**`);
+
+        return interaction.update({ embeds: [successEmbed], components: [] });
+      }
+    }
+
   } 
 }
