@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
-  name: "admin-gamertag-link",
+  name: "admin-gamertag-unlink",
   debug: false,
   global: false,
   description: "Disconnect a users gamertag for them",

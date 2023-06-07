@@ -50,8 +50,7 @@ module.exports = {
             .setStyle(ButtonStyle.Secondary)
         )
 
-        return interaction.send({ embeds: [warnGTOverwrite], components: [opt] });
-      }
+      return interaction.send({ embeds: [warnGTOverwrite], components: [opt] });
     },
   },
 
@@ -91,6 +90,5 @@ module.exports = {
         }
       }
     }
-  
   }
 }
