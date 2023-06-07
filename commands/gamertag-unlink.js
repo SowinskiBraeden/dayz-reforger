@@ -31,7 +31,7 @@ module.exports = {
         });
       }
 
-      let playerStat = GuildDB.playerstats.find(stat => stat.discordID == interaction.user.member.id);
+      let playerStat = GuildDB.playerstats.find(stat => stat.discordID == interaction.member.user.id);
       if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**No Gamertag Linked** It Appears your don't have a gamertag linked to your account.`)] });
 
       const warnGTOverwrite = new EmbedBuilder()
