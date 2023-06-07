@@ -126,8 +126,7 @@ module.exports = {
           const DiscordUser = client.users.cache.get(targetUserID);
 
           balanceEmbed.setTitle(`${DiscordUser.tag.split("#")[0]}'s Bank Records`);
-          balanceEmbed.addFields(
-            { name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
+          balanceEmbed.addFields({ name: '**Bank**', value: `$${targetUserBanking.guilds[GuildDB.serverID].balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true });
 
         } else {
           // Show command authors balance
