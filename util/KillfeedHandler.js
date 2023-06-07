@@ -30,14 +30,14 @@ module.exports = {
       time:      data[1],
       victim:    data[2],
       victimID:  data[3],
-      victimPOS: data[4],
-    }; 
+      victimPOS: data[4].split(', ').map(v => parseFloat(v)),
+    };
 
     // Add additional data
     if (killedBy == 1 || killedBy == 2) {
       info.killer    = data[6];
       info.killerID  = data[7];
-      info.killerPOS = data[8];
+      info.killerPOS = data[8].split(', ').map(v => parseFloat(v));
       info.bodyPart  = data[9];
       info.damage    = data[10];
       info.bullet    = data[11];
@@ -46,7 +46,7 @@ module.exports = {
     } else if (killedBy == 3) {
       info.killer    = data[5];
       info.killerID  = data[6];
-      info.killerPOS = data[7];
+      info.killerPOS = data[7].split(', ').map(v => parseFloat(v));
       info.weapon    = data[8];
       info.distance  = data[9];
     } else info.causeOfDeath = data[5];
