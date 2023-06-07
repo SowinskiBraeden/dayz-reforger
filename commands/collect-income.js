@@ -46,10 +46,7 @@ module.exports = {
           userID: interaction.member.user.id,
           guilds: {
             [GuildDB.serverID]: {
-              bankAccount: {
-                balance: GuildDB.startingBalance,
-                cash: 0.00,
-              },
+              balance: GuildDB.startingBalance,
               lastIncome: new Date('2000-01-01T00:00:00'),
             }
           }
@@ -57,7 +54,7 @@ module.exports = {
 
         // Register bank for user  
         let newBank = new User();
-        newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, 0);
+        newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance);
         newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
         });
@@ -87,7 +84,7 @@ module.exports = {
         let totalIncome = income.reduce((x, y) => x + y, 0)
 
         let newData = banking.guilds[GuildDB.serverID];
-        newData.bankAccount.balance += totalIncome;
+        newData.balance += totalIncome;
         newData.lastIncome = now;
 
         client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}`]: newData}}, function(err, res) {

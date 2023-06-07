@@ -51,10 +51,8 @@ module.exports = {
 
         let users = await client.dbo.collection("users").find({}).toArray();
 
-        users.map(u => u.user.guilds[GuildDB.serverID].bankAccount.total = u.user.guilds[GuildDB.serverID].bankAccount.balance + u.user.guilds[GuildDB.serverID].bankAccount.cash);
-
         leaderboard = users.sort(function(a, b) {
-          return b.user.guilds[GuildDB.serverID].bankAccount.total - a.user.guilds[GuildDB.serverID].bankAccount.total;
+          return b.user.guilds[GuildDB.serverID].balance - a.user.guilds[GuildDB.serverID].balance;
         });
 
       } else {
@@ -70,7 +68,6 @@ module.exports = {
         });
 
       }
-
       
       let limit = args[1].value > leaderboard.length ? leaderboard.length : args[1].value;
       
@@ -97,7 +94,7 @@ module.exports = {
                     category == 'deathstreak' ? `${leaderboard[i].deathStreak} Deathstreak` :
                     category == 'worst_deathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
                     category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 
-                    category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].bankAccount.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A Error';
+                    category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A Error';
 
         if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
         else leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });

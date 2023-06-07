@@ -84,17 +84,14 @@ module.exports = {
           userID: targetUserID,
           guilds: {
             [GuildDB.serverID]: {
-              bankAccount: {
-                balance: GuildDB.startingBalance,
-                cash: 0.00,
-              }
+              balance: GuildDB.startingBalance,
             }
           }
         }
 
         // Register bank for user  
         let newBank = new User();
-        await newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
+        await newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance);
         await newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
         });
@@ -107,10 +104,10 @@ module.exports = {
       }
 
       let newBalance = args[0].name == 'add'
-                        ? banking.guilds[GuildDB.serverID].bankAccount.balance + args[0].options[0].value
-                        : banking.guilds[GuildDB.serverID].bankAccount.balance - args[0].options[0].value;
+                        ? banking.guilds[GuildDB.serverID].balance + args[0].options[0].value
+                        : banking.guilds[GuildDB.serverID].balance - args[0].options[0].value;
     
-      client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.bankAccount.balance`]:newBalance}}, function(err, res) {
+      client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
         if (err) return client.sendInternalError(interaction, err);
       });
     

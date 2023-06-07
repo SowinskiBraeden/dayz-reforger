@@ -58,17 +58,14 @@ module.exports = {
             userID: interaction.member.user.id,
             guilds: {
               [GuildDB.serverID]: {
-                bankAccount: {
-                  balance: GuildDB.startingBalance,
-                  cash: 0.00,
-                }
+                balance: GuildDB.startingBalance,
               }
             }
           }
 
           // Register bank for user  
           let newBank = new User();
-          newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, 0);
+          newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance);
           newBank.save().catch(err => {
             if (err) return client.sendInternalError(interaction, err);
           });
@@ -80,7 +77,7 @@ module.exports = {
           if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
         }
 
-        if (args[0].options[0].value > banking.guilds[GuildDB.serverID].bankAccount.balance) {
+        if (args[0].options[0].value > banking.guilds[GuildDB.serverID].balance) {
           let nsf = new EmbedBuilder()
             .setDescription('**Bank Notice:** NSF. Non sufficient funds')
             .setColor(client.config.Colors.Red);
@@ -88,11 +85,11 @@ module.exports = {
           return interaction.send({ embeds: [nsf] });
         }
 
-        const newBalance = banking.guilds[GuildDB.serverID].bankAccount.balance - args[0].options[1].value;
+        const newBalance = banking.guilds[GuildDB.serverID].balance - args[0].options[1].value;
       
         client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
-            [`user.guilds.${GuildDB.serverID}.bankAccount.balance`]: newBalance,
+            [`user.guilds.${GuildDB.serverID}.balance`]: newBalance,
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);

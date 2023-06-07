@@ -68,7 +68,7 @@ module.exports = {
         if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
       }
 
-      if (banking.guilds[GuildDB.serverID].bankAccount.balance.toFixed(2) - GuildDB.uavPrice < 0) {
+      if (banking.guilds[GuildDB.serverID].balance.toFixed(2) - GuildDB.uavPrice < 0) {
         let embed = new EmbedBuilder()
           .setTitle('**Bank Notice:** NSF. Non sufficient funds')
           .setColor(client.config.Colors.Red);
@@ -76,9 +76,9 @@ module.exports = {
         return interaction.send({ embeds: [embed] });
       }
 
-      const newBalance = banking.guilds[GuildDB.serverID].bankAccount.balance - GuildDB.uavPrice;
+      const newBalance = banking.guilds[GuildDB.serverID].balance - GuildDB.uavPrice;
     
-      client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.bankAccount.balance`]:newBalance}}, function(err, res) {
+      client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
         if (err) return client.sendInternalError(interaction, err);
       });
 

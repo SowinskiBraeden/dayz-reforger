@@ -101,17 +101,14 @@ module.exports = {
           userID: killerStat.discordID,
           guilds: {
             [guildId]: {
-              bankAccount: {
-                balance: guild.startingBalance,
-                cash: 0.00,
-              }
+              balance: guild.startingBalance,
             }
           }
         }
 
         // Register bank for user  
         let newBank = new User();
-        newBank.createUser(killerStat.discordID, guildId, guild.startingBalance, 0);
+        newBank.createUser(killerStat.discordID, guildId, guild.startingBalance);
         newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
         });
@@ -123,11 +120,11 @@ module.exports = {
         if (!success) return client.sendError(guild.connectionLogsChannel, 'Failed to add bank');
       }
 
-      const newBalance = banking.guilds[guildId].bankAccount.balance + totalBounty;
+      const newBalance = banking.guilds[guildId].balance + totalBounty;
       
       await client.dbo.collection("users").updateOne({ "user.userID": killerStat.discordID }, {
         $set: {
-          [`user.guilds.${guildId}.bankAccount.balance`]: newBalance,
+          [`user.guilds.${guildId}.balance`]: newBalance,
         }
       }, function(err, res) {
         if (err) return client.sendError(guild.connectionLogsChannel, err);

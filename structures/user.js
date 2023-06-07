@@ -7,14 +7,11 @@ let userSchema = mongoose.Schema({
   },
 });
 
-userSchema.methods.createUser = function (userID, guildID, startingBalance, cash) {
+userSchema.methods.createUser = function (userID, guildID, startingBalance) {
   this.user.userID = userID;
   this.user.guilds = {};
   this.user.guilds[guildID] = {
-    bankAccount: {
-      balance: startingBalance,
-      cash: cash,
-    },
+    balance: startingBalance,
     lastIncome: new Date('2000-01-01T00:00:00'),
   };
 };
@@ -28,10 +25,7 @@ userSchema.methods.createUser = function (userID, guildID, startingBalance, cash
 function addUser(guilds, guildID, userID, client, startingBalance) {
   let updatedGuilds = guilds;
   updatedGuilds[guildID] = {
-    bankAccount: {
-      balance: startingBalance,
-      cash: 0.00,
-    },
+    balance: startingBalance,
     lastIncome: new Date('2000-01-01T00:00:00')
   }
 
