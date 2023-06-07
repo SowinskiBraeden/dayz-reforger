@@ -47,7 +47,7 @@ module.exports = {
           .setColor(client.config.Colors.Yellow)
           .setDescription(`**Record Found**\n> The gamertag \` ${playerStat.gamertag} \` is currently linked to <@${playerStat.discordID}>.`)
         
-        return interaction.send({ embeds: [found], components: [opt] });
+        return interaction.send({ embeds: [found] });
       }
 
       let notFound = new EmbedBuilder()

@@ -46,7 +46,7 @@ module.exports = {
         .setColor(client.config.Colors.Yellow)
         .setDescription(`**Record Found**\n> The user <@${playerStat.discordID}> has linked the gamertag \` ${playerStat.gamertag} \`.`)
       
-      return interaction.send({ embeds: [found], components: [opt] });
+      return interaction.send({ embeds: [found] });
     },
   },
 }

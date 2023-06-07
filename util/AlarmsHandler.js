@@ -102,6 +102,9 @@ module.exports = {
       if (alarm.disabled || !alarm.rules.includes('ban_on_kill')) continue; // ignore if alarm is disabled or not ban on kill;
       if (alarm.ignoredPlayers.includes(data.killerID)) continue;
 
+      console.log(data);
+      console.log(alarm);
+
       let diff = [Math.round(alarm.origin[0] - data.killerPOS[0]), Math.round(alarm.origin[1] - data.killerPOS[1])];
       let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2)
 
