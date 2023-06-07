@@ -5,7 +5,7 @@ module.exports = {
   debug: false,
   global: false,
   description: "Connect DayZ account to gain server access",
-  usage: "[cmd] [opt]",
+  usage: "[gamertag]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],

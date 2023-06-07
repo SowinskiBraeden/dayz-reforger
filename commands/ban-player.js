@@ -7,7 +7,7 @@ module.exports = {
   debug: false,
   global: false,
   description: "Ban a player from the DayZ Server.",
-  usage: "",
+  usage: "[gamertag]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],

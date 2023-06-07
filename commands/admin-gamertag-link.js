@@ -6,7 +6,7 @@ module.exports = {
   debug: false,
   global: false,
   description: "Connect a users gamertag for them",
-  usage: "[cmd] [opt]",
+  usage: "[user] [gamertag]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],

@@ -6,7 +6,7 @@ module.exports = {
   debug: false,
   global: false,
   description: "Disconnect a users gamertag for them",
-  usage: "[cmd] [opt]",
+  usage: "[user]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],
