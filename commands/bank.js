@@ -132,8 +132,7 @@ module.exports = {
           // Show command authors balance
 
           balanceEmbed.setTitle('Personal Bank Records');
-          balanceEmbed.addFields(
-            { name: '**Bank**', value: `$${banking.guilds[GuildDB.serverID].balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true },
+          balanceEmbed.addFields({ name: '**Bank**', value: `$${banking.guilds[GuildDB.serverID].balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, inline: true });
         }
 
         return interaction.send({ embeds: [balanceEmbed] });
