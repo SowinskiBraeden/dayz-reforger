@@ -606,7 +606,7 @@ module.exports = {
 
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
-    }
+    },
 
     RenameAlarm: {
       run: async(client, interaction, GuildDB) => {
