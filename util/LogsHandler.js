@@ -64,7 +64,7 @@ module.exports = {
 
       let newDt = await client.getDateEST(info.time);
       let unixTime = Math.floor(newDt.getTime()/1000);
-      if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = client.getDateEST(info.time);
+      if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
       let oldUnixTime = Math.floor(playerStat.lastConnectionDate.getTime()/1000);
       let seconds = unixTime - oldUnixTime;
       let sessionTime = client.secondsToDhms(seconds);
@@ -107,7 +107,7 @@ module.exports = {
       let playerStat = stats.find(stat => stat.playerID == info.playerID)
       let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
-      if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = client.getDateEST(info.time);
+      if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
       
       playerStat.lastPos = playerStat.pos;
       playerStat.pos = info.pos;
