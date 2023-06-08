@@ -66,7 +66,7 @@ module.exports = {
         if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
       }
 
-      if (!client.exists(banking.guilds[GuildDB.serverID].lastIncome)) banking.guilds[GuildDB.serverID].lastIncome: new Date('2000-01-01T00:00:00');
+      if (!client.exists(banking.guilds[GuildDB.serverID].lastIncome)) banking.guilds[GuildDB.serverID].lastIncome = new Date('2000-01-01T00:00:00');
       
       let now = new Date();
       let diff = (now - banking.guilds[GuildDB.serverID].lastIncome) / 1000;
