@@ -18,6 +18,7 @@ module.exports = {
     required: true,
     choices: [
       { name: "money", value: "money" },
+      { name: "time_played", value: "time_played" },
       { name: "kills", value: "kills" }, 
       { name: "killstreak", value: "killstreak" },
       { name: "best_killstreak", value: "best_killstreak" },
@@ -65,6 +66,7 @@ module.exports = {
           if (category == 'deathstreak') return b.deathStreak - a.deathSreak;
           if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
           if (category == 'longest_kill') return b.longestKill - a.longestKill;
+          if (category == 'time_played') return b.totalSessionTime - a.totalSessionTime;
         });
 
       }
@@ -81,7 +83,8 @@ module.exports = {
         category == 'deathstreak' ? "Current Deathstreak Leaderboard" :
         category == 'worst_deathstreak' ? "Worst Deathstreak Leaderboard" : 
         category == 'longest_kill' ? "Longest Kill Leaderboard" : 
-        category == 'money' ? "Money Leaderboard" : 'N/A Error';
+        category == 'money' ? "Money Leaderboard" : 
+        category == 'time_played' ? "Time Played" : 'N/A Error';
 
       leaderboardEmbed.setTitle(`**${title} - DayZ Reforger**`);
 
@@ -94,13 +97,14 @@ module.exports = {
                     category == 'deathstreak' ? `${leaderboard[i].deathStreak} Deathstreak` :
                     category == 'worst_deathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
                     category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 
-                    category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A Error';
+                    category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 
+                    category == 'time_played' ? `Total: ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\nLast Session: ${leaderboard[i].lastSessionTime}` : 'N/A Error';
 
-        if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
+        if (category == 'money' || category == 'time_played') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
         else leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });
       }
 
-      if (category == 'money') leaderboardEmbed.setDescription(des);
+      if (category == 'money' || category == 'time_played') leaderboardEmbed.setDescription(des);
       
       return interaction.send({ embeds: [leaderboardEmbed] });
     },

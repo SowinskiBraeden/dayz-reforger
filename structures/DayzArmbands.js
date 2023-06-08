@@ -383,6 +383,8 @@ class DayzArmbands extends Client {
       lastDeathDate: null,
       lastHitBy: null,
       connected: false,
+      totalSessionTime: 0,
+      lastSessionTime: "",
       bounties: [],
     }
   }
