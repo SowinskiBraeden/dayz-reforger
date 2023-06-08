@@ -100,7 +100,8 @@ module.exports = {
                     category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 
                     category == 'time_played' ? `Total: ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\nLast Session: ${leaderboard[i].lastSessionTime}` : 'N/A Error';
 
-        if (category == 'money' || category == 'time_played') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
+        if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
+        else if (category == 'time_played') des += `**${i+1}.** <@${leaderboard[i].discordID}> - **${stats}**\n`
         else leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });
       }
 
