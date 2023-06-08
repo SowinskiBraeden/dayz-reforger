@@ -341,4 +341,116 @@ Mar 17 13:43:06 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Successfully 
 [7mlines 149-184[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
 [7mlines 150-185[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
 [7mlines 151-186[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 152-
+[7mlines 152-187[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
+[7mlines 153-188[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
+[7mlines 154-189[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
+[7mlines 155-190[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
+[7mlines 156-191[27m[K[K[?1l>
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clkear[K[K[K[Kear
+[?2004l[H[2J[3J[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git add .
+[?2004l[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git commi [Kt -0m [K[K[Km "forec[K[Kce lastConnection dat [Ke to not be nil
+[?2004l[?2004h> "\[K
+[?2004l[main eb6db40] force lastConnection date to not be nil
+ 2 files changed, 346 insertions(+)
+ create mode 100644 typescript
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git add .[K[K[K[K[Kpush origin main
+[?2004lEnumerating objects: 8, done.
+Counting objects:  12% (1/8)Counting objects:  25% (2/8)Counting objects:  37% (3/8)Counting objects:  50% (4/8)Counting objects:  62% (5/8)Counting objects:  75% (6/8)Counting objects:  87% (7/8)Counting objects: 100% (8/8)Counting objects: 100% (8/8), done.
+Delta compression using up to 8 threads
+Compressing objects:  20% (1/5)Compressing objects:  40% (2/5)Compressing objects:  60% (3/5)Compressing objects:  80% (4/5)Compressing objects: 100% (5/5)Compressing objects: 100% (5/5), done.
+Writing objects:  20% (1/5)Writing objects:  40% (2/5)Writing objects:  60% (3/5)Writing objects:  80% (4/5)Writing objects: 100% (5/5)Writing objects: 100% (5/5), 4.79 KiB | 1.20 MiB/s, done.
+Total 5 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas:   0% (0/3)[Kremote: Resolving deltas:  33% (1/3)[Kremote: Resolving deltas:  66% (2/3)[Kremote: Resolving deltas: 100% (3/3)[Kremote: Resolving deltas: 100% (3/3), completed with 3 local objects.[K
+To github.com:SowinskiBraeden/dayz-reforger.git
+   981102f..eb6db40  main -> main
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git push origin maincommit -m "force lastConnection date to not be nil
+"[A]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ [C[C[C[Cadd .[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+[?2004l[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git add .push origin maincommit -m "force lastConnection date to not be nil
+"[K[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C"
+[?2004l[main 90314ce] force lastConnection date to not be nil
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git push origin main
+[?2004lEnumerating objects: 7, done.
+Counting objects:  14% (1/7)Counting objects:  28% (2/7)Counting objects:  42% (3/7)Counting objects:  57% (4/7)Counting objects:  71% (5/7)Counting objects:  85% (6/7)Counting objects: 100% (7/7)Counting objects: 100% (7/7), done.
+Delta compression using up to 8 threads
+Compressing objects:  25% (1/4)Compressing objects:  50% (2/4)Compressing objects:  75% (3/4)Compressing objects: 100% (4/4)Compressing objects: 100% (4/4), done.
+Writing objects:  25% (1/4)Writing objects:  50% (2/4)Writing objects:  75% (3/4)Writing objects: 100% (4/4)Writing objects: 100% (4/4), 615 bytes | 615.00 KiB/s, done.
+Total 4 (delta 3), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas:   0% (0/3)[Kremote: Resolving deltas:  33% (1/3)[Kremote: Resolving deltas:  66% (2/3)[Kremote: Resolving deltas: 100% (3/3)[Kremote: Resolving deltas: 100% (3/3), completed with 3 local objects.[K
+To github.com:SowinskiBraeden/dayz-reforger.git
+   eb6db40..90314ce  main -> main
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ track_test.js LilB[K[K;B[K[KLb[KBearsha
+[?2004ltrack_test.js: command not found
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ track_test.js LiLBearsha[1@n[1@o[1@d[1@ [1P[1@e[1@ 
+[?2004lCalculating...
+LiLBearsha's current positional data:
+LiLBearsha has moved 1m @90° South East
+From last Position: 4415.5 / 10848.7 at Last Time: 18:16:11 EST
+To Latest Position: 4416 / 10848.2 at Latest Time: 18:16:36 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node [K[K[K[K[Knode track_test.js LiLBearsha
+[?2004lCalculating...
+LiLBearsha's current positional data:
+LiLBearsha has moved 1m @0° South West
+From last Position: 4634.4 / 10441.1 at Last Time: 18:44:08 EST
+To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:44:35 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha[K[K[K[K[K[K[K[K[K[K[K xCookie666x
+[?2004lCalculating...
+xCookie666x's current positional data:
+xCookie666x has moved 4m @0° South West
+From last Position: 1334.2 / 14451.5 at Last Time: 18:43:52 EST
+To Latest Position: 1330.7 / 14451.3 at Latest Time: 18:43:57 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js xCookie666x[K[K[K[K[K[K[K[K[K[K[KJahn[Kman SQW[K[KE[KQ[KWE
+[?2004lPlayer not found
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js Jahman SWE[K[K[K[K[K[K[K[K[K[Kho[K[KxCookie666x[1PLiLBearshaxCookie666x[K[Knode track_test.js xCookie666x[K[K
+[?2004l[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js xCookie666x[1PLiLBearsha[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[4Pgit push origin maintrack_test.js LiLBearsha[5@node [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[CxCookie666x[KxCookie666x[K[K[K[K[K[K[K[K[K[K[K"ja[K[KJahman SWE"
+[?2004lCalculating...
+Jahman SWE's current positional data:
+Jahman SWE has moved 29m @35° North East
+From last Position: 8098.8 / 12713.5 at Last Time: 18:39:40 EST
+To Latest Position: 8123.2 / 12730.9 at Latest Time: 18:41:11 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js "Jahman SWE"[K[K[K[K[K[K[K[K[K[K[K[Khotdog5558619
+[?2004lCalculating...
+hotdog5558619's current positional data:
+hotdog5558619 has moved 0m @0° N/A
+From last Position: 2036.2 / 7304.1 at Last Time: 18:36:11 EST
+To Latest Position: 2036.2 / 7304.1 at Latest Time: 18:41:11 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clear
+[?2004l[H[2J[3J[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clearnode track_test.js hotdog5558619[1P"Jahman SWE"[KxCookie666x[1PLiLBearsha[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[4Pgit push origin maintrack_test.js LiLBearsha[5@node [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+[?2004lCalculating...
+LiLBearsha's current positional data:
+LiLBearsha has moved 1m @0° South West
+From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
+To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
+[?2004lCalculating...
+LiLBearsha's current positional data:
+LiLBearsha has moved 1m @0° South West
+From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
+To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
+[?2004lCalculating...
+LiLBearsha's current positional data:
+LiLBearsha has moved 1m @0° South West
+From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
+To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
+[?2004lCalculating...
+LiLBearsha's current positional data:
+LiLBearsha has moved 1m @0° South West
+From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
+To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
+[?2004lCalculating...
+LiLBearsha's current positional data:
+LiLBearsha has moved 1m @0° South West
+From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
+To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
+[?2004lCalculating...
+LiLBearsha's current positional data:
+LiLBearsha has moved 1m @0° South West
+From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
+To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
+[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clear
+[?2004l[H[2J[3J[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;3
