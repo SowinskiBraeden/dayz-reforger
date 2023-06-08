@@ -64,7 +64,7 @@ module.exports = {
 
       let newDt = await client.getDateEST(info.time);
       let unixTime = Math.floor(newDt.getTime()/1000);
-      let oldUnixTime = Math.floor(info.lastConnectionDate.getTime()/1000);
+      let oldUnixTime = Math.floor(playerStat.lastConnectionDate.getTime()/1000);
       let seconds = unixTime - oldUnixTime;
       let sessionTime = client.secondsToDhms(seconds);
 
