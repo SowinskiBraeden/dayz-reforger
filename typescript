@@ -1,456 +1,0 @@
-Script started on 2023-06-08 15:10:05-07:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="144" LINES="37"]
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ c[Kclear
-[?2004l[H[2J[3J[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ man script
-[?2004l[?1049h[22;0;0t[?1h=SCRIPT(1)                                                       User Commands                                                      SCRIPT(1)[m
-[m
-[1mNAME[0m[m
-       script - make typescript of terminal session[m
-[m
-[1mSYNOPSIS[0m[m
-       [1mscript[0m [options] [[4mfile[24m][m
-[m
-[1mDESCRIPTION[0m[m
-       [1mscript[0m makes a typescript of everything on your terminal session. The terminal data are stored in raw form to the log file and[m
-       information about timing to another (optional) structured log file. The timing log file is necessary to replay the session later by[m
-       [1mscriptreplay[0m(1) and to store additional information about the session.[m
-[m
-       Since version 2.35, [1mscript[0m supports multiple streams and allows the logging of input and output to separate files or all the one[m
-       file. This version also supports a new timing file which records additional information. The command [1mscriptreplay[0m [1m--summary[0m then[m
-       provides all the information.[m
-[m
-       If the argument [4mfile[24m or option [1m--log-out[0m [4mfile[24m is given, [1mscript[0m saves the dialogue in this [4mfile[24m. If no filename is given, the dialogue[m
-       is saved in the file [4mtypescript[24m.[m
-[m
-       Note that logging input using [1m--log-in[0m or [1m--log-io[0m may record security-sensitive information as the log file contains all terminal[m
-       session input (e.g., passwords) independently of the terminal echo flag setting.[m
-[m
-[1mOPTIONS[0m[m
-       Below, the [4msize[24m argument may be followed by the multiplicative suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB,[m
-       EiB, ZiB and YiB (the "iB" is optional, e.g., "K" has the same meaning as "KiB"), or the suffixes KB (=1000), MB (=1000*1000), and so[m
-       on for GB, TB, PB, EB, ZB and YB.[m
-[m
-       [1m-a[0m, [1m--append[0m[m
-           Append the output to [4mfile[24m or to [4mtypescript[24m, retaining the prior contents.[m
-[m
-       [1m-c[0m, [1m--command[0m [4mcommand[24m[m
-           Run the [4mcommand[24m rather than an interactive shell. This makes it easy for a script to capture the output of a program that behaves[m
-           differently when its stdout is not a tty.[m
-[m
-       [1m-E[0m, [1m--echo[0m [4mwhen[24m[m
-[7m Manual page script(1) line 1 (press h for help or q to quit)[27m[K[H[2J[H[H[2J[HSCRIPT(1)                                                       User Commands                                                      SCRIPT(1)[m
-[m
-[1mNAME[0m[m
-       script - make typescript of terminal session[m
-[m
-[1mSYNOPSIS[0m[m
-       [1mscript[0m [options] [[4mfile[24m][m
-[m
-[1mDESCRIPTION[0m[m
-       [1mscript[0m makes a typescript of everything on your terminal session. The terminal data are stored in raw form to the log file and[m
-       information about timing to another (optional) structured log file. The timing log file is necessary to replay the session later by[m
-       [1mscriptreplay[0m(1) and to store additional information about the session.[m
-[m
-       Since version 2.35, [1mscript[0m supports multiple streams and allows the logging of input and output to separate files or all the one[m
-       file. This version also supports a new timing file which records additional information. The command [1mscriptreplay[0m [1m--summary[0m then[m
-       provides all the information.[m
-[m
-       If the argument [4mfile[24m or option [1m--log-out[0m [4mfile[24m is given, [1mscript[0m saves the dialogue in this [4mfile[24m. If no filename is given, the dialogue[m
-       is saved in the file [4mtypescript[24m.[m
-[m
-       Note that logging input using [1m--log-in[0m or [1m--log-io[0m may record security-sensitive information as the log file contains all terminal[m
-       session input (e.g., passwords) independently of the terminal echo flag setting.[m
-[m
-[1mOPTIONS[0m[m
-       Below, the [4msize[24m argument may be followed by the multiplicative suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB,[m
-       EiB, ZiB and YiB (the "iB" is optional, e.g., "K" has the same meaning as "KiB"), or the suffixes KB (=1000), MB (=1000*1000), and so[m
-       on for GB, TB, PB, EB, ZB and YB.[m
-[m
-       [1m-a[0m, [1m--append[0m[m
-           Append the output to [4mfile[24m or to [4mtypescript[24m, retaining the prior contents.[m
-[m
-       [1m-c[0m, [1m--command[0m [4mcommand[24m[m
-           Run the [4mcommand[24m rather than an interactive shell. This makes it easy for a script to capture the output of a program that behaves[m
-           differently when its stdout is not a tty.[m
-[m
-       [1m-E[0m, [1m--echo[0m [4mwhen[24m[m
-[7m Manual page script(1) line 1 (press h for help or q to quit)[27m[K[K[7m Manual page script(1) line 1 (press h for help or q to quit)[27m[K[K[7m Manual page script(1) line 1 (press h for help or q to quit)[27m[K[K           This option controls the [1mECHO[0m flag for the slave end of the session’s pseudoterminal. The supported modes are [4malways[24m, [4mnever[24m, or[m
-[7m Manual page script(1) line 2 (press h for help or q to quit)[27m[K[K[7m Manual page script(1) line 2 (press h for help or q to quit)[27m[K[K...skipping...
-[m
-[1mNAME[0m[m
-       script - make typescript of terminal session[m
-[m
-[1mSYNOPSIS[0m[m
-       [1mscript[0m [options] [[4mfile[24m][m
-[m
-[1mDESCRIPTION[0m[m
-       [1mscript[0m makes a typescript of everything on your terminal session. The terminal data are stored in raw form to the log file and[m
-       information about timing to another (optional) structured log file. The timing log file is necessary to replay the session later by[m
-       [1mscriptreplay[0m(1) and to store additional information about the session.[m
-[m
-       Since version 2.35, [1mscript[0m supports multiple streams and allows the logging of input and output to separate files or all the one[m
-       file. This version also supports a new timing file which records additional information. The command [1mscriptreplay[0m [1m--summary[0m then[m
-       provides all the information.[m
-[m
-       If the argument [4mfile[24m or option [1m--log-out[0m [4mfile[24m is given, [1mscript[0m saves the dialogue in this [4mfile[24m. If no filename is given, the dialogue[m
-       is saved in the file [4mtypescript[24m.[m
-[m
-       Note that logging input using [1m--log-in[0m or [1m--log-io[0m may record security-sensitive information as the log file contains all terminal[m
-       session input (e.g., passwords) independently of the terminal echo flag setting.[m
-[m
-[1mOPTIONS[0m[m
-       Below, the [4msize[24m argument may be followed by the multiplicative suffixes KiB (=1024), MiB (=1024*1024), and so on for GiB, TiB, PiB,[m
-       EiB, ZiB and YiB (the "iB" is optional, e.g., "K" has the same meaning as "KiB"), or the suffixes KB (=1000), MB (=1000*1000), and so[m
-       on for GB, TB, PB, EB, ZB and YB.[m
-[m
-       [1m-a[0m, [1m--append[0m[m
-           Append the output to [4mfile[24m or to [4mtypescript[24m, retaining the prior contents.[m
-[m
-       [1m-c[0m, [1m--command[0m [4mcommand[24m[m
-           Run the [4mcommand[24m rather than an interactive shell. This makes it easy for a script to capture the output of a program that behaves[m
-           differently when its stdout is not a tty.[m
-[m
-       [1m-E[0m, [1m--echo[0m [4mwhen[24m[m
-           This option controls the [1mECHO[0m flag for the slave end of the session’s pseudoterminal. The supported modes are [4malways[24m, [4mnever[24m, or[m
-[7m Manual page script(1) line 2 (press h for help or q to quit)[27m[K[K           [4mauto[24m.[m
-[7m Manual page script(1) line 3 (press h for help or q to quit)[27m[K[K[?1l>[?1049l[23;0;0t[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ 
-[?2004l[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clear
-[?2004l[H[2J[3J[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ ^C[?2004l[?2004h[?2004l
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ journalctl
-[?2004l[?1h=Mar 16 23:46:49 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:47:15 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:51:07 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:51:34 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:52:07 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:55:20 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:55:32 fal discord_discord.desktop[1035642]: 2023-03-17T06:55:32.673Z [Modules] Host is up to date.[m
-Mar 16 23:55:32 fal discord_discord.desktop[1035642]: 2023-03-17T06:55:32.674Z [Modules] Checking for module updates at https://discord.com/api[m[7m>[27m
-Mar 16 23:55:32 fal discord_discord.desktop[1035642]: 2023-03-17T06:55:32.747Z [Modules] No module updates available.[m
-Mar 16 23:56:34 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:58:05 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:58:48 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:59:14 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:59:35 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 17 00:00:15 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 17 00:00:34 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 17 00:01:54 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 17 00:02:43 fal gnome-shell[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mTimelines with detached actors are not supported. <unnamed>[<Gjs_ui_panel_QuickSettings>:0x55bae74c1680][m[7m>[27m
-Mar 17 00:02:43 fal update-notifier[4416]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mgtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)' failed[0m[m
-Mar 17 00:02:51 fal gsd-media-keys[2005]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mUnable to get default sink[0m[m
-Mar 17 13:42:56 fal systemd[1619]: Stopped target Bluetooth.[m
-Mar 17 13:42:56 fal systemd[1619]: Reached target Bluetooth.[m
-Mar 17 13:43:03 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Activating service name='org.freedesktop.FileManager1' requested by ':1.41' [m[7m>[27m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mLaunching DING process[0m[m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185munable to update icon for Microsoft Teams - Preview1[0m[m
-Mar 17 13:43:05 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185munable to update icon for software-update-available[0m[m
-Mar 17 13:43:05 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185munable to update icon for discord1[0m[m
-Mar 17 13:43:05 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Successfully activated service 'org.freedesktop.FileManager1'[m
-Mar 17 13:43:05 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Activating service name='org.gnome.DiskUtility' requested by ':1.8883' (uid=[m[7m>[27m
-Mar 17 13:43:05 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Activating service name='org.gnome.ArchiveManager1' requested by ':1.8884' ([m[7m>[27m
-Mar 17 13:43:06 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Successfully activated service 'org.gnome.DiskUtility'[m
-[7mlines 1-36[27m[K[K[?1l>
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ journalctl
-[?2004l[?1h=Mar 16 23:46:49 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:47:15 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:51:07 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:51:34 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:52:07 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:55:20 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:55:32 fal discord_discord.desktop[1035642]: 2023-03-17T06:55:32.673Z [Modules] Host is up to date.[m
-Mar 16 23:55:32 fal discord_discord.desktop[1035642]: 2023-03-17T06:55:32.674Z [Modules] Checking for module updates at https://discord.com/api[m[7m>[27m
-Mar 16 23:55:32 fal discord_discord.desktop[1035642]: 2023-03-17T06:55:32.747Z [Modules] No module updates available.[m
-Mar 16 23:56:34 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:58:05 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:58:48 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:59:14 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 16 23:59:35 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 17 00:00:15 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 17 00:00:34 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 17 00:01:54 fal wireplumber[1630]: [0;1;39m[0;1;31m[0;1;39merror reading timerfd: Resource temporarily unavailable[0m[m
-Mar 17 00:02:43 fal gnome-shell[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mTimelines with detached actors are not supported. <unnamed>[<Gjs_ui_panel_QuickSettings>:0x55bae74c1680][m[7m>[27m
-Mar 17 00:02:43 fal update-notifier[4416]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mgtk_widget_get_scale_factor: assertion 'GTK_IS_WIDGET (widget)' failed[0m[m
-Mar 17 00:02:51 fal gsd-media-keys[2005]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mUnable to get default sink[0m[m
-Mar 17 13:42:56 fal systemd[1619]: Stopped target Bluetooth.[m
-Mar 17 13:42:56 fal systemd[1619]: Reached target Bluetooth.[m
-Mar 17 13:43:03 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Activating service name='org.freedesktop.FileManager1' requested by ':1.41' [m[7m>[27m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mLaunching DING process[0m[m
-Mar 17 13:43:05 fal gnome-shell[1829]: [0;1;39m[0;1;31m[0;1;39mJS WARNING: [resource:///org/gnome/gjs/modules/core/overrides/Gio.js 287]: Too many arguments to method [m[7m>[27m
-Mar 17 13:43:05 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185munable to update icon for Microsoft Teams - Preview1[0m[m
-Mar 17 13:43:05 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185munable to update icon for software-update-available[0m[m
-Mar 17 13:43:05 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185munable to update icon for discord1[0m[m
-Mar 17 13:43:05 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Successfully activated service 'org.freedesktop.FileManager1'[m
-Mar 17 13:43:05 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Activating service name='org.gnome.DiskUtility' requested by ':1.8883' (uid=[m[7m>[27m
-Mar 17 13:43:05 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Activating service name='org.gnome.ArchiveManager1' requested by ':1.8884' ([m[7m>[27m
-Mar 17 13:43:06 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Successfully activated service 'org.gnome.DiskUtility'[m
-[7mlines 1-36[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 32 with keysym 32 (keycode b).[m
-[7mlines 2-37[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 31 with keysym 31 (keycode a).[m
-[7mlines 3-38[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 33 with keysym 33 (keycode c).[m
-[7mlines 4-39[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 34 with keysym 34 (keycode d).[m
-[7mlines 5-40[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 35 with keysym 35 (keycode e).[m
-[7mlines 6-41[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 36 with keysym 36 (keycode f).[m
-[7mlines 7-42[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 37 with keysym 37 (keycode 10).[m
-[7mlines 8-43[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 38 with keysym 38 (keycode 11).[m
-[7mlines 9-44[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: Window manager warning: Overwriting existing binding of keysym 39 with keysym 39 (keycode 12).[m
-[7mlines 10-45[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal dbus-daemon[1640]: [session uid=1000 pid=1640] Successfully activated service 'org.gnome.ArchiveManager1'[m
-[7mlines 11-46[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:06 fal gnome-shell[1829]: DING: Detected async api for thumbnails[m
-[7mlines 12-47[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:07 fal gnome-shell[1829]: DING: GNOME nautilus 43.0[m
-[7mlines 13-48[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:25 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mMicrosoft Teams - Preview1, Impossible to lookup icon for 'Microsoft Teams - Preview[m[7m>[27m
-[7mlines 14-49[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:25 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185munable to update icon for Microsoft Teams - Preview1[0m[m
-[7mlines 15-50[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:29 fal ubuntu-appindicators@ubuntu.com[1829]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185munable to update icon for Microsoft Teams - Preview1[0m[m
-[7mlines 16-51[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:35 fal pkexec[1060075]: pam_unix(polkit-1:session): session opened for user root(uid=0) by (uid=1000)[m
-[7mlines 17-52[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:36 fal update-notifier.desktop[1060082]: [90B blob data][m
-[7mlines 18-53[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:36 fal update-notifier.desktop[1060082]: [163B blob data][m
-[7mlines 19-54[27m[K[K [KESCESC[KOO[KBB[KMar 17 13:43:36 fal update-notifier.desktop[1060082]: [101B blob data][m
-[7mlines 20-55[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 21-56[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:11 fal systemd-journald[356345]: Data hash table of /var/log/journal/18dbd3d1e2074a4da2c23e365a72554d/system.journal has a fill le[m[7m>[27m
-[7mlines 22-57[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:11 fal systemd-journald[356345]: /var/log/journal/18dbd3d1e2074a4da2c23e365a72554d/system.journal: Journal header limits reached o[m[7m>[27m
-[7mlines 23-58[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 24-59[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 25-60[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 26-61[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 27-62[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 28-63[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 29-64[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 30-65[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 31-66[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 32-67[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 33-68[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 34-69[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 35-70[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 36-71[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 37-72[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 38-73[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 39-74[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 40-75[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 41-76[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 42-77[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 43-78[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 44-79[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 45-80[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 46-81[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 47-82[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 48-83[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 49-84[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 50-85[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 51-86[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 52-87[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 53-88[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 54-89[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 55-90[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 56-91[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 57-92[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 58-93[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 59-94[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 60-95[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 61-96[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 62-97[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 63-98[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 64-99[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 65-100[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 66-101[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 67-102[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 68-103[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 69-104[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 70-105[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 71-106[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 72-107[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 73-108[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 74-109[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 75-110[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 76-111[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 77-112[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 78-113[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 79-114[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 80-115[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 81-116[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 82-117[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 83-118[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="open" class="file" profile="snap.discord.discord" name="/proc/25847/cmdlin[m[7m>[27m
-[7mlines 84-119[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 85-120[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 86-121[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 87-122[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 88-123[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 89-124[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 90-125[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 91-126[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 92-127[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 93-128[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 94-129[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 95-130[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 96-131[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 97-132[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 98-133[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 99-134[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:10 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 100-135[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 101-136[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 102-137[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="open" class="file" profile="snap.discord.discord" name="/proc/1620/cmdline[m[7m>[27m
-[7mlines 103-138[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 104-139[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 105-140[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 106-141[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 107-142[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 108-143[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 109-144[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 110-145[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 111-146[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 112-147[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mkauditd_printk_skb: 177 callbacks suppressed[0m[m
-[7mlines 113-148[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159971): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 114-149[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159972): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 115-150[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159973): apparmor="DENIED" operation="open" class="file" profile="snap.disc[m[7m>[27m
-[7mlines 116-151[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159974): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 117-152[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159975): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 118-153[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159976): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 119-154[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159977): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 120-155[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159978): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 121-156[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159979): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 122-157[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal kernel: [0;1;39m[0;1;31m[0;1;39maudit: type=1400 audit(1679088375.871:12159980): apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.[m[7m>[27m
-[7mlines 123-158[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 124-159[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 125-160[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 126-161[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 127-162[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 128-163[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 129-164[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 130-165[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 131-166[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 132-167[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 133-168[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 134-169[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 135-170[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 136-171[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 137-172[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 138-173[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 139-174[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 140-175[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 141-176[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 142-177[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 143-178[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 144-179[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 145-180[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 146-181[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 147-182[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 148-183[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 149-184[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 150-185[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 151-186[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 152-187[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 153-188[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 154-189[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 155-190[27m[K[K [KESCESC[KOO[KBB[KMar 17 14:26:15 fal audit[1035830]: [0;34m[0;34mAVC apparmor="DENIED" operation="ptrace" class="ptrace" profile="snap.discord.discord" pid=1035830 comm="Ut[m[7m>[27m
-[7mlines 156-191[27m[K[K[?1l>
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clkear[K[K[K[Kear
-[?2004l[H[2J[3J[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git add .
-[?2004l[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git commi [Kt -0m [K[K[Km "forec[K[Kce lastConnection dat [Ke to not be nil
-[?2004l[?2004h> "\[K
-[?2004l[main eb6db40] force lastConnection date to not be nil
- 2 files changed, 346 insertions(+)
- create mode 100644 typescript
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git add .[K[K[K[K[Kpush origin main
-[?2004lEnumerating objects: 8, done.
-Counting objects:  12% (1/8)Counting objects:  25% (2/8)Counting objects:  37% (3/8)Counting objects:  50% (4/8)Counting objects:  62% (5/8)Counting objects:  75% (6/8)Counting objects:  87% (7/8)Counting objects: 100% (8/8)Counting objects: 100% (8/8), done.
-Delta compression using up to 8 threads
-Compressing objects:  20% (1/5)Compressing objects:  40% (2/5)Compressing objects:  60% (3/5)Compressing objects:  80% (4/5)Compressing objects: 100% (5/5)Compressing objects: 100% (5/5), done.
-Writing objects:  20% (1/5)Writing objects:  40% (2/5)Writing objects:  60% (3/5)Writing objects:  80% (4/5)Writing objects: 100% (5/5)Writing objects: 100% (5/5), 4.79 KiB | 1.20 MiB/s, done.
-Total 5 (delta 3), reused 0 (delta 0), pack-reused 0
-remote: Resolving deltas:   0% (0/3)[Kremote: Resolving deltas:  33% (1/3)[Kremote: Resolving deltas:  66% (2/3)[Kremote: Resolving deltas: 100% (3/3)[Kremote: Resolving deltas: 100% (3/3), completed with 3 local objects.[K
-To github.com:SowinskiBraeden/dayz-reforger.git
-   981102f..eb6db40  main -> main
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git push origin maincommit -m "force lastConnection date to not be nil
-"[A]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ [C[C[C[Cadd .[K
-[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
-[?2004l[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git add .push origin maincommit -m "force lastConnection date to not be nil
-"[K[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C"
-[?2004l[main 90314ce] force lastConnection date to not be nil
- 1 file changed, 2 insertions(+), 2 deletions(-)
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ git push origin main
-[?2004lEnumerating objects: 7, done.
-Counting objects:  14% (1/7)Counting objects:  28% (2/7)Counting objects:  42% (3/7)Counting objects:  57% (4/7)Counting objects:  71% (5/7)Counting objects:  85% (6/7)Counting objects: 100% (7/7)Counting objects: 100% (7/7), done.
-Delta compression using up to 8 threads
-Compressing objects:  25% (1/4)Compressing objects:  50% (2/4)Compressing objects:  75% (3/4)Compressing objects: 100% (4/4)Compressing objects: 100% (4/4), done.
-Writing objects:  25% (1/4)Writing objects:  50% (2/4)Writing objects:  75% (3/4)Writing objects: 100% (4/4)Writing objects: 100% (4/4), 615 bytes | 615.00 KiB/s, done.
-Total 4 (delta 3), reused 0 (delta 0), pack-reused 0
-remote: Resolving deltas:   0% (0/3)[Kremote: Resolving deltas:  33% (1/3)[Kremote: Resolving deltas:  66% (2/3)[Kremote: Resolving deltas: 100% (3/3)[Kremote: Resolving deltas: 100% (3/3), completed with 3 local objects.[K
-To github.com:SowinskiBraeden/dayz-reforger.git
-   eb6db40..90314ce  main -> main
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ track_test.js LilB[K[K;B[K[KLb[KBearsha
-[?2004ltrack_test.js: command not found
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ track_test.js LiLBearsha[1@n[1@o[1@d[1@ [1P[1@e[1@ 
-[?2004lCalculating...
-LiLBearsha's current positional data:
-LiLBearsha has moved 1m @90° South East
-From last Position: 4415.5 / 10848.7 at Last Time: 18:16:11 EST
-To Latest Position: 4416 / 10848.2 at Latest Time: 18:16:36 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node [K[K[K[K[Knode track_test.js LiLBearsha
-[?2004lCalculating...
-LiLBearsha's current positional data:
-LiLBearsha has moved 1m @0° South West
-From last Position: 4634.4 / 10441.1 at Last Time: 18:44:08 EST
-To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:44:35 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha[K[K[K[K[K[K[K[K[K[K[K xCookie666x
-[?2004lCalculating...
-xCookie666x's current positional data:
-xCookie666x has moved 4m @0° South West
-From last Position: 1334.2 / 14451.5 at Last Time: 18:43:52 EST
-To Latest Position: 1330.7 / 14451.3 at Latest Time: 18:43:57 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js xCookie666x[K[K[K[K[K[K[K[K[K[K[KJahn[Kman SQW[K[KE[KQ[KWE
-[?2004lPlayer not found
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js Jahman SWE[K[K[K[K[K[K[K[K[K[Kho[K[KxCookie666x[1PLiLBearshaxCookie666x[K[Knode track_test.js xCookie666x[K[K
-[?2004l[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js xCookie666x[1PLiLBearsha[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[4Pgit push origin maintrack_test.js LiLBearsha[5@node [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[CxCookie666x[KxCookie666x[K[K[K[K[K[K[K[K[K[K[K"ja[K[KJahman SWE"
-[?2004lCalculating...
-Jahman SWE's current positional data:
-Jahman SWE has moved 29m @35° North East
-From last Position: 8098.8 / 12713.5 at Last Time: 18:39:40 EST
-To Latest Position: 8123.2 / 12730.9 at Latest Time: 18:41:11 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js "Jahman SWE"[K[K[K[K[K[K[K[K[K[K[K[Khotdog5558619
-[?2004lCalculating...
-hotdog5558619's current positional data:
-hotdog5558619 has moved 0m @0° N/A
-From last Position: 2036.2 / 7304.1 at Last Time: 18:36:11 EST
-To Latest Position: 2036.2 / 7304.1 at Latest Time: 18:41:11 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clear
-[?2004l[H[2J[3J[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clearnode track_test.js hotdog5558619[1P"Jahman SWE"[KxCookie666x[1PLiLBearsha[5P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[4Pgit push origin maintrack_test.js LiLBearsha[5@node [C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
-[?2004lCalculating...
-LiLBearsha's current positional data:
-LiLBearsha has moved 1m @0° South West
-From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
-To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
-[?2004lCalculating...
-LiLBearsha's current positional data:
-LiLBearsha has moved 1m @0° South West
-From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
-To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
-[?2004lCalculating...
-LiLBearsha's current positional data:
-LiLBearsha has moved 1m @0° South West
-From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
-To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
-[?2004lCalculating...
-LiLBearsha's current positional data:
-LiLBearsha has moved 1m @0° South West
-From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
-To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
-[?2004lCalculating...
-LiLBearsha's current positional data:
-LiLBearsha has moved 1m @0° South West
-From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
-To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ node track_test.js LiLBearsha
-[?2004lCalculating...
-LiLBearsha's current positional data:
-LiLBearsha has moved 1m @0° South West
-From last Position: 4634.4 / 10441.1 at Last Time: 18:47:03 EST
-To Latest Position: 4633.8 / 10440.8 at Latest Time: 18:47:30 EST
-[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;34m~/Desktop/Projects/dayz-reforger[00m (main)[00m $ clear
-[?2004l[H[2J[3J[?2004h]0;flami@fal: ~/Desktop/Projects/dayz-reforger[01;32mflami@fal[00m:[01;3
