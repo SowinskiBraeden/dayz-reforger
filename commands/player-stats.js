@@ -31,7 +31,7 @@ module.exports = {
     name: "discord",
     description: "discord user to lookup stats",
     value: "discord",
-    type: 8,
+    type: 6,
     required: false,
   }, {
     name: "gamertag",
@@ -49,8 +49,8 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
       let category = args[0].value;
-      let discord = args[1] ? args[1].value : undefined;
-      let gamertag = args[2] ? args[2].value : undefined;
+      let discord  = args[1] && args[1].name == 'discord'  ? args[1].value : undefined
+      let gamertag = args[1] && args[1].name == 'gamertag' ? args[1].value : undefined;
 
       let playerStat;
       if (!discord && gamertag) {
@@ -77,7 +77,7 @@ module.exports = {
           query = leaderboard.find(u => u.user.userID == playerStat.discordID);
         
         } else { // If searching for self
-          query = leaderboard.find(u => u.user.userID == interaction.member.userID);
+          query = leaderboard.find(u => u.user.userID == interaction.member.user.id);
         }
 
         if (query == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
@@ -96,15 +96,14 @@ module.exports = {
           if (category == 'time_played') return b.totalSessionTime - a.totalSessionTime;
         });
 
-
         if (discord) { // If searching by discord
           query = leaderboard.find(s => s.discordID == discord);
 
-        } else if (gamertag) { // If searching by gamertag
+        } else if (gamertag ) { // If searching by gamertag
           query = leaderboard.find(s => s.gamertag == gamertag);
         
         } else { // If searching for self
-          query = leaderboard.find(s => s.discordID == interaction.member.userID);
+          query = leaderboard.find(s => s.discordID == interaction.member.user.id);
         }
 
         if (query == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
@@ -129,7 +128,7 @@ module.exports = {
                 !gamertag && discord ? `<@${discord}>` :
                 !discord && gamertag ? `**${gamertag}**` : `N/A Error`;
 
-      statsEmbed.setTitle(`${tag}'s ${title}`);
+      statsEmbed.setDescription(`${tag}'s ${title}`);
 
       let des = ``;
       let stats = category == 'kills' ? `${query.kills} Kill${(query.kills>1||query.kills==0)?'s':''}` :
@@ -141,7 +140,7 @@ module.exports = {
                   category == 'longest_kill' ? `${query.longestKill}m` : 
                   category == 'money' ? `$${(query.user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :  'N/A Error';
 
-      statsEmbed.addFields({ name: 'Leaderboard Position', value: leaderboardPos, inline: true });
+      statsEmbed.addFields({ name: 'Leaderboard Position', value: `# ${leaderboardPos}`, inline: true });
       
       if (category == 'time_played') {
         statsEmbed.addFields(
