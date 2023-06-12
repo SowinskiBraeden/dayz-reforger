@@ -1,6 +1,6 @@
 {
   "name": "dayz-armbands",
-  "version": "6.13.5",
+  "version": "6.14.0",
   "description": "A General Purpose Discord Bot for DayZ Servers.",
   "main": "index.js",
   "nodemonConfig": {
