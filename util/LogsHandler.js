@@ -173,7 +173,7 @@ module.exports = {
 
     let des = ``;
     for (let i = 0; i < activePlayers.length; i++) {
-      des += `**- ${activePlayers[i].gamertag}**\n`;
+      des += `**- ${activePlayers[i].gamertag}**`;
     }
 
     const activePlayersEmbed = new EmbedBuilder()
