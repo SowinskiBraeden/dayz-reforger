@@ -234,6 +234,20 @@ module.exports = {
       }]
     },
     {
+      name: "emp-price",
+      description: "Configure the price of an EMP",
+      value: "emp-price",
+      type: 1,
+      options: [{
+        name: "amount",
+        description: "The amount to set the EMP price",
+        value: "amount",
+        type: 10,
+        min_value: 0.01,
+        required: true,
+      }]
+    },
+    {
       name: "income_role",
       description: "Add/update a role to earn income on /collect-income command",
       value: "set_income_role",
@@ -308,6 +322,7 @@ module.exports = {
       if (!canUseCommand) return interaction.send({ content: 'You don\'t have the permissions to use this command.' });
 
       switch(args[0].name) {
+        
         case 'allowed_channels':
           const channelid = args[0].options[0].options[0].value;
 
@@ -661,6 +676,17 @@ module.exports = {
             .setDescription(`Successfully set $${args[0].options[0].value.toFixed(2)} as UAV price`);
           
           return interaction.send({ embeds: [successEmbed] });
+
+        case 'emp-price':
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.empPrice":args[0].options[0].value}}, function(err, res) {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+    
+          let successEmbed = new EmbedBuilder()
+            .setColor(client.config.Colors.Green)
+            .setDescription(`Successfully set $${args[0].options[0].value.toFixed(2)} as EMP price`);
+          
+          return interaction.send({ embeds: [successEmbed] });          
 
         default:
           return client.sendInternalError(interaction, 'There was an error parsing the config command');
