@@ -745,6 +745,32 @@ module.exports = {
       }
     },
 
+    RemoveIncomeRole: {
+      run: async (client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return ButtonInteraction.reply({
+            content: "This button is not for you",
+            flags: (1 << 6)
+          })
+        }
+        let action = '';
+        let roleId = interaction.customId.split('-')[2];
+        if (interaction.customId.split('-')[1]=='yes') {
+          action = 'removed';
+          let income = GuildDB.incemeRoles.find((i) => i.role == roleId);
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull: {"server.incomeRoles": income}}, function(err, res) {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+        } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
+    
+        const successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`**Successfully ${action} <@&${roleId}> as an income role.**`)
+    
+        return interaction.update({ embeds: [successEmbed], components: [] });
+      }
+    }
+
     ResetSettings: {
       run: async (client, interaction, GuildDB) => {
         if (!interaction.customId.endsWith(interaction.member.user.id)) {
