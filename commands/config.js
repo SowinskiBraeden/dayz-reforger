@@ -769,7 +769,7 @@ module.exports = {
     
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
-    }
+    },
 
     ResetSettings: {
       run: async (client, interaction, GuildDB) => {
