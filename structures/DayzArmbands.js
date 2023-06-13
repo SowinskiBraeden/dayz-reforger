@@ -356,6 +356,7 @@ class DayzArmbands extends Client {
       linkedGamertagRole: "",
       startingBalance: 500,
       uavPrice: 50000,
+      empPrice: 500000,
       memberRole: "",
       adminRole: "",
     }

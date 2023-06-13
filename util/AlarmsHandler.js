@@ -9,6 +9,8 @@ module.exports = {
 
     for (let i = 0; i < guild.alarms.length; i++) {
       let alarm = guild.alarms[i];
+      let now = new Date();
+      if (alarm.uavExpire!=null&&alarm.uavExpire<now) alarm.disabled = false;
       if (alarm.disabled) continue; // ignore if alarm is disabled due to emp
       if (alarm.ignoredPlayers.includes(data.playerID)) continue;
 

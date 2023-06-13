@@ -6,11 +6,11 @@ module.exports = {
   debug: false,
   global: false,
   description: "Send a UAV to scout for 30 minutes. (500m range)",
-  usage: "[cmd] [opt]",
+  usage: "[x-coord] [y-coord]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: ["MANAGE_GUILD"],
-  },  
+  },
   options: [
     {
       name: "x-coord",
@@ -73,7 +73,7 @@ module.exports = {
           .setTitle('**Bank Notice:** NSF. Non sufficient funds')
           .setColor(client.config.Colors.Red);
 
-        return interaction.send({ embeds: [embed] });
+        return interaction.send({ embeds: [embed], flags: (1 << 6) });
       }
 
       const newBalance = banking.guilds[GuildDB.serverID].balance - GuildDB.uavPrice;
@@ -102,7 +102,6 @@ module.exports = {
         .setDescription(`**Success:** Successfully deployed a UAV to **[${uav.origin[0]}, ${uav.origin[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${uav.origin[0]};${uav.origin[1]})**\nRange: 500m`);
 
       return interaction.send({ embeds: [successEmbed], flags: (1 << 6) });
-  
     },
   }
 }

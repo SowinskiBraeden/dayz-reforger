@@ -213,6 +213,7 @@ module.exports = {
           empExempt: client.exists(args[0].options[6]) ? args[0].options[6].value : false,
           showPlayerCoord: client.exists(args[0].options[7]) ? args[0].options[7].value : true,
           disabled: false,
+          empExpire: null,
         };
 
         client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
