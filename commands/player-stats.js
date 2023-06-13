@@ -2,8 +2,8 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
   name: "player-stats",
-  debug: true,
-  global: true,
+  debug: false,
+  global: false,
   description: "Check player statistics",
   usage: "[category] [user or gamertag]",
   permissions: {
