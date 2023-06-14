@@ -25,7 +25,7 @@ module.exports = {
 
       let des = activePlayers.length > 0 ? `` : `**No Players Online**`;
       for (let i = 0; i < activePlayers.length; i++) {
-        des += `**- ${activePlayers[i].gamertag}**`;
+        des += `**- ${activePlayers[i].gamertag}**\n`;
       }
 
       const activePlayersEmbed = new EmbedBuilder()
