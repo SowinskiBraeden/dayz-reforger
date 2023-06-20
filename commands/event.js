@@ -91,7 +91,7 @@ module.exports = {
 
           client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
             $set: {
-              "server.events": events;
+              "server.events": events
             }
           }, function(err, res) {
             if (err) return client.sendInternalError(interaction, err);
