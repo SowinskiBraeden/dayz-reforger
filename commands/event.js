@@ -123,8 +123,8 @@ module.exports = {
           const eventsOptions = new ActionRowBuilder().addComponents(alarms);
 
           return interaction.send({ components: [eventsOptions], flags: (1 << 6) });
-
       }
+    }
   },
 
   Interactions: {
@@ -151,6 +151,5 @@ module.exports = {
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     }
-
   }
 }
