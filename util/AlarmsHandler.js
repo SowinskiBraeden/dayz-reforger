@@ -154,7 +154,7 @@ module.exports = {
         if (err) return client.sendInternalError(interaction, err);
       });
     }
-  }
+  },
 
   HandleEvents: async (client, guildId) => {
 
