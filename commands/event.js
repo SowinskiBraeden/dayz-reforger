@@ -71,6 +71,8 @@ module.exports = {
       if (GuildDB.hasBotAdmin && interaction.member.roles.filter(e => GuildDB.botAdminRoles.indexOf(e) !== -1).length > 0) canUseCommand = true;
       if (!canUseCommand) return interaction.send({ content: 'You don\'t have the permissions to use this command.' });
 
+      let events = GuildDB.events;
+
       switch(args[0].name) {
 
         case 'player-track':
@@ -86,7 +88,6 @@ module.exports = {
             creationDate: new Date(),
           };
 
-          let events = GuildDB.events;
           events.push(event);
 
           client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
