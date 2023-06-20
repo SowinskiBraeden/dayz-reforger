@@ -134,8 +134,21 @@ module.exports = {
         if (!interaction.customId.endsWith(interaction.member.user.id)) 
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
+        let event = GuildDB.events.find(e => e.name == interaction.values[0]);
 
+        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
+          $pull: {
+            'server.events': event,
+          }
+        }, function (err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
 
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`**Success:** Successfully Deleted **${event.name} Event**`);
+  
+        return interaction.update({ embeds: [successEmbed], components: [] });
       }
     }
 
