@@ -123,5 +123,46 @@ module.exports = {
         HandlePlayerBan(client, data.player, true);
       }
     }
+  },
+
+  HandlePlayerTrackEvent: async (client, guild, e) => {
+
+    let player = GuildDB.playerstats.find(stat => stat.gamertag == e.gamertag );
+    let hasMR = (guild.memberRole != "")
+
+    let newDt = await client.getDateEST(player.time);
+    let unixTime = Math.floor(newDt.getTime()/1000);
+
+    const trackEvent = new EmbedBuilder()
+      .setColor(client.config.Colors.Default)
+      .setDescription(`**${e.name} Event**${hasMR ? `\n<@&${guild.memberRole}>`:''}\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>`);
+
+    if (client.exists(e.channel)) await e.channel.send({ embeds: [trackEvent] });
+  
+    let now = new Date();
+    let diff = ((now - e.creationDate) / 1000) / 60;
+    let minutesBetweenDates = Math.abs(Math.round(diff));
+
+    if (minutesBetweenDates >= e.time) {
+      if (client.exists(e.channel)) e.channel.send({ embeds: [new EmbedBuilder().setColor(client.colors.Default).setDescription(`${hasMR ? `<@&${guild.memberRole}>\n`:''}**The ${e.name} Event has ended!**`)] });
+
+      client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
+        $pull: {
+          "server.events": e;
+        }
+      }, function(err, res) {
+        if (err) return client.sendInternalError(interaction, err);
+      });
+    }
   }
+
+  HandleEvents: async (client, guildId) => {
+
+    let guild = await client.GetGuild(guildId);
+
+    for (let i = 0; i < guild.events.length; i++) {
+      let event = guild.events[i];
+      if (event.type == 'player-track') HandlePlayerTrackEvent(client, guild, event);
+    }
+  },
 }

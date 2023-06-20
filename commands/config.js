@@ -454,7 +454,7 @@ module.exports = {
         case 'reset':
           const promptReset = new EmbedBuilder()
             .setTitle(`Woah!? Hold on.`)
-            .setDescruotion('Are you sure you wish to remove all your configurations for this guild?')
+            .setDescription('Are you sure you wish to remove all your configurations for this guild?')
             .setColor(client.config.Colors.Default)
 
           const optReset = new ActionRowBuilder()

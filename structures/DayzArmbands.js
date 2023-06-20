@@ -205,6 +205,7 @@ class DayzArmbands extends Client {
       await c.readLogs(c.config.GuildID).then(async () => {
         c.log('...Analyzed logs...');
         HandleExpiredUAVs(c, c.config.GuildID);
+        HandleEvents(c, c.config.GuildID)
         if (c.activePlayersTick == 12) await HandleActivePlayersList(c, c.config.GuildID);
       })
     });
@@ -350,6 +351,7 @@ class DayzArmbands extends Client {
       botAdminRoles: [],
       playerstats: [],
       alarms: [],
+      events: [],
       uavs: [],
       incomeRoles: [],
       incomeLimiter: 168, // # of hours in 7 days
