@@ -15,7 +15,7 @@ module.exports = {
     name: "player-track",
     description: "track a player and announce location",
     value: "player-track",
-    type: 2,
+    type: 1,
     options: [{
       name: "gamertag",
       description: "Gamertag of player",
@@ -52,7 +52,7 @@ module.exports = {
     name: "delete",
     description: "delete an active event",
     value: "delete",
-    type: 2
+    type: 1
   }],
   SlashCommand: {
     /**
