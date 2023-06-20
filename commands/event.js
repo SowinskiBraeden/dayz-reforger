@@ -30,7 +30,7 @@ module.exports = {
       type: 4,
       required: true,
       choices: [
-        { name: '30-minutes', value: 30 }, { name: '60-minutes', 60 }, { name: '90-minutes', value: 90 }, { name: '120-minutes', value: 120 },
+        { name: '30-minutes', value: 30 }, { name: '60-minutes', value: 60 }, { name: '90-minutes', value: 90 }, { name: '120-minutes', value: 120 },
       ]
     },
     {
