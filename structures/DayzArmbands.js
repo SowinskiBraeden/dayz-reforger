@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const { DownloadNitradoFile } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed } = require('../util/KillfeedHandler');
-const { HandleExpiredUAVs } = require('../util/AlarmsHandler');
+const { HandleExpiredUAVs, HandleEvents } = require('../util/AlarmsHandler');
 
 const path = require("path");
 const fs = require('fs');
