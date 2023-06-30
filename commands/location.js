@@ -40,7 +40,7 @@ module.exports = {
 
       let lastLocation = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`**Location - <t:${unixTime}>**\nYour last location was detected at **[${playerStat.pos[0]}, ${playerStat.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`)
+        .setDescription(`**Location - <t:${unixTime}>**\nYour last location was detected at **[${playerStat.pos[0]}, ${playerStat.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${playerStat.pos[0]};${playerStat.pos[1]})**`)
     
       return interaction.send({ embeds: [lastLocation], flags: (1 << 6) });
     },
