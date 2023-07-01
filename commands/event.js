@@ -118,7 +118,7 @@ module.exports = {
           });
         }
         
-        const eventsOptions = new ActionRowBuilder().addComponents(alarms);
+        const eventsOptions = new ActionRowBuilder().addComponents(events);
 
         return interaction.send({ components: [eventsOptions], flags: (1 << 6) });
       }
