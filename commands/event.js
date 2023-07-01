@@ -112,9 +112,9 @@ module.exports = {
 
         for (let i = 0; i < GuildDB.events.length; i++) {
           events.addOptions({
-            label: GuildDB.alarms[i].name,
+            label: GuildDB.events[i].name,
             description: `Delete this Event`,
-            value: GuildDB.alarms[i].name
+            value: GuildDB.events[i].name
           });
         }
         
