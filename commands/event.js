@@ -82,7 +82,7 @@ module.exports = {
           name: args[0].options[2].value,
           gamertag: args[0].options[0].value,
           channel: args[0].options[3].value,
-          time: args[0].options[1],
+          time: args[0].options[1].value,
           creationDate: new Date(),
         };
 
@@ -98,7 +98,7 @@ module.exports = {
 
         const successCreatePlayerTrack = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`**Success:** Successfully created **${event.name}** that will last **${event.time} minutes**`)
+          .setDescription(`**Success:** Successfully created **${event.name}** that will last **${event.time} minutes.**`)
 
         return interaction.send({ embeds: [successCreatePlayerTrack] });
 

@@ -52,7 +52,7 @@ module.exports = {
 
       let notFound = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`**Record Not Found**\n/ The gamertag \` ${playerStat.gamertag} \` currently has no linked Discord account.`);
+        .setDescription(`**Record Not Found**\n The gamertag \` ${playerStat.gamertag} \` currently has no linked Discord account.`);
 
       return interaction.send({ embeds: [notFound] })
     },

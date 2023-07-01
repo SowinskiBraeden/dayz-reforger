@@ -125,9 +125,23 @@ module.exports = {
     }
   },
 
+  ExpireEvent: async(client, guild, e) => {
+    let hasMR = (guild.memberRole != "");
+    const channel = client.channels.cache.get(e.channel);
+    if (client.exists(e.channel)) channel.send({ embeds: [new EmbedBuilder().setColor(client.colors.Default).setDescription(`${hasMR ? `<@&${guild.memberRole}>\n`:''}**The ${e.name} Event has ended!**`)] });
+
+    client.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
+      $pull: {
+        "server.events": e
+      }
+    }, function(err, res) {
+      if (err) return client.sendInternalError(interaction, err);
+    });
+  }
+
   HandlePlayerTrackEvent: async (client, guild, e) => {
 
-    let player = GuildDB.playerstats.find(stat => stat.gamertag == e.gamertag );
+    let player = guild.playerstats.find(stat => stat.gamertag == e.gamertag );
     let hasMR = (guild.memberRole != "")
 
     let newDt = await client.getDateEST(player.time);
@@ -137,23 +151,15 @@ module.exports = {
       .setColor(client.config.Colors.Default)
       .setDescription(`**${e.name} Event**${hasMR ? `\n<@&${guild.memberRole}>`:''}\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>`);
 
-    if (client.exists(e.channel)) await e.channel.send({ embeds: [trackEvent] });
+    if (!client.exists(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
+    const channel = client.channels.cache.get(e.channel);
+    channel.send({ embeds: [trackEvent] });
   
     let now = new Date();
     let diff = ((now - e.creationDate) / 1000) / 60;
     let minutesBetweenDates = Math.abs(Math.round(diff));
 
-    if (minutesBetweenDates >= e.time) {
-      if (client.exists(e.channel)) e.channel.send({ embeds: [new EmbedBuilder().setColor(client.colors.Default).setDescription(`${hasMR ? `<@&${guild.memberRole}>\n`:''}**The ${e.name} Event has ended!**`)] });
-
-      client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
-        $pull: {
-          "server.events": e
-        }
-      }, function(err, res) {
-        if (err) return client.sendInternalError(interaction, err);
-      });
-    }
+    if (minutesBetweenDates >= e.time) ExpireEvent(client, guild, e);
   },
 
   HandleEvents: async (client, guildId) => {
