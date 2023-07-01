@@ -418,6 +418,7 @@ class DayzArmbands extends Client {
       botAdminRoles: guild.server.botAdminRoles,
       playerstats: guild.server.playerstats,
       alarms: guild.server.alarms,
+      events: guild.server.events,
       uavs: guild.server.uavs,
       killfeedChannel: guild.server.killfeedChannel,
       connectionLogsChannel: guild.server.connectionLogsChannel,
