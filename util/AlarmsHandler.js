@@ -149,11 +149,11 @@ module.exports = {
 
     const trackEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
-      .setDescription(`**${e.name} Event**${hasMR ? `\n<@&${guild.memberRole}>`:''}\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>`);
+      .setDescription(`**${e.name} Event**\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>`);
 
     if (!client.exists(e.channel)) return module.exports.ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
     const channel = client.channels.cache.get(e.channel);
-    channel.send({ embeds: [trackEvent] });
+    channel.send({ embeds: [trackEvent], content: `${hasMR ? `\n<@&${guild.memberRole}>`:'@here'}` });
   
     let now = new Date();
     let diff = ((now - e.creationDate) / 1000) / 60;
