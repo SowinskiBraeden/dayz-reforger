@@ -137,7 +137,7 @@ module.exports = {
     }, function(err, res) {
       if (err) return client.sendInternalError(interaction, err);
     });
-  }
+  },
 
   HandlePlayerTrackEvent: async (client, guild, e) => {
 
