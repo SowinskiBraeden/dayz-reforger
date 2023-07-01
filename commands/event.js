@@ -73,56 +73,53 @@ module.exports = {
 
       let events = GuildDB.events;
 
-      switch(args[0].name) {
+      if (args[0].name == 'player-track') {
 
-        case 'player-track':
+        let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == args[0].options[0].value );
+        if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[1].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
-          let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == args[0].options[0].value );
-          if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[1].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
+        let event = {
+          name: args[0].options[2].value,
+          gamertag: args[0].options[0].value,
+          channel: args[0].options[3].value,
+          time: args[0].options[1],
+          creationDate: new Date(),
+        };
 
-          let event = {
-            name: args[0].options[2].value,
-            gamertag: args[0].options[0].value,
-            channel: args[0].options[3].value,
-            time: args[0].options[1],
-            creationDate: new Date(),
-          };
+        events.push(event);
 
-          events.push(event);
-
-          client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
-            $set: {
-              "server.events": events
-            }
-          }, function(err, res) {
-            if (err) return client.sendInternalError(interaction, err);
-          });
-
-          const successCreatePlayerTrack = new EmbedBuilder()
-            .setColor(client.config.Colors.Default)
-            .setDescription(`**Success:** Successfully created **${event.name}** that will last **${event.time} minutes**`)
-
-          return interaction.send({ embeds: [successCreatePlayerTrack] });
-
-        case 'delete':
-
-          if (GuildDB.events.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Events to Delete.')] });
-
-          let events = new SelectMenuBuilder()
-            .setCustomId(`DeleteEvent-${interaction.member.user.id}`)
-            .setPlaceholder(`Select an Event to Delete.`)
-
-          for (let i = 0; i < GuildDB.events.length; i++) {
-            events.addOptions({
-              label: GuildDB.alarms[i].name,
-              description: `Delete this Event`,
-              value: GuildDB.alarms[i].name
-            });
+        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
+          $set: {
+            "server.events": events
           }
-          
-          const eventsOptions = new ActionRowBuilder().addComponents(alarms);
+        }, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
 
-          return interaction.send({ components: [eventsOptions], flags: (1 << 6) });
+        const successCreatePlayerTrack = new EmbedBuilder()
+          .setColor(client.config.Colors.Default)
+          .setDescription(`**Success:** Successfully created **${event.name}** that will last **${event.time} minutes**`)
+
+        return interaction.send({ embeds: [successCreatePlayerTrack] });
+
+      } else if (args[0].name == 'delete') {
+        if (GuildDB.events.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Events to Delete.')] });
+
+        let events = new SelectMenuBuilder()
+          .setCustomId(`DeleteEvent-${interaction.member.user.id}`)
+          .setPlaceholder(`Select an Event to Delete.`)
+
+        for (let i = 0; i < GuildDB.events.length; i++) {
+          events.addOptions({
+            label: GuildDB.alarms[i].name,
+            description: `Delete this Event`,
+            value: GuildDB.alarms[i].name
+          });
+        }
+        
+        const eventsOptions = new ActionRowBuilder().addComponents(alarms);
+
+        return interaction.send({ components: [eventsOptions], flags: (1 << 6) });
       }
     }
   },
