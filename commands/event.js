@@ -79,6 +79,7 @@ module.exports = {
         if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[1].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
         let event = {
+          type: args[0].name,
           name: args[0].options[2].value,
           gamertag: args[0].options[0].value,
           channel: args[0].options[3].value,
