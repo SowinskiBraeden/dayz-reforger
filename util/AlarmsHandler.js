@@ -151,7 +151,7 @@ module.exports = {
       .setColor(client.config.Colors.Default)
       .setDescription(`**${e.name} Event**${hasMR ? `\n<@&${guild.memberRole}>`:''}\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>`);
 
-    if (!client.exists(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
+    if (!client.exists(e.channel)) return module.exports.ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
     const channel = client.channels.cache.get(e.channel);
     channel.send({ embeds: [trackEvent] });
   
@@ -159,7 +159,7 @@ module.exports = {
     let diff = ((now - e.creationDate) / 1000) / 60;
     let minutesBetweenDates = Math.abs(Math.round(diff));
 
-    if (minutesBetweenDates >= e.time) ExpireEvent(client, guild, e);
+    if (minutesBetweenDates >= e.time) module.exports.ExpireEvent(client, guild, e);
   },
 
   HandleEvents: async (client, guildId) => {
@@ -168,7 +168,7 @@ module.exports = {
 
     for (let i = 0; i < guild.events.length; i++) {
       let event = guild.events[i];
-      if (event.type == 'player-track') HandlePlayerTrackEvent(client, guild, event);
+      if (event.type == 'player-track') module.exports.HandlePlayerTrackEvent(client, guild, event);
     }
   },
 }
