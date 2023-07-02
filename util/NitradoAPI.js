@@ -19,10 +19,11 @@ module.exports = {
     if (!res.data || !res.data.token) {
       client.error(`Error downloading File "${filename}":`);
       client.error(res);
-      return;
+      return -1;
     }
     const { body } = await fetch(res.data.token.url);
     await finished(Readable.fromWeb(body).pipe(stream));
+    return 0;
   },
 
   HandlePlayerBan: async (client, gamertag, ban) => {
