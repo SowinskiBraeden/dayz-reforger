@@ -54,7 +54,7 @@ module.exports = {
     let newDt = await client.getDateEST(info.time);
     let unixTime = Math.floor(newDt.getTime()/1000);
 
-    if (!killedBy == 4) {
+    if (killedBy == 4) {
       const killEvent = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
         .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${info.causeOfDeath}.**`);

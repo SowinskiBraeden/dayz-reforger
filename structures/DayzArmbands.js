@@ -132,7 +132,7 @@ class DayzArmbands extends Client {
     let lines = [];
     for await (const line of rl) { lines.push(line); }
     
-    let logIndex = lines.indexOf(history.lastLog) == -1 ? 0 : lines.indexOf(history.lastLog);
+    let logIndex = lines.indexOf(history.lastLog);
     
     let guild = await this.GetGuild(guildId);
     if (!this.exists(guild.playerstats)) guild.playerstats = [];
