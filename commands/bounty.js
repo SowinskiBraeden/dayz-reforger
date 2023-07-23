@@ -77,7 +77,7 @@ module.exports = {
           if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
         }
 
-        if (args[0].options[0].value > banking.guilds[GuildDB.serverID].balance) {
+        if (args[0].options[1].value > banking.guilds[GuildDB.serverID].balance) {
           let nsf = new EmbedBuilder()
             .setDescription('**Bank Notice:** NSF. Non sufficient funds')
             .setColor(client.config.Colors.Red);
