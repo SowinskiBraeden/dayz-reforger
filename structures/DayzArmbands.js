@@ -139,10 +139,10 @@ class DayzArmbands extends Client {
     let s = guild.playerstats;
 
     for (let i = logIndex + 1; i < lines.length; i++) {
-      if (lines[i].includes("Unknown")) continue;
-      if ((i - 1) >= 0 && lines[i] == lines[i-1]) continue;
+      if (lines[i].includes("(id=Unknown") || lines[i].includes("Player \"Unknown Entity\"")) continue;
+      if ((i - 1) >= 0 && lines[i] == lines[i-1]) continue; // continue if this line is a duplicate of the last line
       if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes('hit by Player')) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
-      if (lines[i].includes('killed by  with')) s = await HandleKillfeed(this, guildId, s, lines[i]);
+      if (lines[i].includes('killed by  with')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles explosive deaths
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]);
       if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]);
     }
