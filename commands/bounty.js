@@ -28,6 +28,12 @@ module.exports = {
       type: 10,
       min_value: 0.01,
       required: true
+    }, {
+      name: "anonymous",
+      description: "Make this bounty anonymous",
+      value: false,
+      type: 5,
+      required: false
     }]
   }, {
     name: "view",
@@ -93,10 +99,12 @@ module.exports = {
           }
         }, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
-        });        
+        });
+
+        let anonymous = args[0].options[2];
 
         playerStat.bounties.push({
-          setBy: interaction.member.user.id,
+          setBy: (anonymous && !anonymous.value) ? interaction.member.user.id : null,
           value: args[0].options[1].value,
         });
 
@@ -115,6 +123,7 @@ module.exports = {
           .setDescription(`Successfully set a **$${args[0].options[1].value.toFixed(2)}** bounty on \` ${playerStat.gamertag} \`\nThis can be viewed using </bounty view:1086786904671924267>`)
           .setColor(client.config.Colors.Green);
         
+        if (anonymous && anonymous.value) return interaction.send({ embeds: [successEmbed], flags: (1 << 6) });
         return interaction.send({ embeds: [successEmbed] });
 
       } else if (args[0].name == 'view') {
@@ -127,7 +136,7 @@ module.exports = {
 
         for (let i = 0; i < activeBounties.length; i++) {
           for (let j = 0; j < activeBounties[i].bounties.length; j++) {
-            bountiesEmbed.addFields({ name: `${activeBounties[i].gamertag} has a:`, value: `**$${activeBounties[i].bounties[j].value.toFixed(2)}** bounty set by <@${activeBounties[i].bounties[j].setBy}>`, inline: false });
+            bountiesEmbed.addFields({ name: `${activeBounties[i].gamertag} has a:`, value: `**$${activeBounties[i].bounties[j].value.toFixed(2)}** bounty set by ${activeBounties[i].bounties[j].setBy == null ? 'Anonymous' : `<@${activeBounties[i].bounties[j].setBy}>`}`, inline: false });
           }
         }
 
