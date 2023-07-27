@@ -167,7 +167,10 @@ module.exports = {
             }
           }
 
-          client.dbo.collection("users").insertOne(targetUserBanking, function(err, res) {
+          // Register bank for user  
+          let newBank = new User();
+          newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
+          newBank.save().catch(err => {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else targetUserBanking = targetUserBanking.user;
