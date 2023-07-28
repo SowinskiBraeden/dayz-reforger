@@ -57,7 +57,7 @@ module.exports = {
     if (killedBy == 4) {
       const killEvent = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${info.causeOfDeath}.\nLocation [${info.victimPOS.pos[0]}, ${info.victimPOS.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS.pos[0]};${info.victimPOS.pos[1]})**`);
+        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${info.causeOfDeath}.\nLocation [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})**`);
 
       if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
       return stats;
@@ -144,7 +144,7 @@ module.exports = {
     
     const killEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
-      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart != undefined ? info.bodyPart.split('(')[0] : 'N/A'} \`\n> **Damage:** \` ${info.damage != undefined ? info.damage : 'N/A'} \`\n **Killer\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}\nLocation [${info.killerPOS.pos[0]}, ${info.killerPOS.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.killerPOS.pos[0]};${info.killerPOS.pos[1]})**`);
+      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> **Weapon:** \` ${info.weapon} \`\n> **Distance:** \` ${info.distance} \`\n> **Body Part:** \` ${info.bodyPart != undefined ? info.bodyPart.split('(')[0] : 'N/A'} \`\n> **Damage:** \` ${info.damage != undefined ? info.damage : 'N/A'} \`\n **Killer\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kills - Killstreak: ${killerStat.killStreak}\nVictim\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Deaths - Deathstreak: ${victimStat.deathStreak}\nLocation [${info.killerPOS[0]}, ${info.killerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.killerPOS[0]};${info.killerPOS[1]})**`);
 
     if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
     if (client.exists(receivedBounty) && client.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
