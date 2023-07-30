@@ -120,7 +120,7 @@ module.exports = {
       
         channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
 
-        HandlePlayerBan(client, data.player, true);
+        HandlePlayerBan(client, data.killer, true);
       }
     }
   },
