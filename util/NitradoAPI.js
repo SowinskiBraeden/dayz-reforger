@@ -37,8 +37,8 @@ module.exports = {
     ).then(res => res);
   
     let bans = res.data.gameserver.settings.general.bans;
-    if (ban) bans += `${gamertag}\r\n`;
-    else if (!ban) bans = bans.replace(`${gamertag}\r\n`, '');
+    if (ban) bans += `\r\n${gamertag}`;
+    else if (!ban) bans = bans.replace(gamertag, '');
     else {
       client.error("Incorrect Ban Option: HandlePlayerBan")
       throw "Incorrect Ban Option: HandlePlayerBan"
