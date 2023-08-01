@@ -90,6 +90,8 @@ module.exports = {
 
       let des = ``;
       for (let i = 0; i < limit; i++) {
+        if (leaderboard.length < limit && i == leaderboard.length) break;
+        
         let stats = category == 'kills' ? `${leaderboard[i].kills} Kill${(leaderboard[i].kills>1||leaderboard[i].kills==0)?'s':''}` :
                     category == 'killstreak' ? `${leaderboard[i].killStreak} Player Killstreak` :
                     category == 'best_killstreak' ? `${leaderboard[i].bestKillStreak} Player Killstreak` :

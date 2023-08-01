@@ -143,7 +143,7 @@ module.exports = {
         // prevent sending transfering money to self
         const targetUserID = args[0].options[0].value.replace('<@!', '').replace('>', '');
 
-        if  (targetUserID == interaction.member.user.id) return interaction.send({ embeds: [new EmbedBuilder().setDescription('**Invalid** You may not transfer money to yourself').setColor(client.config.Colors.Yellow)], flags: (1 << 6) })
+        if (targetUserID == interaction.member.user.id) return interaction.send({ embeds: [new EmbedBuilder().setDescription('**Invalid** You may not transfer money to yourself').setColor(client.config.Colors.Yellow)], flags: (1 << 6) })
 
         if (banking.guilds[GuildDB.serverID].balance.toFixed(2) - args[0].options[1].value < 0) {
           let embed = new EmbedBuilder()

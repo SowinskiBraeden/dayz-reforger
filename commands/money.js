@@ -91,8 +91,8 @@ module.exports = {
 
         // Register bank for user  
         let newBank = new User();
-        await newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance);
-        await newBank.save().catch(err => {
+        newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance);
+        newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
         });
         
