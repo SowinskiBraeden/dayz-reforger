@@ -59,7 +59,7 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
       if (GuildDB.customChannelStatus==true&&!GuildDB.allowedChannels.includes(interaction.channel_id)) {
-        return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) }); 
+        return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) });
       }
 
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
@@ -74,13 +74,13 @@ module.exports = {
           }
         }
 
-        // Register bank for user  
+        // Register bank for user
         let newBank = new User();
         newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance);
         newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
         });
-        
+
       } else banking = banking.user;
 
       if (!client.exists(banking.guilds[GuildDB.serverID])) {
@@ -108,13 +108,13 @@ module.exports = {
               }
             }
 
-            // Register bank for user  
+            // Register bank for user
             let newBank = new User();
             newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
             newBank.save().catch(err => {
               if (err) return client.sendInternalError(interaction, err);
             });
-            
+
           } else targetUserBanking = targetUserBanking.user;
 
           if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
@@ -154,7 +154,7 @@ module.exports = {
         }
 
         const newBalance = banking.guilds[GuildDB.serverID].balance - args[0].options[1].value;
-      
+
         client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
         });
@@ -171,26 +171,26 @@ module.exports = {
             }
           }
 
-          // Register bank for user  
+          // Register bank for user
           let newBank = new User();
           newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
           newBank.save().catch(err => {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else targetUserBanking = targetUserBanking.user;
-      
+
         const newTargetBalance = targetUserBanking.guilds[GuildDB.serverID].balance + args[0].options[1].value;
 
         client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newTargetBalance}}, function(err, res) {
           if (err) return client.sendInternalError(interaction, err);
         });
-        
+
         const successEmbed = new EmbedBuilder()
           .setTitle('Bank Notice:')
           .setDescription(`Successfully transfered <@${targetUserID}> **$${args[0].options[1].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}**`)
           .setColor(client.config.Colors.Green);
 
-        return interaction.send({ embeds: [successEmbed] });        
+        return interaction.send({ embeds: [successEmbed] });
       }
     },
   },
