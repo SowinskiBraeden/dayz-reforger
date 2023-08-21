@@ -157,7 +157,7 @@ module.exports = {
 
         let connectedEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`Successfully connected \` ${playerStat.gamertag} \` as <@${args[0]options[0].value}>'s gamertag.`);
+          .setDescription(`Successfully connected \` ${playerStat.gamertag} \` as <@${args[0].options[0].value}>'s gamertag.`);
 
         return interaction.send({ embeds: [connectedEmbed] })
       
@@ -239,7 +239,7 @@ module.exports = {
         return interaction.send({ embeds: [banned] });
 
       }
-    },
+    }
   },
 
   Interactions: {
