@@ -288,7 +288,7 @@ module.exports = {
           return interaction.update({ embeds: [cancel], components: [] });
         }
       }
-    }
+    },
 
     AdminUnlinkGamertag: {
       run: async(client, interaction, GuildDB) => {
