@@ -107,7 +107,7 @@ class DayzArmbands extends Client {
   async getDateEST(time) {
     let t = new Date(); // Get current date (PST)
     let e = new Date(t.getTime() + 180*60*1000); // Convert to EST to ensure the date is correct for the applied EST time
-    let n = new Date(`${e.toLocaleDateString('default',{month:'long'})} ${e.getDate()}, ${e.getFullYear()} ${time}`) // Apply given time to EST date
+    let n = new Date(`${e.getFullYear()}-${e.getMonth()<10?'0':''}${e.getMonth()+1}-${e.getDate()}T${time.split(' ')[0]}`) // Apply given time to EST date
     let f = new Date(n.getTime() - 180*60*1000) // Convert back to PST
     return f;
   }
