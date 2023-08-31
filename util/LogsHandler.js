@@ -91,7 +91,7 @@ module.exports = {
       });
     }
 
-    if (line.includes('pos=<')) {
+    if (line.includes('pos=<') && !line.includes('hit by')) {
       let data = [...line.matchAll(positionTemplate)][0];
       if (!data) return stats;
 
@@ -112,7 +112,9 @@ module.exports = {
       playerStat.lastPos = playerStat.pos;
       playerStat.pos = info.pos;
       playerStat.lastTime = playerStat.time;
+      playerstat.lastDate = playerStat.date;
       playerStat.time = `${info.time} EST`;
+      playerstat.date = await client.getDateEST(info.time);
 
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
