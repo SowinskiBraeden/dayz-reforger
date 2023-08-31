@@ -408,7 +408,7 @@ module.exports = {
       } else if (args[0].name == "restart") {
 
         const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/restart`, {
-          method: "POST"
+          method: "POST",
           headers: {
             "Authorization": client.config.Nitrado.Auth,
           }
