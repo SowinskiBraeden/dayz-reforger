@@ -91,6 +91,51 @@ module.exports = {
       type: 3,
       required: true,
     }]
+  }, {
+    name: "add-money",
+    description: "Add money to user",
+    value: "add",
+    type: 1,
+    options: [
+      {
+        name: "amount",
+        description: "The amount to add to balance",
+        value: "amount",
+        type: 10,
+        min_value: 0.01,
+        required: true,
+      },
+      {
+        name: "to",
+        description: "User to alter balance",
+        value: "to",
+        type: 6,
+        required: true,
+      },
+    ]
+  },
+  {
+    name: "remove-money",
+    description: "Remove or remove money from a user",
+    value: "remove",
+    type: 1,
+    options: [
+      {
+        name: "amount",
+        description: "The amount to add to balance",
+        value: "amount",
+        type: 10,
+        min_value: 0.01,
+        required: true,
+      },
+      {
+        name: "from",
+        description: "User to alter balance",
+        value: "from",
+        type: 6,
+        required: true,
+      },
+    ]
   }],
   SlashCommand: {
     /**
@@ -311,6 +356,49 @@ module.exports = {
           .setDescription(`Successfully **unbanned** **${args[0].options[0].value}** from the DayZ Server`);
 
         return interaction.send({ embeds: [banned] });
+
+      } else if (args[0].name == 'add-money' || args[0].name == 'remove-money') {
+
+        const targetUserID = args[0].options[1].value;
+        let banking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
+
+        if (!banking) {
+          banking = {
+            userID: targetUserID,
+            guilds: {
+              [GuildDB.serverID]: {
+                balance: GuildDB.startingBalance,
+              }
+            }
+          }
+
+          // Register bank for user  
+          let newBank = new User();
+          newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance);
+          newBank.save().catch(err => {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+          
+        } else banking = banking.user;
+
+        if (!client.exists(banking.guilds[GuildDB.serverID])) {
+          const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
+          if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
+        }
+
+        let newBalance = args[0].name == 'add-money'
+                          ? banking.guilds[GuildDB.serverID].balance + args[0].options[0].value
+                          : banking.guilds[GuildDB.serverID].balance - args[0].options[0].value;
+      
+        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+      
+        const successEmbed = new EmbedBuilder()
+          .setDescription(`Successfully ${args[0].name == 'add-money' ? 'added' : 'removed'} **$${args[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** ${args[0].name == 'add' ? 'to' : 'from'} <@${targetUserID}>'s balance`)
+          .setColor(client.config.Colors.Green);
+
+        return interaction.send({ embeds: [successEmbed] });
 
       }
     }
