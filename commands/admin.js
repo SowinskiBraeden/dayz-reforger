@@ -260,7 +260,7 @@ module.exports = {
       } else if (args[0].name == 'claim-armband') {
 
         // Handle invalid roles
-        if (des) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Notice:**\n> This role has been configured to be excluded to claim an armband.')], flags: (1 << 6) });
+        if (GuildDB.excludedRoles.includes(args[0].options[0].value)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Notice:**\n> This role has been configured to be excluded to claim an armband.')], flags: (1 << 6) });
 
         // If this faction has an existing record in the db
         if (GuildDB.factionArmbands[args[0].value]) {
