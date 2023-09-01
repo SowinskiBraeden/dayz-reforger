@@ -112,9 +112,9 @@ module.exports = {
       playerStat.lastPos = playerStat.pos;
       playerStat.pos = info.pos;
       playerStat.lastTime = playerStat.time;
-      playerstat.lastDate = playerStat.date;
+      playerStat.lastDate = playerStat.date;
       playerStat.time = `${info.time} EST`;
-      playerstat.date = await client.getDateEST(info.time);
+      playerStat.date = await client.getDateEST(info.time);
 
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
