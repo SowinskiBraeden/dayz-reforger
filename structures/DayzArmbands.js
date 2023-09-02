@@ -312,6 +312,7 @@ class DayzArmbands extends Client {
   }
 
   sendError(Channel, Error) {
+    this.error(Error);
     let embed = new EmbedBuilder()
       .setColor(this.config.Red)
       .setDescription(Error);
@@ -319,6 +320,7 @@ class DayzArmbands extends Client {
     Channel.send(embed);
   }
 
+  // Handles internal errors for slash commands. E.g failed to update database from slash command.
   sendInternalError(Interaction, Error) {
     this.error(Error);
     const embed = new EmbedBuilder()
