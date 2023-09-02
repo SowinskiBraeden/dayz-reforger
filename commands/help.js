@@ -32,7 +32,7 @@ module.exports = {
     },
     { 
       name: "credits",
-      description: "DayzArmbands Credits",
+      description: "DayZR Bot Credits",
       value: "credits",
       type: 1,
     },
@@ -55,7 +55,7 @@ module.exports = {
     run: async (client, interaction, args, start) => {
       if (args[0].name == 'version') {
         const versionEmbed = new EmbedBuilder()
-          .setTitle(`Current DayzArmbands Version`)
+          .setTitle(`Current DayZR Bot Version`)
           .setDescription(client.config.Version);
 
         return interaction.send({ embeds: [versionEmbed] });
@@ -71,7 +71,7 @@ module.exports = {
           .setColor(client.config.Colors.Default)
           .setDescription(`${Commands.join("\n")}
     
-    DayzArmbands Version: v${client.config.Version}`);
+    DayZR Bot Version: v${client.config.Version}`);
         if (!args[0].options[0]) return interaction.send({ embeds: [Embed] });
         else {
           let cmd =
@@ -113,9 +113,9 @@ module.exports = {
       } else if (args[0].name == 'support') {
         const supportEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`**__DayzArmbands Support__**
+          .setDescription(`**__DayZR Bot Support__**
           
-            Are you experiencing troubles with DayzArmbands?
+            Are you experiencing troubles with the DayZR Bot?
             Do you have questions or concerns?
             Do you require help to use the bot?
             Do you have a feature you'd like to see?
@@ -148,7 +148,7 @@ module.exports = {
             { name: 'Latency', value: `${end - start}ms`, inline: true },
             { name: 'Uptime', value: `${client.secondsToDhms(process.uptime().toFixed(2))}`, inline: true },
             { name: 'Bot Version', value: `${client.config.Dev} v${client.config.Version}`, inline: true },
-            { name: 'Discord Version', value: 'Discord.js v14.3.0', inline: true },
+            { name: 'Discord Version', value: 'Discord.js v^14.8.0', inline: true },
           )
         
         return interaction.send({ embeds: [stats] })

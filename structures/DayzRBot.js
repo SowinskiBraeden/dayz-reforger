@@ -17,7 +17,7 @@ const readline = require('readline');
 
 const minute = 60000; // 1 minute in milliseconds
 
-class DayzArmbands extends Client {
+class DayzRBot extends Client {
 
   constructor(options, config) {
     super(options)
@@ -320,6 +320,7 @@ class DayzArmbands extends Client {
     Channel.send(embed);
   }
 
+
   // Handles internal errors for slash commands. E.g failed to update database from slash command.
   sendInternalError(Interaction, Error) {
     this.error(Error);
@@ -442,4 +443,4 @@ class DayzArmbands extends Client {
   }
 }
 
-module.exports = DayzArmbands;
+module.exports = DayzRBot;
