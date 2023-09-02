@@ -13,14 +13,17 @@ module.exports = {
     let template           = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let templateDEAD       = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by  with (.*)/g;
-    
+    let landMineTemplate   = /(.8) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by LandMineTrap/g;
+
     let killedBy = line.includes('hit by Player') && line.includes('(DEAD)') ? 1 :
                    line.includes('hit by Player') ? 2 :
-                   line.includes('killed by Player') ? 3 : 4;
+                   line.includes('killed by Player') ? 3 : 
+                   line.includes('killed by LandMineTrap') ? 4 : 5;
 
     let data = killedBy == 1 ? [...line.matchAll(templateDEAD)][0] : 
                killedBy == 2 ? [...line.matchAll(template)][0] :
                killedBy == 3 ? [...line.matchAll(templateKilled)][0] :
+               killedBy == 4 ? [...line.matchAll(landMineTemplate)][0] :
                [...line.matchAll(explosionTemplate)][0]
 
     if (!data) return stats;
@@ -49,15 +52,17 @@ module.exports = {
       info.killerPOS = data[7].split(', ').map(v => parseFloat(v));
       info.weapon    = data[8];
       info.distance  = data[9];
-    } else info.causeOfDeath = data[5];
+    } else if (killedBy == 5) info.causeOfDeath = data[5]; // use 'else if' because it will cause error if killedBy == 4 (LandMineTrap)
 
     let newDt = await client.getDateEST(info.time);
     let unixTime = Math.floor(newDt.getTime()/1000);
 
-    if (killedBy == 4) {
+    if (killedBy == 4 || killedBy == 5) {
+      let cod = killedBy == 4 ? `Land Mine Trap` : info.causeOfDeath;
+       
       const killEvent = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${info.causeOfDeath}.\nLocation [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})**`);
+        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${cod}.\nLocation [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})**`);
 
       if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
       return stats;
