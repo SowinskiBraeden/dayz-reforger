@@ -1,5 +1,5 @@
 {
-  "name": "dayz-r-bot",
+  "name": "dayzr-bot",
   "version": "9.0.0",
   "description": "A General Purpose Discord Bot for DayZ Nitrado Servers.",
   "main": "index.js",
