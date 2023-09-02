@@ -197,14 +197,14 @@ class DayzRBot extends Client {
 
   async logsUpdateTimer(c) {
     let t = new Date();
-    c.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
+    // c.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
     c.activePlayersTick++;
     
     await DownloadNitradoFile(c, `/games/${c.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async (status) => {
       if (status == -1) return c.error('...Failed to Download logs...');
-      c.log('...Downloaded logs...');
+      // c.log('...Downloaded logs...');
       await c.readLogs(c.config.GuildID).then(async () => {
-        c.log('...Analyzed logs...');
+        // c.log('...Analyzed logs...');
         HandleExpiredUAVs(c, c.config.GuildID);
         HandleEvents(c, c.config.GuildID)
         if (c.activePlayersTick == 12) await HandleActivePlayersList(c, c.config.GuildID);
