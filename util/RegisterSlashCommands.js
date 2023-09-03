@@ -5,7 +5,7 @@ const { REST } = require('@discordjs/rest');
 
 /**
  * Register slash commands for a guild
- * @param {require("../structures/QuarksBot")} client
+ * @param {require("../structures/DayzRBot")} client
  */
 module.exports = {
   // Register guild commands  

@@ -100,7 +100,6 @@ class DayzRBot extends Client {
     const client = this;
   }
 
-
   log(Text) { this.logger.log(Text); }
   error(Text) { this.logger.error(Text); }
 
@@ -186,7 +185,7 @@ class DayzRBot extends Client {
         "server.playerstats": s
       }
     }, function (err, res) {
-      if (err) this.error(err);
+      if (err) this.sendError(this.GetChannel(guild.adminLogsChannel), err);
     });
 
     history.lastLog = lines[lines.length-1];
@@ -306,10 +305,13 @@ class DayzRBot extends Client {
           const event = require(EventsDir + "/" + file);
           if (['interactionCreate','guildMemberAdd'].includes(file.split(".")[0])) this.on(file.split(".")[0], i => event(this, i));
           else this.on(file.split(".")[0], event.bind(null, this));
-          this.logger.log("Event Loaded: " + file.split(".")[0]);
+          this.log("Event Loaded: " + file.split(".")[0]);
         });
     });
   }
+
+  // Allows shorter lines of code elsewhere
+  GetChannel(channel_id) { return this.channels.cache.get(channel_id); }
 
   sendError(Channel, Error) {
     this.error(Error);
@@ -319,7 +321,6 @@ class DayzRBot extends Client {
 
     Channel.send(embed);
   }
-
 
   // Handles internal errors for slash commands. E.g failed to update database from slash command.
   sendInternalError(Interaction, Error) {

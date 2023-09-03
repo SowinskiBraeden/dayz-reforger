@@ -18,7 +18,7 @@ module.exports = {
       let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2)
 
       if (distance < alarm.radius) {
-        const channel = client.channels.cache.get(alarm.channel);
+        const channel = client.GetChannel(alarm.channel);
 
         let newDt = await client.getDateEST(data.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
@@ -90,7 +90,7 @@ module.exports = {
 
     if (update) {
       client.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {$set: { "server.uavs": uavs }}, function (err, res) {
-        if (err) return client.sendInternalError(interaction, err);
+        if (err) return client.sendError(client.GetChannel(guild.adminLogsChannel), err);
       });
     }
   },
@@ -108,7 +108,7 @@ module.exports = {
       let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2)
 
       if (distance < alarm.radius) {
-        const channel = client.channels.cache.get(alarm.channel);
+        const channel = client.GetChannel(alarm.channel);
 
         let newDt = await client.getDateEST(data.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
@@ -127,7 +127,7 @@ module.exports = {
 
   ExpireEvent: async(client, guild, e) => {
     let hasMR = (guild.memberRole != "");
-    const channel = client.channels.cache.get(e.channel);
+    const channel = client.GetChannel(e.channel);
     if (client.exists(e.channel)) channel.send({ embeds: [new EmbedBuilder().setColor(client.config.colors.Default).setDescription(`${hasMR ? `<@&${guild.memberRole}>\n`:''}**The ${e.name} Event has ended!**`)] });
 
     client.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
@@ -135,7 +135,7 @@ module.exports = {
         "server.events": e
       }
     }, function(err, res) {
-      if (err) return client.sendInternalError(interaction, err);
+      if (err) return client.sendError(client.GetChannel(guild.adminLogsChannel), err);
     });
   },
 
@@ -152,7 +152,7 @@ module.exports = {
       .setDescription(`**${e.name} Event**\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>`);
 
     if (!client.exists(e.channel)) return module.exports.ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
-    const channel = client.channels.cache.get(e.channel);
+    const channel = client.GetChannel(e.channel);
     channel.send({ embeds: [trackEvent], content: `${hasMR ? `\n<@&${guild.memberRole}>`:'@here'}` });
   
     let now = new Date();

@@ -39,10 +39,7 @@ module.exports = {
     let bans = res.data.gameserver.settings.general.bans;
     if (ban) bans += `\r\n${gamertag}`;
     else if (!ban) bans = bans.replace(gamertag, '');
-    else {
-      client.error("Incorrect Ban Option: HandlePlayerBan")
-      throw "Incorrect Ban Option: HandlePlayerBan"
-    }
+    else client.error("Incorrect Ban Option: HandlePlayerBan");
 
     const formData = new FormData();
     formData.append("category", "general");

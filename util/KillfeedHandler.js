@@ -7,7 +7,7 @@ module.exports = {
   HandleKillfeed: async (client, guildId, stats, line) => {
     
     let guild = await client.GetGuild(guildId);
-    const channel = client.channels.cache.get(guild.killfeedChannel);
+    const channel = client.GetChannel(guild.killfeedChannel);
 
     let templateKilled     = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) with (.*) from (.*) meters /g;
     let template           = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
@@ -115,14 +115,14 @@ module.exports = {
         let newBank = new User();
         newBank.createUser(killerStat.discordID, guildId, guild.startingBalance);
         newBank.save().catch(err => {
-          if (err) return client.sendInternalError(interaction, err);
+          if (err) return client.sendError(client.GetChannel(guild.killfeedChannel), err);
         });
         
       } else banking = banking.user;
 
       if (!client.exists(banking.guilds[guildId])) {
         const success = addUser(banking.guilds, guildId, killer.discordID, this, guild.startingBalance);
-        if (!success) return client.sendError(guild.connectionLogsChannel, 'Failed to add bank');
+        if (!success) return client.sendError(client.GetChannel(guild.killfeedChannel), 'Automatic Bounty Payout: Failed to add bank to database.');
       }
 
       const newBalance = banking.guilds[guildId].balance + totalBounty;
@@ -132,7 +132,7 @@ module.exports = {
           [`user.guilds.${guildId}.balance`]: newBalance,
         }
       }, function(err, res) {
-        if (err) return client.sendError(guild.connectionLogsChannel, err);
+        if (err) return client.sendError(client.GetChannel(guild.killfeedChannel), `Killfeed Error: Updating killer bank balance\n${err}`);
       });        
 
       receivedBounty = new EmbedBuilder()

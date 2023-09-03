@@ -197,7 +197,7 @@ module.exports = {
     if (!client.exists(guild.playerstats)) guild.playerstats = [];
     if (!client.exists(guild.activePlayersChannel)) return;
 
-    const channel = client.channels.cache.get(guild.activePlayersChannel);
+    const channel = client.GetChannel(guild.activePlayersChannel);
     let activePlayers = guild.playerstats.filter(p => p.connected == true);
 
     let des = ``;
@@ -223,7 +223,7 @@ module.exports = {
      
     return channel.send({ embeds: [PlayersEmbed, activePlayersEmbed] }).then(sentMessage => {      
       setTimeout(() => {
-          sentMessage.delete().catch(error => client.sendError(channel, error));
+          sentMessage.delete().catch(error => client.sendError(channel, `HandleActivePlayersList Error: \n${error}`));
       }, 360000);
     });
   }

@@ -6,7 +6,7 @@ module.exports = {
     
     let guild = await client.GetGuild(guildId);
     if (!client.exists(guild.connectionLogsChannel)) return;
-    const channel = client.channels.cache.get(guild.connectionLogsChannel);
+    const channel = client.GetChannel(guild.connectionLogsChannel);
 
     let newDt = await client.getDateEST(data.time);
     let unixTime = Math.floor(newDt.getTime()/1000);
@@ -40,7 +40,7 @@ module.exports = {
 
     let guild = await client.GetGuild(guildId);
     if (!client.exists(guild.connectionLogsChannel)) return;
-    const channel = client.channels.cache.get(guild.connectionLogsChannel);
+    const channel = client.GetChannel(guild.connectionLogsChannel);
     if (!channel) return;
 
     let unixTime = Math.floor(newDt.getTime()/1000);

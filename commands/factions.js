@@ -21,7 +21,7 @@ module.exports = {
   SlashCommand: {
     /**
      *
-     * @param {require("../structures/QuarksBot")} client
+     * @param {require("../structures/DayzRBot")} client
      * @param {import("discord.js").Message} message
      * @param {string[]} args
      * @param {*} param3

@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 module.exports = async (client, member) => {
 
   let GuildDB = await client.GetGuild(member.guild.id);
-  const channel = client.channels.cache.get(GuildDB.welcomeChannel);
+  const channel = client.GetChannel(GuildDB.welcomeChannel);
 
   let embed = new EmbedBuilder()
     .setColor(client.config.Colors.Default)

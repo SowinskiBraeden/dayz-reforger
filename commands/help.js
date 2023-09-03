@@ -46,7 +46,7 @@ module.exports = {
   SlashCommand: {
     /**
      *
-     * @param {require("../structures/QuarksBot")} client
+     * @param {require("../structures/DayzRBot")} client
      * @param {import("discord.js").Message} message
      * @param {string[]} args
      * @param {*} param3
@@ -80,10 +80,7 @@ module.exports = {
               (x) => x.aliases && x.aliases.includes(args[0].options[0].value)
             );
           if (!cmd)
-            return client.sendError(
-              interaction,
-              `❌ | Unable to find that command.`
-            );
+            return interaction.send({ content: `❌ | Unable to find that command.` });
   
           let embed = new EmbedBuilder()
             .setDescription(cmd.description)
@@ -129,7 +126,7 @@ module.exports = {
       } else if (args[0].name == 'credits') {
         const creditsEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setTitle('QuarksBot Credits')
+          .setTitle('DayzRBot Credits')
           .setDescription(`
             **Bot Author:** McDazzzled#5307
             
@@ -141,7 +138,7 @@ module.exports = {
         const end = new Date().getTime();
         const stats = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setTitle('QuarksBot Statistics')
+          .setTitle('DayzRBot Statistics')
           .addFields(
             { name: 'Guilds', value: `${client.guilds.cache.size}`, inline: true },
             { name: 'Users', value: `${client.users.cache.size}`, inline: true },

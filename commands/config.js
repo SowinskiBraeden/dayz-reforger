@@ -308,7 +308,7 @@ module.exports = {
   SlashCommand: {
     /**
      *
-     * @param {require("../structures/QuarksBot")} client
+     * @param {require("../structures/DayzRBot")} client
      * @param {import("discord.js").Message} message
      * @param {string[]} args
      * @param {*} param3
@@ -327,7 +327,7 @@ module.exports = {
           const channelid = args[0].options[0].options[0].value;
 
           if (args[0].options[0].name == 'add') {
-            const channelAdd = client.channels.cache.get(channelid);
+            const channelAdd = client.GetChannel(channelid);
 
             const newChannelErrorEmbed = new EmbedBuilder().setColor(client.config.Colors.Red)
             let error = false;
