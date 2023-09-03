@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
 const bitfieldCalculator = require('discord-bitfield-calculator');
-const { BanPlayer, UnbanPlayer } = require('../util/NitradoAPI');
+const { BanPlayer, UnbanPlayer, RestartServer } = require('../util/NitradoAPI');
 const { Armbands } = require('../config/armbandsdb.js');
 
 module.exports = {
@@ -407,16 +407,7 @@ module.exports = {
         return interaction.send({ embeds: [successEmbed] });
 
       } else if (args[0].name == "restart") {
-
-        const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/restart`, {
-          method: "POST",
-          headers: {
-            "Authorization": client.config.Nitrado.Auth,
-          }
-        }).then(response => 
-          response.json().then(data => data)
-        ).then(res => res);
-
+        RestartServer(client);
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('The server will restart shortly.')], flags: (1 << 6) });
       }
     }

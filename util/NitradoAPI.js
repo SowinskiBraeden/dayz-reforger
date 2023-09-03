@@ -28,18 +28,16 @@ module.exports = {
         await finished(Readable.fromWeb(body).pipe(stream));
         return 0;
       } catch (error) {
-        if (retries === maxRetries) {
-            throw new Error(`Failed to fetch data after ${maxRetries} retries`);
-        }
+        if (retries === maxRetries) throw new Error(`DownloadNitradoFile: Failed to fetch data after ${maxRetries} retries`);
       }
       await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
     }
   },
 
   HandlePlayerBan: async (client, gamertag, ban) => {
-    // get current bans
     for (let retries = 0; retries <= maxRetries; retries++) {
       try {
+        // get current bans
         const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers`, {
           headers: {
             "Authorization": client.config.Nitrado.Auth
@@ -72,9 +70,7 @@ module.exports = {
           sendList();
         }));
       } catch (error) {
-        if (retries === maxRetries) {
-            throw new Error(`Failed to fetch data after ${maxRetries} retries`);
-        }
+        if (retries === maxRetries) throw new Error(`HandlePlayerBans: Failed to fetch data after ${maxRetries} retries`);
       }
       await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
     }
@@ -87,6 +83,24 @@ module.exports = {
     two whole different functions for each.
   */
 
-    BanPlayer:   async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, true),
-    UnbanPlayer: async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, false)
+  BanPlayer:   async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, true),
+  UnbanPlayer: async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, false),
+  
+  RestartServer: async (client) => {
+    for (let retries = 0; retries < maxRetries; retries++) {
+      try {
+        const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/restart`, {
+          method: "POST",
+          headers: {
+            "Authorization": client.config.Nitrado.Auth,
+          }
+        }).then(response => 
+          response.json().then(data => data)
+        ).then(res => res);    
+      } catch (error) {
+        if (retries === maxRetries) throw new Error(`RestartServer: Failed to fetch data after ${maxRetries} retries`);
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
+    }
+  },
 }
