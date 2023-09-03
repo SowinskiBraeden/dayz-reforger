@@ -1,4 +1,4 @@
-const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
 const { Armbands } = require('../config/armbandsdb.js');
 
 module.exports = {
@@ -67,11 +67,11 @@ module.exports = {
         return interaction.send({ embeds: [warnArmbadChange], components: [opt] });
       }
 
-      let available = new SelectMenuBuilder()
+      let available = new StringSelectMenuBuilder()
         .setCustomId(`Claim-${args[0].value}-1-${interaction.member.user.id}`)
         .setPlaceholder('Select an armband from list 1 to claim')
       
-      let availableNext = new SelectMenuBuilder()
+      let availableNext = new StringSelectMenuBuilder()
         .setCustomId(`Claim-${args[0].value}-2-${interaction.member.user.id}`)
         .setPlaceholder('Select an armband from list 2 to claim')
 
@@ -162,11 +162,11 @@ module.exports = {
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
-          let available = new SelectMenuBuilder()
+          let available = new StringSelectMenuBuilder()
             .setCustomId(`Claim-${interaction.customId.split('-')[2]}-update-1-${interaction.member.user.id}`)
             .setPlaceholder('Select an armband from list 1 to claim')
           
-          let availableNext = new SelectMenuBuilder()
+          let availableNext = new StringSelectMenuBuilder()
             .setCustomId(`Claim-${interaction.customId.split('-')[2]}-update-2-${interaction.member.user.id}`)
             .setPlaceholder('Select an armband from list 2 to claim')
 

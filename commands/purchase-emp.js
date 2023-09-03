@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const { User, addUser } = require('../structures/user');
 
 module.exports = {
@@ -67,7 +67,7 @@ module.exports = {
         if (err) return client.sendInternalError(interaction, err);
       });
       
-      let alarms = new SelectMenuBuilder()
+      let alarms = new StringSelectMenuBuilder()
         .setCustomId(`EMPAlarmSelect-${interaction.member.user.id}`)
         .setPlaceholder(`Select an Alarm to EMP.`)
 

@@ -1,4 +1,4 @@
-const { SelectMenuBuilder, EmbedBuilder, ActionRowBuilder } = require('discord.js');
+const { StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder } = require('discord.js');
 const { Armbands } = require('../config/armbandsdb.js');
 
 module.exports = {
@@ -24,11 +24,11 @@ module.exports = {
       if (GuildDB.customChannelStatus==true&&!GuildDB.allowedChannels.includes(interaction.channel_id))
         return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) }); 
       
-      let available = new SelectMenuBuilder()
+      let available = new StringSelectMenuBuilder()
         .setCustomId(`View-1-${interaction.member.user.id}`)
         .setPlaceholder('View an armband from list 1')
       
-      let availableNext = new SelectMenuBuilder()
+      let availableNext = new StringSelectMenuBuilder()
         .setCustomId(`View-2-${interaction.member.user.id}`)
         .setPlaceholder('View an armband from list 2')
 

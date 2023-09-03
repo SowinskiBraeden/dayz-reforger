@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -106,7 +106,7 @@ module.exports = {
       } else if (args[0].name == 'delete') {
         if (GuildDB.events.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Events to Delete.')] });
 
-        let events = new SelectMenuBuilder()
+        let events = new StringSelectMenuBuilder()
           .setCustomId(`DeleteEvent-${interaction.member.user.id}`)
           .setPlaceholder(`Select an Event to Delete.`)
 

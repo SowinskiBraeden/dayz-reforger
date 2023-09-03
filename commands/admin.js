@@ -286,11 +286,11 @@ module.exports = {
         // Any interaction for 'claim-armband' can be handled in 
         // 'commands/claim.js' Interaction handlers and does not require its own code in this file.
 
-        let available = new SelectMenuBuilder()
+        let available = new StringSelectMenuBuilder()
           .setCustomId(`Claim-${args[0].options[0].value}-1-${interaction.member.user.id}`)
           .setPlaceholder('Select an armband from list 1 to claim')
         
-        let availableNext = new SelectMenuBuilder()
+        let availableNext = new StringSelectMenuBuilder()
           .setCustomId(`Claim-${args[0].options[0].value}-2-${interaction.member.user.id}`)
           .setPlaceholder('Select an armband from list 2 to claim')
 

@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -234,7 +234,7 @@ module.exports = {
 
         if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to Delete.')] });
 
-        let alarms = new SelectMenuBuilder()
+        let alarms = new StringSelectMenuBuilder()
           .setCustomId(`DeleteAlarmSelect-${interaction.member.user.id}`)
           .setPlaceholder(`Select an Alarm to Delete.`)
 
@@ -256,7 +256,7 @@ module.exports = {
 
         if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription(`**Notice:** No Existing Alarms to ${add?'Add':'Remove'} Player ${add?'to':'from'}.`)] });
 
-        let alarms = new SelectMenuBuilder()
+        let alarms = new StringSelectMenuBuilder()
           .setCustomId(`ManageAlarmIgnored-${add?'add':'remove'}-${args[0].options[0].value}-${interaction.member.user.id}`)
           .setPlaceholder(`Select an Alarm to ${add?'Add':'Remove'} Player ${add?'to':'from'}.`)
 
@@ -277,7 +277,7 @@ module.exports = {
 
         let id = `ManageRule-${args[0].name=='set-rule'?'add':'remove'}${args[0].name=='set-rule'?`-${args[0].options[0].value}`:''}-${interaction.member.user.id}`
 
-        let alarms = new SelectMenuBuilder()
+        let alarms = new StringSelectMenuBuilder()
           .setCustomId(id)
           .setPlaceholder(`Select an Alarm to configure.`)
 
@@ -299,7 +299,7 @@ module.exports = {
 
         let disable = args[0].name == 'disable' ? true : false;
 
-        let alarms = new SelectMenuBuilder()
+        let alarms = new StringSelectMenuBuilder()
           .setCustomId(`EnableOrDisableAlarm-${disable ? 'disable' : 'enable'}-${interaction.member.user.id}`)
           .setPlaceholder(`Select an Alarm to ${disable ? 'disable' : 'enable'}.`);
 
@@ -329,7 +329,7 @@ module.exports = {
 
         let disable = args[0].name == 'disable' ? true : false;
 
-        let alarms = new SelectMenuBuilder()
+        let alarms = new StringSelectMenuBuilder()
           .setCustomId(`RenameAlarm-${args[0].options[0].value}-${interaction.member.user.id}`)
           .setPlaceholder(`Select an Alarm to rename.`);
 
@@ -351,7 +351,7 @@ module.exports = {
 
         let disable = args[0].name == 'disable' ? true : false;
 
-        let alarms = new SelectMenuBuilder()
+        let alarms = new StringSelectMenuBuilder()
           .setCustomId(`MoveOrigin-${args[0].options[0].value}-${args[0].options[1].value}-${interaction.member.user.id}`)
           .setPlaceholder(`Select an Alarm to ${disable ? 'disable' : 'enable'}.`);
 
@@ -496,7 +496,7 @@ module.exports = {
 
         } else if (interaction.customId.split('-')[1]=='remove') {
 
-          let alarmRules = new SelectMenuBuilder()
+          let alarmRules = new StringSelectMenuBuilder()
             .setCustomId(`DeleteAlarmRule-${alarm.name}-${interaction.member.user.id}`)
             .setPlaceholder(`Select Rule to Remove from ${alarm.name}`);
 
