@@ -528,7 +528,7 @@ module.exports = {
           });
     
           const successWelcomeChannelEmbed = new EmbedBuilder()
-            .setDescription(`Successfully set <#${channel}> as the Welcome Channel.`)
+            .setDescription(`Successfully set <#${welcomeChannel}> as the Welcome Channel.`)
             .setColor(client.config.Colors.Green);
     
           return interaction.send({ embeds: [successWelcomeChannelEmbed] });    

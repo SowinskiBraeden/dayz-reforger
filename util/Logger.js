@@ -13,13 +13,10 @@ class Logger {
     this.logger.log({
       level: "info",
       message:
-        `${d.getHours()}:${
-          d.getMinutes
-        } - ${d.getDate()}:${d.getMonth()}:${d.getFullYear()} | Info: ` + Text,
-    });
+        `${d.getHours()}:${d.getMinutes()} - ${d.getMonth()+1}:${d.getDate()}:${d.getFullYear()} | Info: ` + Text});
     console.log(
       colors.green(
-        `${d.getDate()}:${d.getMonth()}:${d.getFullYear()} - ${d.getHours()}:${d.getMinutes()}`
+        `${d.getMonth()+1}:${d.getDate()}:${d.getFullYear()} - ${d.getHours()}:${d.getMinutes()}`
       ) + colors.yellow(" | Info: " + Text)
     );
   }
@@ -29,13 +26,10 @@ class Logger {
     this.logger.log({
       level: "error",
       message:
-        `${d.getHours()}:${
-          d.getMinutes
-        } - ${d.getDate()}:${d.getMonth()}:${d.getFullYear()} - ${d.getHours()}:${d.getMinutes()}| Error: ` + Text,
-    });
+        `${d.getHours()}:${d.getMinutes()} - ${d.getMonth()+1}:${d.getDate()}:${d.getFullYear()} | Error: ` + Text});
     console.log(
       colors.green(
-        `${d.getDate()}:${d.getMonth()}:${d.getFullYear()} - ${d.getHours()}:${d.getMinutes()}`
+        `${d.getMonth()+1}:${d.getDate()}:${d.getFullYear()} - ${d.getHours()}:${d.getMinutes()}`
       ) + colors.yellow(" | Error: ") + colors.red(Text)
     );
   }
