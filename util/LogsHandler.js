@@ -206,7 +206,6 @@ module.exports = {
     }
     const nodes = activePlayers.length === 0;
     const PlayersEmbed = new EmbedBuilder()
-      .setThumbnail(client.config.icon.IconURL)
       .setColor(client.config.Colors.Default)
       .setTitle(`Online List  \` ${activePlayers.length} \`  Player${activePlayers.length>1?'s':''} Online`)
       .addFields(
