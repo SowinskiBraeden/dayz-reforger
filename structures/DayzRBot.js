@@ -104,11 +104,11 @@ class DayzRBot extends Client {
   error(Text) { this.logger.error(Text); }
 
   async getDateEST(time) {
-    let t = new Date(); // Get current date (PST)
-    let e = new Date(t.getTime() + 180*60*1000); // Convert to EST to ensure the date is correct for the applied EST time
-    let n = new Date(`${e.getFullYear()}-${e.getMonth()<10?'0':''}${e.getMonth()+1}-${e.getDate()<10?'0':''}${e.getDate()}T${time.split(' ')[0]}`) // Apply given time to EST date
-    let f = new Date(n.getTime() - 180*60*1000) // Convert back to PST
-    return f;
+    let timeArray = time.split(' ')[0].split(':')
+    let t = new Date(); // Get current date & time (UTC)
+    let f = new Date(t.getTime() - 4 * 3600000) // Convert UTC into EST time to roll back the day as necessary
+    f.setUTCHours(timeArray[0], timeArray[1], timeArray[2]);  // Apply the supplied EST time to the converted date (EST is the timezone produced from the Nitrado logs).
+    return new Date(f.getTime() + 4 * 3600000);  // Add EST time offset to return timestamp in UTC
   }
 
   async readLogs(guildId) {
@@ -246,12 +246,12 @@ class DayzRBot extends Client {
       this.databaseConnected = true;
     } catch (err) {
       databaselogs.attempts++;
-      this.error(`Failed to connect to mongodb: attempt ${databaselogs.attempts}`);
+      this.error(`Failed to connect to mongodb (mongodb://${mongoURI.split('@')[1]}/${dbo}): attempt ${databaselogs.attempts} - Error: ${err}`);
       failed = true;
     }
 
     // write JSON string to a file
-    await fs.writeFileSync(dbLogDir, JSON.stringify(databaselogs));
+    fs.writeFileSync(dbLogDir, JSON.stringify(databaselogs));
 
     if (failed) process.exit(-1);
   }
