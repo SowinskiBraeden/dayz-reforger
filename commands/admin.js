@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const bitfieldCalculator = require('discord-bitfield-calculator');
-const { HandlePlayerBan } = require('../util/NitradoAPI');
+const { BanPlayer, UnbanPlayer } = require('../util/NitradoAPI');
 
 module.exports = {
   name: "admin",
@@ -344,7 +344,7 @@ module.exports = {
 
       } else if (args[0].name == 'ban-player') {
 
-        HandlePlayerBan(client, args[0].options[0].value, true);
+        BanPlayer(client, args[0].options[0].value);
 
         let banned = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
@@ -354,7 +354,7 @@ module.exports = {
 
       } else if (args[0].name == 'unban-player') {
 
-        HandlePlayerBan(client, args[0].options[0].value, false);
+        UnbanPlayer(client, args[0].options[0].value);
 
         let banned = new EmbedBuilder()
           .setColor(client.config.Colors.Default)

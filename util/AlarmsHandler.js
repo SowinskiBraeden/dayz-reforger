@@ -1,4 +1,4 @@
-const { HandlePlayerBan } = require('./NitradoAPI');
+const { BanPlayer, UnbanPlayer } = require('./NitradoAPI');
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
@@ -32,7 +32,7 @@ module.exports = {
         
           channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
 
-          HandlePlayerBan(client, data.player, true);
+          BanPlayer(client, data.player);
         }
 
         let alarmEmbed = new EmbedBuilder()
@@ -120,7 +120,7 @@ module.exports = {
       
         channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
 
-        HandlePlayerBan(client, data.killer, true);
+        BanPlayer(client, data.killer);
       }
     }
   },

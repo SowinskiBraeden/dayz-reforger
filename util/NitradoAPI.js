@@ -62,5 +62,16 @@ module.exports = {
       }
       sendList();
     }));
-  }
+  },
+
+  /*
+    Allows more explicit function names outside this file;
+    i.e BanPlayer() & UnbanPlayer() that both call to the 
+    parent function HandlePlayerBan() rather than write
+    two whole different functions for each.
+  */
+
+  BanPlayer:   async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, true),
+  UnbanPlayer: async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, false),
+
 }
