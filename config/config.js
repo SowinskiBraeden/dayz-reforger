@@ -27,6 +27,8 @@ module.exports = {
   mongoURI: process.env.mongoURI || "mongodb://localhost:27017",
   dbo: process.env.dbo || "knoldus",
   Presence: {
-    status: "online", // You can show online, idle, and dnd
+    // type: 2,  // Listening
+    // name: "", // What message you want after "Listening to"
+    status: "online", // You can show either "idle", "dnd", "online", or "offline"
   },
 }
