@@ -208,8 +208,8 @@ module.exports = {
       .setColor(client.config.Colors.Default)
       .setTitle(`Online List  \` ${activePlayers.length} \`  Player${activePlayers.length>1?'s':''} Online`)
       .addFields(
-        { name: 'Server🎮:', value: `\` ${hostname} \``, inline: false },      
-        { name: 'Map🌎:', value: `\` ${map} \``, inline: true },
+        { name: 'Server:', value: `\` ${hostname} \``, inline: false },      
+        { name: 'Map:', value: `\` ${map} \``, inline: true },
         { name: 'Status:', value: `\` ${statusEmoji} ${statusText} \``, inline: true }, 
         { name: 'Slots:', value: `\` ${slots} \``, inline: true }
       );
