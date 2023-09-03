@@ -18,7 +18,8 @@ module.exports = {
     required: true,
     choices: [
       { name: "money", value: "money" },
-      { name: "time_played", value: "time_played" },
+      { name: "total_time_played", value: "total_time_played" },
+      { name: "longest_time_played", value: "longest_time_played" },
       { name: "kills", value: "kills" }, 
       { name: "killstreak", value: "killstreak" },
       { name: "best_killstreak", value: "best_killstreak" },
@@ -93,7 +94,8 @@ module.exports = {
           if (category == 'deathstreak') return b.deathStreak - a.deathSreak;
           if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
           if (category == 'longest_kill') return b.longestKill - a.longestKill;
-          if (category == 'time_played') return b.totalSessionTime - a.totalSessionTime;
+          if (category == 'total_time_played') return b.totalSessionTime - a.totalSessionTime;
+          if (category == 'longest_time_played') return b.longestSessionTime - a.longestSessionTime;
         });
 
         if (discord) { // If searching by discord
@@ -119,7 +121,8 @@ module.exports = {
         category == 'worst_deathstreak' ? "Worst Deathstreak" : 
         category == 'longest_kill' ? "Longest Kill" : 
         category == 'money' ? "Total Money" : 
-        category == 'time_played' ? "Time Played" : 'N/A Error';
+        category == 'total_time_played' ? "Total Time Played" :
+        category == 'longest_time_played' ? "Longest Game Session" : 'N/A Error';
 
       let statsEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default);
@@ -142,11 +145,13 @@ module.exports = {
 
       statsEmbed.addFields({ name: 'Leaderboard Position', value: `# ${leaderboardPos}`, inline: true });
       
-      if (category == 'time_played') {
+      if (category == 'total_time_played') {
         statsEmbed.addFields(
           { name: 'Total Time Played', value: client.secondsToDhms(query.totalSessionTime), inline: true },
-          { name: 'Last Session Time', value: query.lastSessionTime, inline: true }
+          { name: 'Last Session Time', value: client.secondsToDhms(query.lastSessionTime), inline: true }
         );
+      } else if (category == 'longest_time_played') {
+        statsEmbed.addFields({ name: 'Longest Game Session', value: client.secondsToDhms(query.longestSessionTime), inline: true });
       } else statsEmbed.addFields({ name: title, value: stats, inline: true });
  
       return interaction.send({ embeds: [statsEmbed] });

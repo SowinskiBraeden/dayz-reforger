@@ -18,7 +18,8 @@ module.exports = {
     required: true,
     choices: [
       { name: "money", value: "money" },
-      { name: "time_played", value: "time_played" },
+      { name: "total_time_played", value: "total_time_played" },
+      { name: "longest_time_played", value: "longest_time_played" },
       { name: "kills", value: "kills" }, 
       { name: "killstreak", value: "killstreak" },
       { name: "best_killstreak", value: "best_killstreak" },
@@ -66,7 +67,8 @@ module.exports = {
           if (category == 'deathstreak') return b.deathStreak - a.deathSreak;
           if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
           if (category == 'longest_kill') return b.longestKill - a.longestKill;
-          if (category == 'time_played') return b.totalSessionTime - a.totalSessionTime;
+          if (category == 'total_time_played') return b.totalSessionTime - a.totalSessionTime;
+          if (category == 'longest_time_played') return b.longestSessionTime - a.longestSessionTime;
         });
 
       }
@@ -84,7 +86,8 @@ module.exports = {
         category == 'worst_deathstreak' ? "Worst Deathstreak Leaderboard" : 
         category == 'longest_kill' ? "Longest Kill Leaderboard" : 
         category == 'money' ? "Money Leaderboard" : 
-        category == 'time_played' ? "Time Played" : 'N/A Error';
+        category == 'total_time_played' ? "Total Time Played" : 
+        category == 'longest_time_played' ? "Longest Game Session" : 'N/A Error';
 
       leaderboardEmbed.setTitle(`**${title} - DayZ Reforger**`);
 
@@ -100,16 +103,17 @@ module.exports = {
                     category == 'worst_deathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
                     category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 
                     category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 
-                    category == 'time_played' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${leaderboard[i].lastSessionTime}` : 'N/A Error';
+                    category == 'total_time_played' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${client.secondsToDhms(leaderboard[i].lastSessionTime)}` : 
+                    category == 'longest_time_played' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 'N/A Error';
 
         if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
-        else if (category == 'time_played') {
+        else if (category == 'total_time_played' || category == 'longest_time_played') {
           tag = leaderboard[i].discordID != "" ? `<@${leaderboard[i].discordID}>` : leaderboard[i].gamertag;
           des += `**${i+1}.** ${tag}\n> ${stats}\n\n`;
         } else leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });
       }
 
-      if (category == 'money' || category == 'time_played') leaderboardEmbed.setDescription(des);
+      if (['money', 'total_time_played', 'longest_time_played'].includes(category)) leaderboardEmbed.setDescription(des);
       
       return interaction.send({ embeds: [leaderboardEmbed] });
     },
