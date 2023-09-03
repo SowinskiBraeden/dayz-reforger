@@ -65,6 +65,7 @@ module.exports = {
       let unixTime = Math.floor(newDt.getTime()/1000);
       let oldUnixTime = Math.floor(playerStat.lastConnectionDate.getTime()/1000);
       let seconds = unixTime - oldUnixTime;
+      if (!client.exists(playerStat.longestSessionTime)) playerStat.longestSessionTime = 0;
 
       playerStat.totalSessionTime = playerStat.totalSessionTime + seconds;
       playerStat.lastSessionTime = seconds;
