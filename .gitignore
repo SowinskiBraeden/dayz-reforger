@@ -12,3 +12,4 @@ npm-debug.log
 
 #env
 .env
+.DS_Store
