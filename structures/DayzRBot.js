@@ -392,7 +392,8 @@ class DayzRBot extends Client {
       lastHitBy: null,
       connected: false,
       totalSessionTime: 0,
-      lastSessionTime: "",
+      lastSessionTime: 0,
+      longestSessionTime: 0,
       bounties: [],
     }
   }
