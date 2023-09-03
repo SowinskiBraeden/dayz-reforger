@@ -2,6 +2,15 @@ const { EmbedBuilder } = require('discord.js');
 const { User, addUser } = require('../structures/user');
 const { KillInAlarm } = require('./AlarmsHandler');
 
+const Templates = {
+  Killed: 1,
+  HitBy: 2,
+  HitByAndDead: 3,
+  Explosion: 4,
+  LandMine: 5,
+  Melee: 6,
+}
+
 module.exports = {
   
   HandleKillfeed: async (client, guildId, stats, line) => {
@@ -13,18 +22,21 @@ module.exports = {
     let template           = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let templateDEAD       = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
     let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by  with (.*)/g;
-    let landMineTemplate   = /(.8) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by LandMineTrap/g;
+    let landMineTemplate   = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by LandMineTrap/g;
+    let meleeTemplate      = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*)/g;
 
-    let killedBy = line.includes('hit by Player') && line.includes('(DEAD)') ? 1 :
-                   line.includes('hit by Player') ? 2 :
-                   line.includes('killed by Player') ? 3 : 
-                   line.includes('killed by LandMineTrap') ? 4 : 5;
+    let killedBy = line.includes('hit by Player') && line.includes('(DEAD)') ? Templates.HitByAndDead :
+                   line.includes('hit by Player') && !line.includes('meters') ? Templates.Melee : // Missing meters indicates it was a melee attack.
+                   line.includes('hit by Player') ? Templates.HitBy :
+                   line.includes('killed by Player') ? Templates.Killed : 
+                   line.includes('killed by LandMineTrap') ? Templates.LandMine : Templates.Explosion;
 
-    let data = killedBy == 1 ? [...line.matchAll(templateDEAD)][0] : 
-               killedBy == 2 ? [...line.matchAll(template)][0] :
-               killedBy == 3 ? [...line.matchAll(templateKilled)][0] :
-               killedBy == 4 ? [...line.matchAll(landMineTemplate)][0] :
-               [...line.matchAll(explosionTemplate)][0]
+    let data = killedBy == Templates.HitByAndDead ? [...line.matchAll(templateDEAD)][0] : 
+               killedBy == Templates.HitBy ? [...line.matchAll(template)][0] :
+               killedBy == Templates.Killed ? [...line.matchAll(templateKilled)][0] :
+               killedBy == Templates.LandMine ? [...line.matchAll(landMineTemplate)][0] :
+               killedBy == Templates.Melee ? [...line.matchAll(meleeTemplate)][0] :
+               [...line.matchAll(explosionTemplate)][0];
 
     if (!data) return stats;
     
@@ -37,28 +49,27 @@ module.exports = {
     };
 
     // Add additional data
-    if (killedBy == 1 || killedBy == 2) {
+    if (killedBy == Templates.HitBy || killedBy == Templates.HitByAndDead || killedBy == Templates.Melee) {
       info.killer    = data[6];
       info.killerID  = data[7];
       info.killerPOS = data[8].split(', ').map(v => parseFloat(v));
       info.bodyPart  = data[9];
       info.damage    = data[10];
-      info.bullet    = data[11];
       info.weapon    = data[12];
-      info.distance  = data[13];
-    } else if (killedBy == 3) {
+      info.distance  = killedBy == Templates.Melee ? 0 : data[13];
+    } else if (killedBy == Templates.Killed) {
       info.killer    = data[5];
       info.killerID  = data[6];
       info.killerPOS = data[7].split(', ').map(v => parseFloat(v));
       info.weapon    = data[8];
       info.distance  = data[9];
-    } else if (killedBy == 5) info.causeOfDeath = data[5]; // use 'else if' because it will cause error if killedBy == 4 (LandMineTrap)
+    } else if (killedBy == Templates.Explosion) info.causeOfDeath = data[5]; // use 'else if' because it will cause error if killedBy == 4 (LandMineTrap)
 
     let newDt = await client.getDateEST(info.time);
     let unixTime = Math.floor(newDt.getTime()/1000);
 
-    if (killedBy == 4 || killedBy == 5) {
-      let cod = killedBy == 4 ? `Land Mine Trap` : info.causeOfDeath;
+    if (killedBy == Templates.LandMine || killedBy == Templates.Explosion) {
+      let cod = killedBy == Templates.LandMine ? `Land Mine Trap` : info.causeOfDeath;
        
       const killEvent = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
