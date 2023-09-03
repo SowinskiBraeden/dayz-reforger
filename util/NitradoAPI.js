@@ -79,7 +79,7 @@ module.exports = {
       await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
     }
   },
-  
+
   /*
     Allows more explicit function names outside this file;
     i.e BanPlayer() & UnbanPlayer() that both call to the 
@@ -88,6 +88,5 @@ module.exports = {
   */
 
     BanPlayer:   async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, true),
-    UnbanPlayer: async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, false),
-  
-  }
+    UnbanPlayer: async (client, gamertag) => module.exports.HandlePlayerBan(client, gamertag, false)
+}
