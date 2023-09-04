@@ -168,7 +168,7 @@ module.exports = {
             $set: {
               "server.playerstats": []
             }
-          }, function (err, res) {
+          }, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
         }
@@ -232,7 +232,7 @@ module.exports = {
             $set: {
               "server.playerstats": []
             }
-          }, function (err, res) {
+          }, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
         }
@@ -333,7 +333,7 @@ module.exports = {
           $set: {
             'server.playerstats': GuildDB.playerstats,
           }
-        }, function(err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });        
 
@@ -396,7 +396,7 @@ module.exports = {
                           ? banking.guilds[GuildDB.serverID].balance + args[0].options[0].value
                           : banking.guilds[GuildDB.serverID].balance - args[0].options[0].value;
       
-        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
       

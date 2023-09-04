@@ -104,7 +104,7 @@ module.exports = {
           $set: {
             [`user.guilds.${GuildDB.serverID}.balance`]: newBalance,
           }
-        }, function(err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -121,7 +121,7 @@ module.exports = {
           $set: {
             'server.playerstats': GuildDB.playerstats,
           }
-        }, function(err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
         
@@ -162,7 +162,7 @@ module.exports = {
 
         const newBalance = banking.guilds[GuildDB.serverID].balance - (totalBounty * 2);
       
-        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -173,7 +173,7 @@ module.exports = {
           $set: {
             'server.playerstats': GuildDB.playerstats,
           }
-        }, function(err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });        
 

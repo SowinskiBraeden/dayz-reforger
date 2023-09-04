@@ -29,7 +29,7 @@ function addUser(guilds, guildID, userID, client, startingBalance) {
     lastIncome: new Date('2000-01-01T00:00:00')
   }
 
-  client.dbo.collection("users").updateOne({"user.userID":userID}, {$set: {"user.guilds": updatedGuilds}}, function(err, res) {
+  client.dbo.collection("users").updateOne({"user.userID":userID}, {$set: {"user.guilds": updatedGuilds}}, (err, res) => {
     if (err) return false
   })
   return true

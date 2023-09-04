@@ -27,7 +27,7 @@ module.exports = {
           $set: {
             "server.playerstats": []
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
       }

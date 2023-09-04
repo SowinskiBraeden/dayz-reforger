@@ -220,7 +220,7 @@ module.exports = {
           $push: {
             'server.alarms': alarm,
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -406,7 +406,7 @@ module.exports = {
             $pull: {
               'server.alarms': alarm,
             }
-          }, function (err, res) {
+          }, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
   
@@ -452,7 +452,7 @@ module.exports = {
           $set: {
             'server.alarms': GuildDB.alarms,
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -484,7 +484,7 @@ module.exports = {
             $set: {
               'server.alarms': GuildDB.alarms,
             }
-          }, function (err, res) {
+          }, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
 
@@ -536,7 +536,7 @@ module.exports = {
           $set: {
             'server.alarms': GuildDB.alarms,
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -566,7 +566,7 @@ module.exports = {
           $set: {
             'server.alarms': GuildDB.alarms,
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -597,7 +597,7 @@ module.exports = {
           $set: {
             'server.alarms': GuildDB.alarms,
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -628,7 +628,7 @@ module.exports = {
           $set: {
             'server.alarms': GuildDB.alarms,
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 

@@ -78,7 +78,7 @@ module.exports = {
 
       const newBalance = banking.guilds[GuildDB.serverID].balance - GuildDB.uavPrice;
     
-      client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
+      client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
         if (err) return client.sendInternalError(interaction, err);
       });
 
@@ -93,7 +93,7 @@ module.exports = {
         $push: {
           'server.uavs': uav,
         }
-      }, function (err, res) {
+      }, (err, res) => {
         if (err) return client.sendInternalError(interaction, err);
       });
 

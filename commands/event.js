@@ -93,7 +93,7 @@ module.exports = {
           $set: {
             "server.events": events
           }
-        }, function(err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -138,7 +138,7 @@ module.exports = {
           $pull: {
             'server.events': event,
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 

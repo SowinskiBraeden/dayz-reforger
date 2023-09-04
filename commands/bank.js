@@ -155,7 +155,7 @@ module.exports = {
 
         const newBalance = banking.guilds[GuildDB.serverID].balance - args[0].options[1].value;
 
-        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -181,7 +181,7 @@ module.exports = {
 
         const newTargetBalance = targetUserBanking.guilds[GuildDB.serverID].balance + args[0].options[1].value;
 
-        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newTargetBalance}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newTargetBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 

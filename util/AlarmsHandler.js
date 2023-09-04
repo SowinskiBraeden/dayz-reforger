@@ -12,7 +12,7 @@ const ExpireEvent = async(client, guild, e) => {
     $pull: {
       "server.events": e
     }
-  }, function(err, res) {
+  }, (err, res) => {
     if (err) return client.sendError(client.GetChannel(guild.adminLogsChannel), err);
   });
 }
@@ -128,7 +128,7 @@ module.exports = {
     }
 
     if (update) {
-      client.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {$set: { "server.uavs": uavs }}, function (err, res) {
+      client.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {$set: { "server.uavs": uavs }}, (err, res) => {
         if (err) return client.sendError(client.GetChannel(guild.adminLogsChannel), err);
       });
     }

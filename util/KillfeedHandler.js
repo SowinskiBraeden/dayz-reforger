@@ -152,7 +152,7 @@ module.exports = {
         $set: {
           [`user.guilds.${guildId}.balance`]: newBalance,
         }
-      }, function(err, res) {
+      }, (err, res) => {
         if (err) return client.sendError(client.GetChannel(guild.killfeedChannel), `Killfeed Error: Updating killer bank balance\n${err}`);
       });        
 

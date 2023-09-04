@@ -129,12 +129,12 @@ module.exports = {
           for (const [fid, data] of Object.entries(GuildDB.factionArmbands)) {
             if (fid == factionID) removeQuery = data.armband;
           }
-          client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, {$pull: {'server.usedArmbands': removeQuery}}, function (err, res) {
+          client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, {$pull: {'server.usedArmbands': removeQuery}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           })
         }
         
-        client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, function (err, res) {
+        client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         })
 

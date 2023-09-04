@@ -89,7 +89,7 @@ module.exports = {
         newData.balance += totalIncome;
         newData.lastIncome = now;
 
-        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}`]: newData}}, function(err, res) {
+        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}`]: newData}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 

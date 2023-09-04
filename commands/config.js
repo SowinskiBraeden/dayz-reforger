@@ -349,7 +349,7 @@ module.exports = {
             if (channelAdd.type=="voice") {error=true;newChannelErrorEmbed.setDescription(`**Error Notice:** Cannot add voice channel to allowed channels.`);}
             if (error) return interaction.send({ embeds: [newChannelErrorEmbed] });
                       
-            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$push:{"server.allowedChannels": channelid}}, function (err, res) {
+            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$push:{"server.allowedChannels": channelid}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
             });
 
@@ -390,7 +390,7 @@ module.exports = {
           if (args[0].options[0].value == 'add') {
             const botAdminRoleId = args[0].options[1].value;
 
-            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$push: {"server.botAdminRoles": botAdminRoleId}}, function(err, res) {
+            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$push: {"server.botAdminRoles": botAdminRoleId}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
             });
       
@@ -430,7 +430,7 @@ module.exports = {
           }
 
         case 'admin_role':
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.adminRole": args[0].options[0].value}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.adminRole": args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -442,7 +442,7 @@ module.exports = {
 
         case 'exclude':
           if (args[0].options[0].value == 'add') {
-            client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$push: {'server.excludedRoles': args[0].options[1].value}}, function(err, res) {
+            client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$push: {'server.excludedRoles': args[0].options[1].value}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
             })
 
@@ -453,7 +453,7 @@ module.exports = {
             return interaction.send({ embeds: [successExcludeEmbed] });
 
           } else if (args[0].options[0].value == 'remove') {
-            client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$pull: {'server.excludedRoles': args[0].options[1].value}}, function(err, res) {
+            client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$pull: {'server.excludedRoles': args[0].options[1].value}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
             })
 
@@ -510,7 +510,7 @@ module.exports = {
         case 'killfeed_channel':
           const killfeedChannel = args[0].options[0].value;
 
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.killfeedChannel": killfeedChannel}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.killfeedChannel": killfeedChannel}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -523,7 +523,7 @@ module.exports = {
         case 'show_killfeed_coords':
           const showKillfeedCoordsConfiguration = args[0].options[0].value;
 
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.showKillfeedCoords": showKillfeedCoordsConfiguration}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.showKillfeedCoords": showKillfeedCoordsConfiguration}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
 
@@ -536,7 +536,7 @@ module.exports = {
         case 'admin_logs_channel':
           const adminLogsChannel = args[0].options[0].value;
   
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.connectionLogsChannel": adminLogsChannel}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.connectionLogsChannel": adminLogsChannel}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -549,7 +549,7 @@ module.exports = {
         case 'welcome_channel':
           const welcomeChannel = args[0].options[0].value;
   
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.welcomeChannel": welcomeChannel}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.welcomeChannel": welcomeChannel}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -562,7 +562,7 @@ module.exports = {
         case 'active_players_channel':
           const acticePlayersChannel = args[0].options[0].value;
   
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.activePlayersChannel": acticePlayersChannel}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.activePlayersChannel": acticePlayersChannel}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -575,7 +575,7 @@ module.exports = {
         case 'linked_gt_role':
           const linked_gt_role = args[0].options[0].value;
   
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.linkedGamertagRole": linked_gt_role}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.linkedGamertagRole": linked_gt_role}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -588,7 +588,7 @@ module.exports = {
         case 'member_role':
           const member_role = args[0].options[0].value;
   
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.memberRole": member_role}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.memberRole": member_role}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -599,7 +599,7 @@ module.exports = {
           return interaction.send({ embeds: [successMemberRoleEmbed] });
       
         case 'starting_balance':
-          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.startingBalance":args[0].options[0].value}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.startingBalance":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -628,7 +628,7 @@ module.exports = {
                 income: args[0].options[0].options[1].value,
               }
       
-              client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$push: {"server.incomeRoles":newIncome}}, function(err, res) {
+              client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$push: {"server.incomeRoles":newIncome}}, (err, res) => {
                 if (err) return client.sendInternalError(interaction, err);
               });
             } else {
@@ -640,7 +640,7 @@ module.exports = {
                 $set: {
                   "server.incomeRoles.$.income": args[0].options[0].options[1].value
                 }
-              }, function(err, res) {
+              }, (err, res) => {
                 if (err) return client.sendInternalError(interaction, err);
               });
             }
@@ -682,7 +682,7 @@ module.exports = {
           }
       
         case 'income_limiter':
-          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.incomeLimiter":args[0].options[0].value}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.incomeLimiter":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -693,7 +693,7 @@ module.exports = {
           return interaction.send({ embeds: [successIncomeLimiterEmbed] });          
       
         case 'uav-price':
-          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.uavPrice":args[0].options[0].value}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.uavPrice":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -704,7 +704,7 @@ module.exports = {
           return interaction.send({ embeds: [successUAVPriceEmbed] });
 
         case 'emp-price':
-          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.empPrice":args[0].options[0].value}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.empPrice":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
@@ -733,7 +733,7 @@ module.exports = {
         let action = ''
         if (interaction.customId.split('-')[1]=='yes') {
           action = 'removed';
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull:{"server.allowedChannels": channelid}}, function (err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull:{"server.allowedChannels": channelid}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
@@ -758,7 +758,7 @@ module.exports = {
         let roleId = interaction.customId.split('-')[2];
         if (interaction.customId.split('-')[1]=='yes') {
           action = 'removed';
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull: {"server.botAdminRoles": roleId}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull: {"server.botAdminRoles": roleId}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
@@ -784,7 +784,7 @@ module.exports = {
         if (interaction.customId.split('-')[1]=='yes') {
           action = 'removed';
           let income = GuildDB.incemeRoles.find((i) => i.role == roleId);
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull: {"server.incomeRoles": income}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull: {"server.incomeRoles": income}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
@@ -809,7 +809,7 @@ module.exports = {
         if (interaction.customId.split('-')[1]=='yes') {
           action = 'reset';
           const defaultGuildConfig = client.getDefaultSettings(GuildDB.serverID);
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$set: {"server": defaultGuildConfig}}, function(err, res) {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$set: {"server": defaultGuildConfig}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';

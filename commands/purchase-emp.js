@@ -63,7 +63,7 @@ module.exports = {
     
       if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to EMP.')], flags: (1 << 6) });
 
-      client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, function(err, res) {
+      client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
         if (err) return client.sendInternalError(interaction, err);
       });
       
@@ -102,7 +102,7 @@ module.exports = {
           $set: {
             'server.alarms': alarms,
           }
-        }, function (err, res) {
+        }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 

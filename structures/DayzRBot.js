@@ -56,7 +56,7 @@ class DayzRBot extends Client {
               $pull: { 'server.usedArmbands': data.armband },
               $unset: { [`server.factionArmbands.${factionID}`]: "" },
             };
-            await this.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, function (err, res) {
+            await this.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, (err, res) => {
               if (err) return this.sendInternalError(interaction, err);
             });
           }
@@ -185,7 +185,7 @@ class DayzRBot extends Client {
       $set: {
         "server.playerstats": s
       }
-    }, function (err, res) {
+    }, (err, res) => {
       if (err) this.sendError(this.GetChannel(guild.adminLogsChannel), err);
     });
 
@@ -409,7 +409,7 @@ class DayzRBot extends Client {
       guild = {}
       guild.server = this.getDefaultSettings(GuildId);
       if (this.databaseConnected) {
-        this.dbo.collection("guilds").insertOne(guild, function(err, res) {
+        this.dbo.collection("guilds").insertOne(guild, (err, res) => {
           if (err) throw err;
         });
       }
