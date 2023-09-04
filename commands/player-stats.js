@@ -145,7 +145,7 @@ module.exports = {
                   category == 'worst_deathstreak' ? `${query.worstDeathStreak} Deathstreak` :
                   category == 'longest_kill' ? `${query.longestKill}m` : 
                   category == 'money' ? `$${(query.user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :  
-                  category == 'KDR' ? `${query.KDR} KDR` : 'N/A Error';
+                  category == 'KDR' ? `${query.KDR.toFixed(2)} KDR` : 'N/A Error';
 
       statsEmbed.addFields({ name: 'Leaderboard Position', value: `# ${leaderboardPos}`, inline: true });
       

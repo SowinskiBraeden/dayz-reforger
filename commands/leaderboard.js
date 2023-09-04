@@ -108,7 +108,7 @@ module.exports = {
                     category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 
                     category == 'total_time_played' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${client.secondsToDhms(leaderboard[i].lastSessionTime)}` : 
                     category == 'longest_time_played' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 
-                    category == 'KDR' ? `**KDR: ${leaderboard[i].KDR}**` : 'N/A Error';
+                    category == 'KDR' ? `**KDR: ${leaderboard[i].KDR.toFixed(2)}**` : 'N/A Error';
 
         if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
         else if (category == 'total_time_played' || category == 'longest_time_played') {
