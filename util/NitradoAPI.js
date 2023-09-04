@@ -8,28 +8,43 @@ const retryDelay = 5000; // 5 seconds
 
 // Private functions (only called locally)
 
-const DownloadNitradoFile = async(client, filename, outputDir)  => {
+const HandlePlayerBan = async (client, gamertag, ban) => {
   for (let retries = 0; retries <= maxRetries; retries++) {
     try {
-      const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/file_server/download?file=${filename}`, {
+      // get current bans
+      const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers`, {
         headers: {
           "Authorization": client.config.Nitrado.Auth
         }
       }).then(response => 
         response.json().then(data => data)
       ).then(res => res);
-    
-      const stream = fs.createWriteStream(outputDir);
-      if (!res.data || !res.data.token) {
-        client.error(`Error downloading File "${filename}":`);
-        client.error(res);
-        return -1;
-      }
-      const { body } = await fetch(res.data.token.url);
-      await finished(Readable.fromWeb(body).pipe(stream));
-      return 0;
+
+      let bans = res.data.gameserver.settings.general.bans;
+      if (ban) bans += `\r\n${gamertag}`;
+      else if (!ban) bans = bans.replace(gamertag, '');
+      else client.error("Incorrect Ban Option: HandlePlayerBan");
+
+      const formData = new FormData();
+      formData.append("category", "general");
+      formData.append("key", "bans");
+      formData.append("value", bans);
+      formData.pipe(concat(data => {
+        async function sendList() {
+          await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/settings`, {
+            method: "POST",
+            credentials: 'include',
+            headers: {
+              ...formData.getHeaders(),
+              "Authorization": client.config.Nitrado.Auth
+            },
+            body: data,
+          });
+        }
+        sendList();
+      }));
     } catch (error) {
-      if (retries === maxRetries) throw new Error(`DownloadNitradoFile: Failed to fetch data after ${maxRetries} retries`);
+      if (retries === maxRetries) throw new Error(`HandlePlayerBans: Failed to fetch data after ${maxRetries} retries`);
     }
     await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
   }
@@ -38,6 +53,34 @@ const DownloadNitradoFile = async(client, filename, outputDir)  => {
 // Public functions (called externally)
 
 module.exports = {
+
+  DownloadNitradoFile: async(client, filename, outputDir)  => {
+    for (let retries = 0; retries <= maxRetries; retries++) {
+      try {
+        const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/file_server/download?file=${filename}`, {
+          headers: {
+            "Authorization": client.config.Nitrado.Auth
+          }
+        }).then(response => 
+          response.json().then(data => data)
+        ).then(res => res);
+      
+        const stream = fs.createWriteStream(outputDir);
+        if (!res.data || !res.data.token) {
+          client.error(`Error downloading File "${filename}":`);
+          client.error(res);
+          return -1;
+        }
+        const { body } = await fetch(res.data.token.url);
+        await finished(Readable.fromWeb(body).pipe(stream));
+        return 0;
+      } catch (error) {
+        if (retries === maxRetries) throw new Error(`DownloadNitradoFile: Failed to fetch data after ${maxRetries} retries`);
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
+    }
+  },
+
   /*
     Export explicit function names; i.e BanPlayer() & UnbanPlayer() 
     that call to the private parent function HandlePlayerBan() 
