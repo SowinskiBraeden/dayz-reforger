@@ -421,9 +421,9 @@ module.exports = {
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
-          let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == interaction.customId.split('-')[3]);
+          let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == interaction.customId.split('-')[2]);
 
-          playerStat.discordID = interaction.customId.split('-')[2];
+          playerStat.discordID = interaction.customId.split('-')[3];
           
           let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
           GuildDB.playerstats[playerStatIndex] = playerStat;
