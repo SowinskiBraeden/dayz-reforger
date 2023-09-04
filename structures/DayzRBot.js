@@ -348,6 +348,7 @@ class DayzRBot extends Client {
       serverID: GuildId,
       allowedChannels: [],
       killfeedChannel: "",
+      showKillfeedCoords: false,
       connectionLogsChannel: "",
       activePlayersChannel: "",
       welcomeChannel: "",

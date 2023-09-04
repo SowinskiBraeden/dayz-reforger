@@ -299,8 +299,21 @@ module.exports = {
       options: [{
         name: "hours",
         description: "Number of hours till income can be collected",
-        value: 168.00,
+        value: 168.00, // 1 week
         type: 10,
+        required: true,
+      }]
+    },
+    {
+      name: "show_killfeed_coords",
+      description: "Show the coordinates of the killer or victim in the killfeed channel.",
+      value: "show_killfeed_coords",
+      type: 1,
+      options: [{
+        name: "configuration",
+        description: "True or False",
+        value: false,
+        type: 5,
         required: true,
       }]
     }
@@ -507,6 +520,19 @@ module.exports = {
     
           return interaction.send({ embeds: [successSetKillfeedChannelEmbed] });
       
+        case 'show_killfeed_coords':
+          const showKillfeedCoordsConfiguration = args[0].options[0].value;
+
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.showKillfeedCoords": showKillfeedCoordsConfiguration}}, function(err, res) {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+
+          const successConfigureShowKillfeedCoords = new EmbedBuilder()
+            .setDescription(`Successfully configured the killfeed to ${showKillfeedCoordsConfiguration ? 'show' : 'not show'} coordinates.`)
+            .setColor(client.config.Colors.Green);
+
+          return interaction.send({ embeds: [successConfigureShowKillfeedCoords] });
+
         case 'admin_logs_channel':
           const adminLogsChannel = args[0].options[0].value;
   
