@@ -127,7 +127,7 @@ module.exports = {
         
         const successEmbed = new EmbedBuilder()
           .setTitle('Success')
-          .setDescription(`Successfully set a **$${args[0].options[1].value.toFixed(2)}** bounty on \` ${playerStat.gamertag} \`\nThis can be viewed using </bounty view:1086786904671924267>`)
+          .setDescription(`Successfully set a **$${args[0].options[1].value.toFixed(2).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** bounty on \` ${playerStat.gamertag} \`\nThis can be viewed using </bounty view:1086786904671924267>`)
           .setColor(client.config.Colors.Green);
         
         if (anonymous && anonymous.value) return interaction.send({ embeds: [successEmbed], flags: (1 << 6) });
@@ -193,7 +193,7 @@ module.exports = {
 
         for (let i = 0; i < activeBounties.length; i++) {
           for (let j = 0; j < activeBounties[i].bounties.length; j++) {
-            bountiesEmbed.addFields({ name: `${activeBounties[i].gamertag} has a:`, value: `**$${activeBounties[i].bounties[j].value.toFixed(2)}** bounty set by ${activeBounties[i].bounties[j].setBy == null ? 'Anonymous' : `<@${activeBounties[i].bounties[j].setBy}>`}`, inline: false });
+            bountiesEmbed.addFields({ name: `${activeBounties[i].gamertag} has a:`, value: `**$${activeBounties[i].bounties[j].value.toFixed(2).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** bounty set by ${activeBounties[i].bounties[j].setBy == null ? 'Anonymous' : `<@${activeBounties[i].bounties[j].setBy}>`}`, inline: false });
           }
         }
 

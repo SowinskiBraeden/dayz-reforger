@@ -155,7 +155,7 @@ module.exports = {
 
       receivedBounty = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`<@${killerStat.discordID}> received **$${totalBounty.toFixed(2)}** in bounty rewards.`);
+        .setDescription(`<@${killerStat.discordID}> received **$${totalBounty.toFixed(2).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** in bounty rewards.`);
 
       victimStat.bounties = []; // clear bounties after claimed
     }

@@ -95,7 +95,7 @@ module.exports = {
 
         let description = `**You collected**`;
         for (let i = 0; i < roles.length; i++) {
-          description += `\n<@&${roles[i]}> - $**${income[i].toFixed(2)}**`
+          description += `\n<@&${roles[i]}> - $**${income[i].toFixed(2).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}**`
         }
 
         const success = new EmbedBuilder()
