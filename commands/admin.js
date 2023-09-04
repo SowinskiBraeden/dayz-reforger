@@ -447,7 +447,7 @@ module.exports = {
 
           let connectedEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Default)
-            .setDescription(`Successfully connected \` ${playerStat.gamertag} \` as <@${interaction.customId.split('-')[2]}>'s gamertag.`);
+            .setDescription(`Successfully connected \` ${playerStat.gamertag} \` as <@${interaction.customId.split('-')[3]}>'s gamertag.`);
 
           return interaction.update({ embeds: [connectedEmbed], components: [] });
 
