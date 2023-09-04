@@ -27,6 +27,7 @@ module.exports = {
       { name: "deathstreak", value: "deathstreak" },
       { name: "worst_deathstreak", value: "worst_deathstreak" },
       { name: "longest_kill", value: "longest_kill" },
+      { name: "KDR", value: "KDR" },
     ]
   }, {
     name: "limit",
@@ -69,6 +70,7 @@ module.exports = {
           if (category == 'longest_kill') return b.longestKill - a.longestKill;
           if (category == 'total_time_played') return b.totalSessionTime - a.totalSessionTime;
           if (category == 'longest_time_played') return b.longestSessionTime - a.longestSessionTime;
+          if (category == 'KDR') return b.KDR - a.KDR;
         });
 
       }
@@ -87,7 +89,8 @@ module.exports = {
         category == 'longest_kill' ? "Longest Kill Leaderboard" : 
         category == 'money' ? "Money Leaderboard" : 
         category == 'total_time_played' ? "Total Time Played" : 
-        category == 'longest_time_played' ? "Longest Game Session" : 'N/A Error';
+        category == 'longest_time_played' ? "Longest Game Session" : 
+        category == 'KDR' ? "Kill Death Ratio" : 'N/A Error';
 
       leaderboardEmbed.setTitle(`**${title} - DayZ Reforger**`);
 
@@ -104,7 +107,8 @@ module.exports = {
                     category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 
                     category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 
                     category == 'total_time_played' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${client.secondsToDhms(leaderboard[i].lastSessionTime)}` : 
-                    category == 'longest_time_played' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 'N/A Error';
+                    category == 'longest_time_played' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 
+                    category == 'KDR' ? `**KDR: ${leaderboard[i].KDR}**` : 'N/A Error';
 
         if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
         else if (category == 'total_time_played' || category == 'longest_time_played') {

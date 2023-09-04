@@ -27,6 +27,7 @@ module.exports = {
       { name: "deathstreak", value: "deathstreak" },
       { name: "worst_deathstreak", value: "worst_deathstreak" },
       { name: "longest_kill", value: "longest_kill" },
+      { name: "KDR", value: "KDR" },
     ]
   }, {
     name: "discord",
@@ -96,6 +97,7 @@ module.exports = {
           if (category == 'longest_kill') return b.longestKill - a.longestKill;
           if (category == 'total_time_played') return b.totalSessionTime - a.totalSessionTime;
           if (category == 'longest_time_played') return b.longestSessionTime - a.longestSessionTime;
+          if (category == 'KDR') return b.KDR - a.KDR;
         });
 
         if (discord) { // If searching by discord
@@ -122,7 +124,8 @@ module.exports = {
         category == 'longest_kill' ? "Longest Kill" : 
         category == 'money' ? "Total Money" : 
         category == 'total_time_played' ? "Total Time Played" :
-        category == 'longest_time_played' ? "Longest Game Session" : 'N/A Error';
+        category == 'longest_time_played' ? "Longest Game Session" :
+        category == 'KDR' ? "Kill Death Ratio" : 'N/A Error';
 
       let statsEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default);
@@ -141,7 +144,8 @@ module.exports = {
                   category == 'deathstreak' ? `${query.deathStreak} Deathstreak` :
                   category == 'worst_deathstreak' ? `${query.worstDeathStreak} Deathstreak` :
                   category == 'longest_kill' ? `${query.longestKill}m` : 
-                  category == 'money' ? `$${(query.user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :  'N/A Error';
+                  category == 'money' ? `$${(query.user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :  
+                  category == 'KDR' ? `${query.KDR} KDR` : 'N/A Error';
 
       statsEmbed.addFields({ name: 'Leaderboard Position', value: `# ${leaderboardPos}`, inline: true });
       
@@ -151,7 +155,10 @@ module.exports = {
           { name: 'Last Session Time', value: client.secondsToDhms(query.lastSessionTime), inline: true }
         );
       } else if (category == 'longest_time_played') {
-        statsEmbed.addFields({ name: 'Longest Game Session', value: client.secondsToDhms(query.longestSessionTime), inline: true });
+        statsEmbed.addFields(
+          { name: 'Longest Game Session', value: client.secondsToDhms(query.longestSessionTime), inline: true },
+          { name: 'Last Session Time', value: client.secondsToDhms(query.lastSessionTime), inline: true }
+        );
       } else statsEmbed.addFields({ name: title, value: stats, inline: true });
  
       return interaction.send({ embeds: [statsEmbed] });
