@@ -429,6 +429,7 @@ class DayzRBot extends Client {
       events: guild.server.events,
       uavs: guild.server.uavs,
       killfeedChannel: guild.server.killfeedChannel,
+      showKillfeedCoords: guild.server.showKillfeedCoords,
       connectionLogsChannel: guild.server.connectionLogsChannel,
       welcomeChannel: guild.server.welcomeChannel,
       activePlayersChannel: guild.server.activePlayersChannel,
