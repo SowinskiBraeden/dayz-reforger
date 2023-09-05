@@ -168,7 +168,7 @@ module.exports = {
     if (victimStatIndex == -1) stats.push(victimStat);
     else stats[victimStatIndex] = victimStat;
     
-    const coord = showCoord ? `\n**Location [${info.killerPOS[0]}, ${info.killerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.killerPOS[0]};${info.killerPOS[1]})**` : '';
+    const coord = showCoords ? `\n**Location [${info.killerPOS[0]}, ${info.killerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.killerPOS[0]};${info.killerPOS[1]})**` : '';
     
     const killEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
