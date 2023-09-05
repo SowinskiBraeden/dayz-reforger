@@ -185,7 +185,7 @@ class DayzRBot extends Client {
 
             // This player was not connected before, i.e missing connection log?
             playerStat.connected = true;
-            playerStat.lastConnectionDate = this.getDateEST(info.time); // Assume connected now
+            playerStat.lastConnectionDate = await this.getDateEST(info.time); // Assume connected now
             detectedAsConnected.push()
           }
 
