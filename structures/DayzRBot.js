@@ -144,7 +144,7 @@ class DayzRBot extends Client {
     s.map(p => p.connected = false) // assume all players not connected
     
     for (let i = logIndex + 1; i < lines.length; i++) {
-      if (line.includes('| ####')) continue;
+      if (lines[i].includes('| ####')) continue;
       if (lines[i].includes("(id=Unknown") || lines[i].includes("Player \"Unknown Entity\"")) continue;
       if ((i - 1) >= 0 && lines[i] == lines[i-1]) continue; // continue if this line is a duplicate of the last line
       if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes('hit by Player')) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
@@ -200,16 +200,13 @@ class DayzRBot extends Client {
     for (let i = 0; i < previouslyConnected.length; i++) {
       if (!detectedAsConnected.includes(previouslyConnected[i])) {
 
-        // This player disconnected without a disconnect log appearing.
-        client.log('Players disconnected withouth disconnect log: this can happen!!!') // debug proof
-        
-        let playerStat = spreviouslyConnected[i];
+        let playerStat = previouslyConnected[i];
         let playerStatIndex = s.indexOf(playerStat);
         
         playerStat.connected = false;
         s[playerStatIndex] = playerStat;
         
-        SendConnectionLogs(client, guildId, {
+        SendConnectionLogs(this, guildId, {
           time: lastDetectedTime,
           player: playerStat.gamertag,
           connected: false,
