@@ -9,45 +9,41 @@ const retryDelay = 5000; // 5 seconds
 // Private functions (only called locally)
 
 const HandlePlayerBan = async (client, gamertag, ban) => {
-  for (let retries = 0; retries <= maxRetries; retries++) {
-    try {
-      // get current bans
-      const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers`, {
-        headers: {
-          "Authorization": client.config.Nitrado.Auth
-        }
-      }).then(response => 
-        response.json().then(data => data)
-      ).then(res => res);
+  const data = await module.exports.FetchServerSettings(client, 'HandlePlayerBan');  // Fetch server status
 
-      let bans = res.data.gameserver.settings.general.bans;
-      if (ban) bans += `\r\n${gamertag}`;
-      else if (!ban) bans = bans.replace(gamertag, '');
-      else client.error("Incorrect Ban Option: HandlePlayerBan");
+  if (data && data != 1) {
+    let bans = data.data.gameserver.settings.general.bans;
+    if (ban) bans += `\r\n${gamertag}`;
+    else if (!ban) bans = bans.replace(gamertag, '');
+    else client.error("Incorrect Ban Option: HandlePlayerBan");
 
-      const formData = new FormData();
-      formData.append("category", "general");
-      formData.append("key", "bans");
-      formData.append("value", bans);
-      formData.pipe(concat(data => {
-        async function sendList() {
-          await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/settings`, {
-            method: "POST",
-            credentials: 'include',
-            headers: {
-              ...formData.getHeaders(),
-              "Authorization": client.config.Nitrado.Auth
-            },
-            body: data,
-          });
-        }
-        sendList();
-      }));
-      return 0;
-    } catch (error) {
-      if (retries === maxRetries) throw new Error(`HandlePlayerBans: Failed to fetch data after ${maxRetries} retries`);
+    for (let retries = 0; retries <= maxRetries; retries++) {
+      try {
+        const formData = new FormData();
+        formData.append("category", "general");
+        formData.append("key", "bans");
+        formData.append("value", bans);
+        formData.pipe(concat(data => {
+          async function sendList() {
+            await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/settings`, {
+              method: "POST",
+              credentials: 'include',
+              headers: {
+                ...formData.getHeaders(),
+                "Authorization": client.config.Nitrado.Auth
+              },
+              body: data,
+            });
+          }
+          sendList();
+        }));
+        return 0;
+      } catch (error) {
+        client.error(`HandlePlayerBan: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
+        if (retries === maxRetries) throw new Error(`HandlePlayerBan: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`);
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
     }
-    await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
   }
 }
 
@@ -76,7 +72,8 @@ module.exports = {
         await finished(Readable.fromWeb(body).pipe(stream));
         return 0;
       } catch (error) {
-        if (retries === maxRetries) throw new Error(`DownloadNitradoFile: Failed to fetch data after ${maxRetries} retries`);
+        client.error(`DownloadNitradoFile: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
+        if (retries === maxRetries) throw new Error(`DownloadNitradoFile: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`);
       }
       await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
     }
@@ -106,16 +103,23 @@ module.exports = {
           },
           body: JSON.stringify(params)
         });
-        return 0;
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          client.error(`Failed to restart Nitrado server (${client.config.Nitrado.ServerID}): status: ${res.status}, message: ${errorText}: RestartServer`);
+          return 1; // Return error status on failed status code.
+        } else {
+          return 0;
+        }
       } catch (error) {
-        client.error(`Error during restart request: ${error.message}`);
-        if (retries === maxRetries) throw new Error(`RestartServer: Failed to fetch data after ${maxRetries} retries`);
+        client.error(`RestartServer: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
+        if (retries === maxRetries) throw new Error(`RestartServer: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`);
       }
       await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
     }
   },
 
-  CheckServerStatus: async (client) => {
+  FetchServerSettings: async (client, fetcher) => {
     for (let retries = 0; retries <= maxRetries; retries++) {
       try {
         // get current status
@@ -124,27 +128,35 @@ module.exports = {
             "Authorization": client.config.Nitrado.Auth
           }
         });
-  
+
         if (!res.ok) {
           const errorText = await res.text();
-          client.error(`Failed to get Nitrado server stats (${client.config.Nitrado.ServerID}): status: ${res.status}, message: ${errorText}: CheckServerStatus`);
+          client.error(`Failed to get Nitrado server stats (${client.config.Nitrado.ServerID}): status: ${res.status}, message: ${errorText}: ${fetcher} via FetchServerSettings`);
+          if (retries === 2) return 1; // Return error status on the second failed status code.
         } else {
           const data = await res.json();
-          if (data && data.data.gameserver.status === 'stopped') {
-            client.log(`Restart of Nitrado server ${client.config.Nitrado.ServerID} has been invoked by the bot, the periodic check showed status of "${data.data.gameserver.status}".`);
-            // Write optional "restart_message" to set in the Nitrado server logs and send a notice "message" to your server community.
-            restart_message = 'Server being restarted by periodic bot check.';
-            message = 'The server was restarted by periodic bot check!';
-  
-            module.exports.RestartServer(client, restart_message, message);
-          }
+          return data;
         }
-        return 0;
       } catch (error) {
-        client.error(`Failed to connect to Nitrado (${client.config.Nitrado.ServerID}): ${error.message}`);
-        if (retries === maxRetries) throw new Error(`CheckServerStatus: Failed to fetch data after ${maxRetries} retries`);
+        client.error(`${fetcher} via FetchServerSettings: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
+        if (retries === maxRetries) throw new Error(`${fetcher} via FetchServerSettings: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`);
       }
       await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
+    }
+  },
+
+  CheckServerStatus: async (client) => {
+    const data = await module.exports.FetchServerSettings(client, 'CheckServerStatus');  // Fetch server status
+
+    if (data && data != 1) {
+      if (data && data.data.gameserver.status === 'stopped') {
+        client.log(`Restart of Nitrado server ${client.config.Nitrado.ServerID} has been invoked by the bot, the periodic check showed status of "${data.data.gameserver.status}".`);
+        // Write optional "restart_message" to set in the Nitrado server logs and send a notice "message" to your server community.
+        restart_message = 'Server being restarted by periodic bot check.';
+        message = 'The server was restarted by periodic bot check!';
+
+        module.exports.RestartServer(client, restart_message, message);
+      }
     }
   },
 }
