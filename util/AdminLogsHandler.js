@@ -31,12 +31,12 @@ module.exports = {
     
     let newDt = await client.getDateEST(data.time);
 
-    let diff = Math.round((newDt.getTime() - data.lastDamageDate.getTime()) / 1000 / 60); // diff minutes
+    let diffSeconds = Math.round((newDt.getTime() - data.lastDamageDate.getTime()) / 1000);
 
     // If diff is greater than 5 minutes, not a combat log
-    // or if death after last combat and death was before logout event
-    if (data.lastDamageDate <= data.lastDeathDate && data.lastDeathDate < newDt) return;
-    if (diff > 5) return;
+    // or if death after last combat
+    if (data.lastDamageDate <= data.lastDeathDate) return;
+    if (diffSeconds > (5 * 60)) return;
 
     let guild = await client.GetGuild(guildId);
     if (!client.exists(guild.connectionLogsChannel)) return;

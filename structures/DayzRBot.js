@@ -10,6 +10,7 @@ const { DownloadNitradoFile, CheckServerStatus } = require('../util/NitradoAPI')
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents } = require('../util/AlarmsHandler');
+const { SendConnectionLogs } = require('../util/AdminLogsHandler');
 
 const path = require("path");
 const fs = require('fs');
@@ -140,7 +141,10 @@ class DayzRBot extends Client {
     if (!this.exists(guild.playerstats)) guild.playerstats = [];
     let s = guild.playerstats;
 
+    s.map(p => p.connected = false) // assume all players not connected
+    
     for (let i = logIndex + 1; i < lines.length; i++) {
+      if (line.includes('| ####')) continue;
       if (lines[i].includes("(id=Unknown") || lines[i].includes("Player \"Unknown Entity\"")) continue;
       if ((i - 1) >= 0 && lines[i] == lines[i-1]) continue; // continue if this line is a duplicate of the last line
       if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes('hit by Player')) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
@@ -151,7 +155,9 @@ class DayzRBot extends Client {
     }
 
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
-    s.map(p => p.connected = false) // make all connections false
+    let previouslyConnected = s.filter(p => p.connected); // All players with connection log captured above and no disconnect log
+    let detectedAsConnected = [];
+    let lastDetectedTime;
 
     for (let i = lines.length - 1; i > 0; i--) {
       if (lines[i].includes('PlayerList log:')) {
@@ -168,19 +174,47 @@ class DayzRBot extends Client {
             playerID: data[3],
           };
 
+          lastDetectedTime = info.time;
+
           if (!this.exists(info.player) || !this.exists(info.playerID)) continue;
 
-          let playerStat = s.find(stat => stat.playerID == info.playerID)
+          let playerStat = s.find(stat => stat.playerID == info.playerID);
           let playerStatIndex = s.indexOf(playerStat);
           if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
+          if (!previouslyConnected.includes(playerStat)) {
 
-          playerStat.connected = true;
+            // This player was not connected before, i.e missing connection log?
+            playerStat.connected = true;
+            playerStat.lastConnectionDate = this.getDateEST(info.time); // Assume connected now
+            detectedAsConnected.push()
+          }
 
           if (playerStatIndex == -1) s.push(playerStat);
           else s[playerStatIndex] = playerStat;
-
+          detectedAsConnected.push(playerStat);
         }
         break;
+      }
+    }
+
+    for (let i = 0; i < previouslyConnected.length; i++) {
+      if (!detectedAsConnected.includes(previouslyConnected[i])) {
+
+        // This player disconnected without a disconnect log appearing.
+        client.log('Players disconnected withouth disconnect log: this can happen!!!') // debug proof
+        
+        let playerStat = spreviouslyConnected[i];
+        let playerStatIndex = s.indexOf(playerStat);
+        
+        playerStat.connected = false;
+        s[playerStatIndex] = playerStat;
+        
+        SendConnectionLogs(client, guildId, {
+          time: lastDetectedTime,
+          player: playerStat.gamertag,
+          connected: false,
+          lastConnectionDate: playerStat.lastConnectionDate,
+        });
       }
     }
 
