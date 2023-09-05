@@ -6,7 +6,7 @@ const Logger = require("../util/Logger");
 const mongoose = require('mongoose');
 
 // custom util imports
-const { DownloadNitradoFile } = require('../util/NitradoAPI');
+const { DownloadNitradoFile, CheckServerStatus } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents } = require('../util/AlarmsHandler');
@@ -16,6 +16,7 @@ const fs = require('fs');
 const readline = require('readline');
 
 const minute = 60000; // 1 minute in milliseconds
+const arInterval = 600000; // Set auto-restart interval 10mins (600,000ms)
 
 class DayzRBot extends Client {
 
@@ -35,8 +36,10 @@ class DayzRBot extends Client {
 
     this.db;
     this.dbo;
-    this.connectMongo(this.config.mongoURI, this.config.dbo);
     this.databaseConnected = false;
+    this.arInterval = arInterval
+    this.arIntervalId;  // Interval for auto-restart functions
+    this.autoRestartInit();
     this.LoadCommandsAndInteractionHandlers();
     this.LoadEvents();
 
@@ -192,7 +195,7 @@ class DayzRBot extends Client {
     history.lastLog = lines[lines.length-1];
 
     // write JSON string to a file
-    await fs.writeFileSync(logHistoryDir, JSON.stringify(history));
+    fs.writeFileSync(logHistoryDir, JSON.stringify(history));
   }
 
   async logsUpdateTimer(c) {
@@ -255,6 +258,19 @@ class DayzRBot extends Client {
     fs.writeFileSync(dbLogDir, JSON.stringify(databaselogs));
 
     if (failed) process.exit(-1);
+  }
+
+  async autoRestartInit() {
+    // Wait for MongoDB to connect
+    await this.connectMongo(this.config.mongoURI, this.config.dbo);
+
+    let is_enabled = undefined;
+    if (this.databaseConnected) is_enabled = await this.dbo.collection("guilds").findOne({"server.autoRestart":1}).then(is_enabled => is_enabled);
+
+    if (is_enabled) {
+      this.log('Starting periodic Nitrado server status check.');
+      this.arIntervalId = setInterval(CheckServerStatus, this.arInterval, this);
+    }
   }
 
   exists(n) {return null != n && undefined != n && "" != n}
@@ -346,6 +362,7 @@ class DayzRBot extends Client {
   getDefaultSettings(GuildId) {
     return {
       serverID: GuildId,
+      autoRestart: 0,
       allowedChannels: [],
       killfeedChannel: "",
       showKillfeedCoords: false,
@@ -417,6 +434,7 @@ class DayzRBot extends Client {
 
     return {
       serverID: GuildId,
+      autoRestart: guild.server.autoRestart,
       customChannelStatus: guild.server.allowedChannels.length > 0 ? true : false,
       allowedChannels: guild.server.allowedChannels,
       factionArmbands: guild.server.factionArmbands,
@@ -429,6 +447,7 @@ class DayzRBot extends Client {
       events: guild.server.events,
       uavs: guild.server.uavs,
       killfeedChannel: guild.server.killfeedChannel,
+      showKillfeedCoords: guild.server.showKillfeedCoords,
       connectionLogsChannel: guild.server.connectionLogsChannel,
       welcomeChannel: guild.server.welcomeChannel,
       activePlayersChannel: guild.server.activePlayersChannel,

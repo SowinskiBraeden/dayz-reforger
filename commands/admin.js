@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
 const bitfieldCalculator = require('discord-bitfield-calculator');
-const { BanPlayer, UnbanPlayer, RestartServer } = require('../util/NitradoAPI');
+const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus } = require('../util/NitradoAPI');
 const { Armbands } = require('../config/armbandsdb.js');
 
 module.exports = {
@@ -141,6 +141,11 @@ module.exports = {
     name: "restart",
     description: "Restart the DayZ Server",
     value: "restart",
+    type: 1,
+  }, {
+    name: "auto-restart",
+    description: "Enable/Disable periodic server checks and restart if stopped.",
+    value: "auto-restart",
     type: 1,
   }],
   SlashCommand: {
@@ -396,7 +401,7 @@ module.exports = {
                           ? banking.guilds[GuildDB.serverID].balance + args[0].options[0].value
                           : banking.guilds[GuildDB.serverID].balance - args[0].options[0].value;
       
-        client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
+          client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
       
@@ -407,8 +412,40 @@ module.exports = {
         return interaction.send({ embeds: [successEmbed] });
 
       } else if (args[0].name == "restart") {
-        RestartServer(client);
+        // Write optional "restart_message" to set in the Nitrado server logs and send a notice "message" to your server community.
+        restart_message = 'Server being restarted by an admin.';
+        message = 'The server was restarted by an admin!';
+
+        RestartServer(client, restart_message, message);
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('The server will restart shortly.')], flags: (1 << 6) });
+
+      } else if (args[0].name == "auto-restart") {
+        msg = 'Auto server restart periodic check enabled.';
+        pref = 0;
+
+        // Enable/Disable a 10min periodic server status check.
+        if (!client.arIntervalId) {
+          client.arIntervalId = setInterval(CheckServerStatus, client.arInterval, client);
+          client.log('Enabled and starting periodic Nitrado server status check.');
+          pref = 1;
+        } else {
+          msg = 'Auto server restart periodic check disabled.'
+          clearInterval(client.arIntervalId);
+          client.arIntervalId = 0;
+          client.log('Disabled periodic Nitrado server status check.');
+        }
+
+        // Update DB preference
+        GuildDB.autoRestart = pref;
+        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
+          $set: {
+            "server.autoRestart": GuildDB.autoRestart
+          }
+        }, function (err, res) {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+
+        return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(msg)] });
       }
     }
   },
