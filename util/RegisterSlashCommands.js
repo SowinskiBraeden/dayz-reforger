@@ -19,7 +19,7 @@ module.exports = {
 
     for (const file of commandFiles) {
       const command = require(`../commands/${file}`);
-      if (!commands.global) commands.push(command); // don't include global commands
+      if (!command.global) commands.push(command); // don't include global commands
     }
 
     const rest = new REST({ version: '10' }).setToken(client.config.Token);
@@ -43,7 +43,6 @@ module.exports = {
     const commands = [];
     const commandFiles = fs.readdirSync(path.join(__dirname, "..", "commands")).filter(file => file.endsWith('.js'));
 
-    // Place your client and guild ids here
     const clientId = client.application.id;
 
     for (const file of commandFiles) {
