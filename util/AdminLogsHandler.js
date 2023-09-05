@@ -31,7 +31,7 @@ module.exports = {
     
     let newDt = await client.getDateEST(data.time);
 
-    let diff = Math.round((newDt.getTime() - data.lastDamageDate.getTime()) / 1000 / 60); // diff minutes
+    let diffSeconds = Math.round((newDt.getTime() - data.lastDamageDate.getTime()) / 1000);
 
     // If diff is greater than 5 minutes, not a combat log
     // or if death after last combat and death was before logout event
