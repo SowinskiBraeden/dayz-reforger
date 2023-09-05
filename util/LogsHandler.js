@@ -20,7 +20,6 @@ module.exports = {
         time: data[1],
         player: data[2],
         playerID: data[3],
-        connected: true,
       };
 
       if (!client.exists(info.player) || !client.exists(info.playerID)) return stats;
@@ -32,6 +31,7 @@ module.exports = {
       let newDt = await client.getDateEST(info.time);
       
       playerStat.lastConnectionDate = newDt;
+      playerStat.connected = true;
 
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
@@ -39,7 +39,7 @@ module.exports = {
       SendConnectionLogs(client, guildId, {
         time: info.time,
         player: info.player,
-        connected: info.connected,
+        connected: true,
         lastConnectionDate: null,
       });
     }
@@ -52,7 +52,6 @@ module.exports = {
         time: data[1],
         player: data[2],
         playerID: data[3],
-        connected: false
       }
 
       if (!client.exists(info.player) || !client.exists(info.playerID)) return stats;
@@ -62,14 +61,15 @@ module.exports = {
       if (playerStat == undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
 
       let newDt = await client.getDateEST(info.time);
-      let unixTime = Math.floor(newDt.getTime()/1000);
-      let oldUnixTime = Math.floor(playerStat.lastConnectionDate.getTime()/1000);
-      let seconds = unixTime - oldUnixTime;
+      let unixTime = Math.floor(newDt.getTime()/1000); // Seconds
+      let oldUnixTime = Math.floor(playerStat.lastConnectionDate.getTime()/1000); // Seconds
+      let sessionTimeSeconds = unixTime - oldUnixTime;
       if (!client.exists(playerStat.longestSessionTime)) playerStat.longestSessionTime = 0;
 
-      playerStat.totalSessionTime = playerStat.totalSessionTime + seconds;
-      playerStat.lastSessionTime = seconds;
-      playerStat.longestSessionTime = seconds > playerStat.longestSessionTime ? seconds : playerStat.longestSessionTime;
+      playerStat.totalSessionTime = playerStat.totalSessionTime + sessionTimeSeconds;
+      playerStat.lastSessionTime = sessionTimeSeconds;
+      playerStat.longestSessionTime = sessionTimeSeconds > playerStat.longestSessionTime ? sessionTimeSeconds : playerStat.longestSessionTime;
+      playerStat.connected = false;
 
       if (playerStatIndex == -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
@@ -77,7 +77,7 @@ module.exports = {
       SendConnectionLogs(client, guildId, {
         time: info.time,
         player: info.player,
-        connected: info.connected,
+        connected: false,
         lastConnectionDate: playerStat.lastConnectionDate,
       });
 
