@@ -137,8 +137,6 @@ module.exports = {
             message = 'The server was restarted by periodic bot check!';
   
             module.exports.RestartServer(client, restart_message, message);
-          // } else {
-          //   client.log(`Nitrado server ${client.config.Nitrado.ServerID} is ${data.data.gameserver.status}.`);
           }
         }
         return 0;
