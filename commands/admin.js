@@ -436,10 +436,9 @@ module.exports = {
         }
 
         // Update DB preference
-        GuildDB.autoRestart = pref;
         client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
           $set: {
-            "server.autoRestart": GuildDB.autoRestart
+            "server.autoRestart": pref
           }
         }, function (err, res) {
           if (err) return client.sendInternalError(interaction, err);
