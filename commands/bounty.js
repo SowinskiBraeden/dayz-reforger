@@ -56,8 +56,9 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
 
+      let banking;
       if (args[0].name == 'set' || args[0].name == 'pay') {
-        let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
+        banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
 
         if (!banking) {
           banking = {
@@ -82,7 +83,6 @@ module.exports = {
           const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
           if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
         }
-      }
 
       if (args[0].name == 'set') {
 
