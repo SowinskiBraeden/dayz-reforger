@@ -1,4 +1,4 @@
-const { RegisterGlobalCommands, RegisterGuildCommands} = require("../util/RegisterSlashCommands");
+const { RegisterGlobalCommands, RegisterGuildCommands } = require("../util/RegisterSlashCommands");
 const { Collection, Client, EmbedBuilder, Routes } = require('discord.js');
 const MongoClient = require('mongodb').MongoClient;
 const { REST } = require('@discordjs/rest');
@@ -127,7 +127,7 @@ class DayzRBot extends Client {
         lastLog: null
       };
     }
-    
+
     const rl = readline.createInterface({
       input: fileStream,
       crlfDelay: Infinity
@@ -142,7 +142,7 @@ class DayzRBot extends Client {
     let s = guild.playerstats;
 
     s.map(p => p.connected = false) // assume all players not connected
-    
+
     for (let i = logIndex + 1; i < lines.length; i++) {
       if (lines[i].includes('| ####')) continue;
       if (lines[i].includes("(id=Unknown") || lines[i].includes("Player \"Unknown Entity\"")) continue;
