@@ -83,6 +83,7 @@ module.exports = {
           const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
           if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
         }
+      }
 
       if (args[0].name == 'set') {
 
