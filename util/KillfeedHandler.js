@@ -80,10 +80,11 @@ module.exports = {
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
       const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : info.causeOfDeath;
       const coord = showCoords ? `\n**Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})**` : '';
+      const killMessage = killedBy == Templayed.Vehicle ? 'run over by' : 'blew up from';
 
       const killEvent = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** killed by a **${cod}.**${coord}`);
+        .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** ${killMessage} a **${cod}.**${coord}`);
 
       if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
       return stats;
