@@ -5,6 +5,8 @@ const { SendConnectionLogs, DetectCombatLog } = require('./AdminLogsHandler');
 // custom util imports
 const { FetchServerSettings } = require('../util/NitradoAPI');
 
+let lastSendMessage;
+
 module.exports = {
 
   HandlePlayerLogs: async (client, guildId, stats, line) => {
@@ -210,18 +212,18 @@ module.exports = {
           { name: 'Status:', value: `\` ${statusEmoji} ${statusText} \``, inline: true }, 
           { name: 'Slots:', value: `\` ${slots} \``, inline: true }
         );
-    
+
       const activePlayersEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
         .setTimestamp()
         .setTitle(`Players Online:`)
         .setDescription(des || (nodes ? "No Players Online :(" : ""))
-      
-      return channel.send({ embeds: [PlayersEmbed, activePlayersEmbed] }).then(sentMessage => {      
-        setTimeout(() => {
-            sentMessage.delete().catch(error => client.sendError(channel, `HandleActivePlayersList Error: \n${error}`));
-        }, 360000);
-      });
+
+      if (lastSendMessage) lastSendMessage.delete().catch(error => client.sendError(channel, `HandleActivePlayersList Error: \n${error}`));  // Remove previous message before reprinting
+
+      return channel.send({ embeds: [PlayersEmbed, activePlayersEmbed] }).then(sentMessage =>   
+        lastSendMessage = sentMessage
+      );
     }
   }
 }
