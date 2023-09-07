@@ -47,7 +47,7 @@ module.exports = {
 
     let combatLog = new EmbedBuilder()
       .setColor(client.config.Colors.Red)
-      .setDescription(`**NOTICE:**\n**${data.player}** has combat logged at <t:${unixTime}> when fighting **${data.lastHitBy}**`);
+      .setDescription(`**NOTICE:**\n**${data.player}** has combat logged at <t:${unixTime}> when fighting **${data.lastHitBy}\nLocation [${pos[0]}, ${pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${pos[0]};${pos[1]})**`);
   
     if (client.exists(guild.adminRole)) channel.send({ content: `<@&${guild.adminRole}>` });
 

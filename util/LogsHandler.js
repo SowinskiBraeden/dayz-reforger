@@ -89,6 +89,7 @@ module.exports = {
       DetectCombatLog(client, guildId, {
         time: info.time,
         player: info.player,
+        pos: plaerStat.pos,
         lastDamageDate: playerStat.lastDamageDate,
         lastHitBy: playerStat.lastHitBy,
         lastDeathDate: playerStat.lastDeathDate,
