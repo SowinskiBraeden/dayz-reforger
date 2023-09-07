@@ -235,7 +235,7 @@ class DayzRBot extends Client {
     c.activePlayersTick++;
     
     await DownloadNitradoFile(c, `/games/${c.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async (status) => {
-      if (status == -1) return c.error('...Failed to Download logs...');
+      if (status == 1) return c.error('...Failed to Download logs...');
       // c.log('...Downloaded logs...');
       await c.readLogs(c.config.GuildID).then(async () => {
         // c.log('...Analyzed logs...');
