@@ -350,9 +350,9 @@ module.exports = {
 
       } else if (args[0].name == 'ban-player') {
 
-        let failed = await BanPlayer(client, args[0].options[0].value);
+        let data = await BanPlayer(client, args[0].options[0].value);
 
-        if (failed) {
+        if (data == 1) {
           let failed = new EmbedBuilder()
             .setColor(client.config.Colors.Red)
             .setDescription(`Failed to ban **${args[0].options[0].value}**. Check internal logs for an error.`);
@@ -368,14 +368,14 @@ module.exports = {
 
       } else if (args[0].name == 'unban-player') {
 
-        let failed = UnbanPlayer(client, args[0].options[0].value);
+        let data = UnbanPlayer(client, args[0].options[0].value);
 
-        if (failed) {
+        if (data == 1) {
           let failed = new EmbedBuilder()
             .setColor(client.config.Colors.Red)
             .setDescription(`Failed to ban **${args[0].options[0].value}**. Check internal logs for an error.`);
 
-          return interaciton.send({ embeds: [failed] });
+          return interaction.send({ embeds: [failed] });
         }
 
         let banned = new EmbedBuilder()
