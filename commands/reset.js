@@ -6,7 +6,7 @@ module.exports = {
   name: "reset",
   debug: false,
   global: false,
-  description: "Reset a users data",
+  description: "Reset a users Banking data",
   usage: "[user]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

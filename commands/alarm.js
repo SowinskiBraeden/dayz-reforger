@@ -6,7 +6,7 @@ module.exports = {
   debug: false,
   global: false,
   description: "Create a Zone Ping Alarm",
-  usage: "[cmd] [opt]",
+  usage: "[command] [options]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: ["MANAGE_GUILD"],

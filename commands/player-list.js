@@ -4,7 +4,7 @@ module.exports = {
   name: "player-list",
   debug: false,
   global: false,
-  description: "get current online players",
+  description: "Get current online players",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

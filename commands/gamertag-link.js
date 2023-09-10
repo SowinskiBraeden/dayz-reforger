@@ -4,7 +4,7 @@ module.exports = {
   name: "gamertag-link",
   debug: false,
   global: false,
-  description: "Connect DayZ account to gain server access",
+  description: "Connect DayZ stats to your Discord",
   usage: "[gamertag]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

@@ -4,7 +4,7 @@ module.exports = {
   name: "excluded",
   debug: false,
   global: false,
-  description: "view a list of excluded roles",
+  description: "View a list of excluded roles",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

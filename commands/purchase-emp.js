@@ -5,7 +5,7 @@ module.exports = {
   name: "purchase-emp",
   debug: false,
   global: false,
-  description: "EMP an Alarm to prevent any updates for 30 minutes.",
+  description: "EMP an Alarm to prevent any updates for 30 minutes",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

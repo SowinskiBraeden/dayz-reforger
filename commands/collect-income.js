@@ -5,7 +5,7 @@ module.exports = {
   name: "collect-income",
   debug: false,
   global: false,
-  description: "collect your income",
+  description: "Collect your income",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

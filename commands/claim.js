@@ -5,7 +5,7 @@ module.exports = {
   name: "claim",
   debug: false,
   global: false,
-  description: "claim an available armband for your ",
+  description: "Claim an available armband for your faction",
   usage: "[role]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

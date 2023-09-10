@@ -6,7 +6,7 @@ module.exports = {
   debug: false,
   global: false,
   description: "Admin controlled events",
-  usage: "[event] [opt]",
+  usage: "[event] [option]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],

@@ -7,8 +7,8 @@ module.exports = {
   name: "admin",
   debug: false,
   global: false,
-  description: "Connect a users gamertag for them",
-  usage: "[user] [gamertag]",
+  description: "Administrative only commands",
+  usage: "[command] [options]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],

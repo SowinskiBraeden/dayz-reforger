@@ -6,7 +6,7 @@ module.exports = {
   debug: false,
   global: false,
   description: "Configure your server settings",
-  usage: "[opt] [action] [value]",
+  usage: "[options] [configuration]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: ["MANAGE_GUILD"],

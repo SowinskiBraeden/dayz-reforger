@@ -5,7 +5,7 @@ module.exports = {
   name: "factions",
   debug: false,
   global: false,
-  description: "view the armband of a faction",
+  description: "View the armband of a faction",
   usage: "[role]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

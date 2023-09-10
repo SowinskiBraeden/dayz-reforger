@@ -4,7 +4,7 @@ module.exports = {
   name: "gamertag-unlink",
   debug: false,
   global: false,
-  description: "Disconnect gamertag",
+  description: "Disconnect DayZ stats from your Discord",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

@@ -4,7 +4,7 @@ module.exports = {
   name: "channels",
   debug: false,
   global: false,
-  description: "view a list of allowed channels",
+  description: "View a list of allowed channels",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
