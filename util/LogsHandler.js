@@ -74,6 +74,7 @@ module.exports = {
       playerStat.totalSessionTime = playerStat.totalSessionTime + sessionTimeSeconds;
       playerStat.lastSessionTime = sessionTimeSeconds;
       playerStat.longestSessionTime = sessionTimeSeconds > playerStat.longestSessionTime ? sessionTimeSeconds : playerStat.longestSessionTime;
+      playerStat.lastDisconnectionDate = newDt;
       playerStat.connected = false;
 
       if (playerStatIndex === -1) stats.push(playerStat);
