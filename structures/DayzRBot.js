@@ -1,5 +1,6 @@
 const { RegisterGlobalCommands, RegisterGuildCommands } = require("../util/RegisterSlashCommands");
 const { Collection, Client, EmbedBuilder, Routes } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const MongoClient = require('mongodb').MongoClient;
 const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
@@ -155,7 +156,6 @@ class DayzRBot extends Client {
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
     const playerSessions = new Map();
     let previouslyConnected = s.filter(p => p.connected); // All players with connection log captured above and no disconnect log
-    let detectedAsConnected = [];
     let lastDetectedTime;
 
     for (let i = lines.length - 1; i > 0; i--) {
@@ -173,38 +173,37 @@ class DayzRBot extends Client {
             playerID: data[3],
           };
 
-          lastDetectedTime = info.time;
+          lastDetectedTime = await this.getDateEST(info.time);
 
-          if (!this.exists(info.player) || !this.exists(info.playerID)) continue;
+          if (!this.exists(info.player) || !this.exists(info.playerID)) continue;  // Skip this player if the player does not exist.
+          let playerStat = s.find(stat => stat.playerID == info.playerID);
+          if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
           // Check if the player session exists in the map.
           if (playerSessions.has(info.playerID)) {
             // Player is already in a session, update the session's end time.
             const session = playerSessions.get(info.playerID);
-            session.endTime = await this.getDateEST(info.time); // Update end time.
+            session.endTime = lastDetectedTime; // Update end time.
           } else {
             // Player is not in a session, create a new session.
             const newSession = {
-              startTime: await this.getDateEST(info.time),
+              startTime: lastDetectedTime,
               endTime: null, // Initialize end time as null.
             };
             playerSessions.set(info.playerID, newSession);
           }
 
-          let playerStat = s.find(stat => stat.playerID == info.playerID);
           let playerStatIndex = s.indexOf(playerStat);
           if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
 
           if (!previouslyConnected.includes(playerStat)) {
             // Check if the player has been marked as connected before.
             playerStat.connected = true;
-            playerStat.lastConnectionDate = await this.getDateEST(info.time); // Update last connection date.
-            detectedAsConnected.push(playerStat);
+            playerStat.lastConnectionDate = lastDetectedTime; // Update last connection date.
           }
 
           if (playerStatIndex == -1) s.push(playerStat);
           else s[playerStatIndex] = playerStat;
-          detectedAsConnected.push(playerStat);
         }
         break;
       }
@@ -433,6 +432,7 @@ class DayzRBot extends Client {
       time: null,
       lastTime: null,
       lastConnectionDate: null,
+      lastDisconnectionDate: null,
       lastDamageDate: null,
       lastDeathDate: null,
       lastHitBy: null,

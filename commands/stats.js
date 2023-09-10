@@ -30,7 +30,7 @@ module.exports = {
           { name: 'Latency', value: `${end - start}ms`, inline: true },
           { name: 'Uptime', value: `${client.secondsToDhms(process.uptime().toFixed(2))}`, inline: true },
           { name: 'Bot Version', value: `${client.config.Dev} v${client.config.Version}`, inline: true },
-          { name: 'Discord Version', value: 'Discord.js ^14.8.0', inline: true },
+          { name: 'Discord Version', value: 'Discord.js v14.8.0', inline: true },
         )
       
       return interaction.send({ embeds: [stats] })

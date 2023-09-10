@@ -319,7 +319,7 @@ module.exports = {
       }]
     }, {
       name: "combat-log-timer",
-      description: "Set the number of minutes to elapse for a player to not combat log. (Set to 0 to disbable combat logging detection)",
+      description: "Adjust log timeout for combat prevention. (0 disables combat log)",
       value: "combat-log-timer",
       type: CommandOptions.SubCommand,
       options: [{
