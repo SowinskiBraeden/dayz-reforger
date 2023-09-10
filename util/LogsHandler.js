@@ -15,7 +15,7 @@ module.exports = {
     const disconnectTemplate = /(.*) \| Player \"(.*)\"\(id=(.*)\) has been disconnected/g;
     const positionTemplate   = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
     const damageTemplate     = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
-    const deadTemplate       = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: 0] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
+    const deadTemplate       = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
 
     if (line.includes(' connected')) {
       let data = [...line.matchAll(connectTemplate)][0];
@@ -33,9 +33,7 @@ module.exports = {
       let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat == undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
       
-      let newDt = await client.getDateEST(info.time);
-      
-      playerStat.lastConnectionDate = newDt;
+      playerStat.lastConnectionDate = await client.getDateEST(info.time);;
       playerStat.connected = true;
 
       if (playerStatIndex == -1) stats.push(playerStat);
