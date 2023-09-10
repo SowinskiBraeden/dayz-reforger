@@ -177,7 +177,7 @@ class DayzRBot extends Client {
 
           if (!this.exists(info.player) || !this.exists(info.playerID)) continue;  // Skip this player if the player does not exist.
           let playerStat = s.find(stat => stat.playerID == info.playerID);
-          if (this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
+          if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
           // Check if the player session exists in the map.
           if (playerSessions.has(info.playerID)) {
