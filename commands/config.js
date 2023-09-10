@@ -317,6 +317,18 @@ module.exports = {
         type: CommandOptions.Boolean,
         required: true,
       }]
+    }, {
+      name: "combat-log-timer",
+      description: "Set the number of minutes to elapse for a player to not combat log. (Set to 0 to disbable combat logging detection)",
+      value: "combat-log-timer",
+      type: CommandOptions.SubCommand,
+      options: [{
+        name: "minutes",
+        description: "Minutes to qualify combat log",
+        value: 5,
+        type: CommandOptions.Integer,
+        min_value: 0,
+      }]
     }
   ],  
   SlashCommand: {
@@ -522,7 +534,7 @@ module.exports = {
           return interaction.send({ embeds: [successSetKillfeedChannelEmbed] });
       
         case 'show_killfeed_coords':
-          const showKillfeedCoordsConfiguration = args[0].options[0].value;
+          const showKillfeedCoordsConfiguration = args[0].options[0].value ? 1 : 0;
 
           client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.showKillfeedCoords": showKillfeedCoordsConfiguration}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
@@ -714,6 +726,17 @@ module.exports = {
             .setDescription(`Successfully set $${args[0].options[0].value.toFixed(2)} as EMP price`);
           
           return interaction.send({ embeds: [successEMPPriceEmbed] });          
+
+        case 'combat-log-timer':
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.combatLogTimer":args[0].options[0].value}}, (err, res) => {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+    
+          let successCobatLogTimerEmbed = new EmbedBuilder()
+            .setColor(client.config.Colors.Green)
+            .setDescription(`Successfully set combat log timer to **${args[0].options[0].value.toFixed(0)} minutes.**`);
+
+          return interaction.send({ embeds: [successCobatLogTimerEmbed] });          
 
         default:
           return client.sendInternalError(interaction, 'There was an error parsing the config command');

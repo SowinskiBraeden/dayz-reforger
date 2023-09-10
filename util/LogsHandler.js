@@ -9,7 +9,7 @@ let lastSendMessage;
 
 module.exports = {
 
-  HandlePlayerLogs: async (client, guildId, stats, line) => {
+  HandlePlayerLogs: async (client, guildId, stats, line, combatLogTimer = 5) => {
 
     const connectTemplate    = /(.*) \| Player \"(.*)\" is connected \(id=(.*)\)/g;
     const disconnectTemplate = /(.*) \| Player \"(.*)\"\(id=(.*)\) has been disconnected/g;
@@ -86,14 +86,16 @@ module.exports = {
         lastConnectionDate: playerStat.lastConnectionDate,
       });
 
-      DetectCombatLog(client, guildId, {
-        time: info.time,
-        player: info.player,
-        pos: playerStat.pos,
-        lastDamageDate: playerStat.lastDamageDate,
-        lastHitBy: playerStat.lastHitBy,
-        lastDeathDate: playerStat.lastDeathDate,
-      });
+      if (combatLogTimer != 0) {
+        DetectCombatLog(client, guildId, {
+          time: info.time,
+          player: info.player,
+          pos: playerStat.pos,
+          lastDamageDate: playerStat.lastDamageDate,
+          lastHitBy: playerStat.lastHitBy,
+          lastDeathDate: playerStat.lastDeathDate,
+        });
+      }
     }
 
     if (line.includes('pos=<') && !line.includes('hit by')) {

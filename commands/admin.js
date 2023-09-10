@@ -148,18 +148,6 @@ module.exports = {
     description: "Enable/Disable periodic server checks and restart if stopped.",
     value: "auto-restart",
     type: CommandOptions.SubCommand,
-  }, {
-    name: "combat-log-timer",
-    description: "Set the number of minutes to elapse for a player to not combat log. (Set to 0 to disbable combat logging detection)",
-    value: "combat-log-timer",
-    type: CommandOptions.SubCommand,
-    options: [{
-      name: "minutes",
-      description: "Minutes to qualify combat log",
-      value: 5,
-      type: CommandOptions.Integer, // Integer
-
-    }]
   }],
   SlashCommand: {
     /**

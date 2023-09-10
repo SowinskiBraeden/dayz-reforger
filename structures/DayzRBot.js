@@ -145,7 +145,7 @@ class DayzRBot extends Client {
       if (lines[i].includes('| ####')) continue;
       if (lines[i].includes("(id=Unknown") || lines[i].includes("Player \"Unknown Entity\"")) continue;
       if ((i - 1) >= 0 && lines[i] == lines[i - 1]) continue; // continue if this line is a duplicate of the last line
-      if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[i].includes('hit by Player')) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
+      if (lines[i].includes('connected') || lines[i].includes('pos=<')) s = await HandlePlayerLogs(this, guildId, s, lines[i], guild.combatLogTimer);
       if (lines[i].includes('killed by  with') || lines[i].includes('killed by LandMineTrap')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles explosive deaths
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by') && lines[i].includes('TransportHit')) s = await HandleKillfeed(this, guildId, s, lines[i]) // Handles vehicle deaths
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles regular deaths
@@ -411,6 +411,7 @@ class DayzRBot extends Client {
       empPrice: 500000,
       memberRole: "",
       adminRole: "",
+      combatLogTimer: 5, // minutes
     }
   }
 
@@ -484,6 +485,7 @@ class DayzRBot extends Client {
       uavPrice: guild.server.uavPrice,
       memberRole: guild.server.memberRole,
       adminRole: guild.server.adminRole,
+      combatLogTimer: guild.server.combatLogTimer,
     };
   }
 
