@@ -75,11 +75,11 @@ module.exports = {
         }).then(response => 
           response.json().then(data => data)
         ).then(res => res);
-      
+
         const stream = fs.createWriteStream(outputDir);
         if (!res.data || !res.data.token) {
-          client.error(`Error downloading File "${filename}":`);
-          client.error(res);
+          const errorText = await res.text();
+          client.error(`Error downloading File "${filename}": message: ${errorText}: DownloadNitradoFile`);
           return 1;
         }
         const { body } = await fetch(res.data.token.url);

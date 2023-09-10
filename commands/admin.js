@@ -185,7 +185,7 @@ module.exports = {
           const warnGTOverwrite = new EmbedBuilder()
             .setColor(client.config.Colors.Yellow)
             .setDescription(`**Notice:**\n> The gamertag has previously been linked to <@${playerStat.discordID}>. Are you sure you would like to change this?`)
-          
+
           const opt = new ActionRowBuilder()
             .addComponents(
               new ButtonBuilder()
@@ -202,7 +202,7 @@ module.exports = {
         }
 
         playerStat.discordID = args[0].options[0].value;
-        
+
         let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
         GuildDB.playerstats[playerStatIndex] = playerStat;
 
@@ -228,7 +228,7 @@ module.exports = {
           .setDescription(`Successfully connected \` ${playerStat.gamertag} \` as <@${args[0].options[0].value}>'s gamertag.`);
 
         return interaction.send({ embeds: [connectedEmbed] })
-      
+
       } else if (args[0].name == 'gamertag-unlink') {
 
         if (!client.exists(GuildDB.playerstats)) {
@@ -248,7 +248,7 @@ module.exports = {
         const warnGTOverwrite = new EmbedBuilder()
           .setColor(client.config.Colors.Yellow)
           .setDescription(`**Notice:**\n> This action will unlink the gamertag \` ${playerStat.gamertag} \` from the user <@${playerStat.discordID}>. Are you sure you would like to continue?`)
-        
+
         const opt = new ActionRowBuilder()
           .addComponents(
             new ButtonBuilder()
@@ -273,7 +273,7 @@ module.exports = {
           const warnArmbadChange = new EmbedBuilder()
             .setColor(client.config.Colors.Yellow)
             .setDescription(`**Notice:**\n> The faction <@&${args[0].options[0].value}> already has an armband selected. Are you sure you would like to change this?`)
-          
+
           const opt = new ActionRowBuilder()
             .addComponents(
               new ButtonBuilder()
@@ -289,13 +289,13 @@ module.exports = {
           return interaction.send({ embeds: [warnArmbadChange], components: [opt] });
         }
 
-        // Any interaction for 'claim-armband' can be handled in 
+        // Any interaction for 'claim-armband' can be handled in
         // 'commands/claim.js' Interaction handlers and does not require its own code in this file.
 
         let available = new StringSelectMenuBuilder()
           .setCustomId(`Claim-${args[0].options[0].value}-1-${interaction.member.user.id}`)
           .setPlaceholder('Select an armband from list 1 to claim')
-        
+
         let availableNext = new StringSelectMenuBuilder()
           .setCustomId(`Claim-${args[0].options[0].value}-2-${interaction.member.user.id}`)
           .setPlaceholder('Select an armband from list 2 to claim')
@@ -321,7 +321,7 @@ module.exports = {
         if (tracker > 25) {
           opt2 = new ActionRowBuilder().addComponents(availableNext);
           compList.push(opt2);
-        } 
+        }
 
         return interaction.send({ components: compList });
 
@@ -340,7 +340,7 @@ module.exports = {
           }
         }, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
-        });        
+        });
 
         const clearedBounty = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
@@ -399,13 +399,13 @@ module.exports = {
             }
           }
 
-          // Register bank for user  
+          // Register bank for user
           let newBank = new User();
           newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance);
           newBank.save().catch(err => {
             if (err) return client.sendInternalError(interaction, err);
           });
-          
+
         } else banking = banking.user;
 
         if (!client.exists(banking.guilds[GuildDB.serverID])) {
@@ -416,11 +416,11 @@ module.exports = {
         let newBalance = args[0].name == 'add-money'
                           ? banking.guilds[GuildDB.serverID].balance + args[0].options[0].value
                           : banking.guilds[GuildDB.serverID].balance - args[0].options[0].value;
-      
+
           client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
-      
+
         const successEmbed = new EmbedBuilder()
           .setDescription(`Successfully ${args[0].name == 'add-money' ? 'added' : 'removed'} **$${args[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** ${args[0].name == 'add' ? 'to' : 'from'} <@${targetUserID}>'s balance`)
           .setColor(client.config.Colors.Green);
@@ -460,7 +460,7 @@ module.exports = {
           if (err) return client.sendInternalError(interaction, err);
         });
 
-        return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(msg)] });
+        return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(msg)], flags: (1 << 6) });
       }
     }
   },
@@ -469,14 +469,14 @@ module.exports = {
 
     AdminOverwriteGamertag: {
       run: async(client, interaction, GuildDB) => {
-        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+        if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
           let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == interaction.customId.split('-')[2]);
 
           playerStat.discordID = interaction.customId.split('-')[3];
-          
+
           let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
           GuildDB.playerstats[playerStatIndex] = playerStat;
 
@@ -515,14 +515,14 @@ module.exports = {
 
     AdminUnlinkGamertag: {
       run: async(client, interaction, GuildDB) => {
-        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+        if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
           let playerStat = GuildDB.playerstats.find(stat => stat.discordID == interaction.customId.split('-')[2]);
 
           playerStat.discordID = "";
-          
+
           let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
           GuildDB.playerstats[playerStatIndex] = playerStat;
 

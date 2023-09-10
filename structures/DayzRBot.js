@@ -10,19 +10,18 @@ const { DownloadNitradoFile, CheckServerStatus } = require('../util/NitradoAPI')
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents } = require('../util/AlarmsHandler');
-const { SendConnectionLogs } = require('../util/AdminLogsHandler');
 
 const path = require("path");
 const fs = require('fs');
 const readline = require('readline');
 
 const minute = 60000; // 1 minute in milliseconds
-const arInterval = 600000; // Set auto-restart interval 10mins (600,000ms)
+const arInterval = 600000; // Set auto-restart interval 10 minutes (600,000ms)
 
 class DayzRBot extends Client {
 
   constructor(options, config) {
-    super(options)
+    super(options);
 
     this.config = config;
     this.commands = new Collection();
@@ -30,16 +29,17 @@ class DayzRBot extends Client {
     this.logger = new Logger(path.join(__dirname, "..", "logs/Logs.log"));
     this.timer = this.config.Dev == 'PROD.' ? minute * 5 : minute / 4;
 
-    if (this.config.Token === "" || this.config.GuildID === "")
-    throw new TypeError(
-      "The config.js is not filled out. Please make sure nothing is blank, otherwise the bot will not work properly."
-    );
+    if (this.config.Token === "" || this.config.GuildID === "") {
+      throw new TypeError(
+        "The config.js is not filled out. Please make sure nothing is blank, otherwise the bot will not work properly."
+      );
+    }
 
     this.db;
     this.dbo;
     this.databaseConnected = false;
-    this.arInterval = arInterval
-    this.arIntervalId;  // Interval for auto-restart functions
+    this.arInterval = arInterval;
+    this.arIntervalId; // Interval for auto-restart functions
     this.autoRestartInit();
     this.LoadCommandsAndInteractionHandlers();
     this.LoadEvents();
@@ -49,7 +49,7 @@ class DayzRBot extends Client {
 
     this.ws.on("INTERACTION_CREATE", async (interaction) => {
       const start = new Date().getTime();
-      if (interaction.type!=3) {
+      if (interaction.type != 3) {
         let GuildDB = await this.GetGuild(interaction.guild_id);
 
         for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
@@ -60,21 +60,21 @@ class DayzRBot extends Client {
               $pull: { 'server.usedArmbands': data.armband },
               $unset: { [`server.factionArmbands.${factionID}`]: "" },
             };
-            await this.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, (err, res) => {
+            await this.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
               if (err) return this.sendInternalError(interaction, err);
             });
           }
         }
-        
+
         const command = interaction.data.name.toLowerCase();
         const args = interaction.data.options;
 
-        client.log(`Interaction - ${command}`);
+        this.log(`Interaction - ${command}`);
 
-        //Easy to send respnose so ;)
+        // Easy to send response so ;)
         interaction.guild = await this.guilds.fetch(interaction.guild_id);
         interaction.send = async (message) => {
-          const rest = new REST({ version: '10' }).setToken(client.config.Token);
+          const rest = new REST({ version: '10' }).setToken(this.config.Token);
 
           return await rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
             body: {
@@ -88,11 +88,11 @@ class DayzRBot extends Client {
           let dbFailedEmbed = new EmbedBuilder()
             .setDescription(`**Internal Error:**\nUh Oh D:  Its not you, its me.\nThe bot has failed to connect to the database 5 times!\nContact the Developers\nhttps://discord.gg/YCXhvy9uZw`)
             .setColor(this.config.Colors.Red)
-        
+
           return interaction.send({ embeds: [dbFailedEmbed] });
         }
 
-        let cmd = client.commands.get(command);
+        let cmd = this.commands.get(command);
         try {
           cmd.SlashCommand.run(this, interaction, args, { GuildDB }, start); // start is only used in ping / stats command
         } catch (err) {
@@ -100,24 +100,22 @@ class DayzRBot extends Client {
         }
       }
     });
-
-    const client = this;
   }
 
   log(Text) { this.logger.log(Text); }
   error(Text) { this.logger.error(Text); }
 
   async getDateEST(time) {
-    let timeArray = time.split(' ')[0].split(':')
+    let timeArray = time.split(' ')[0].split(':');
     let t = new Date(); // Get current date & time (UTC)
-    let f = new Date(t.getTime() - 4 * 3600000) // Convert UTC into EST time to roll back the day as necessary
+    let f = new Date(t.getTime() - 4 * 3600000); // Convert UTC into EST time to roll back the day as necessary
     f.setUTCHours(timeArray[0], timeArray[1], timeArray[2]);  // Apply the supplied EST time to the converted date (EST is the timezone produced from the Nitrado logs).
     return new Date(f.getTime() + 4 * 3600000);  // Add EST time offset to return timestamp in UTC
   }
 
   async readLogs(guildId) {
     const fileStream = fs.createReadStream('./logs/server-logs.ADM');
-  
+
     let logHistoryDir = path.join(__dirname, '..', 'logs', 'history-logs.ADM.json');
     let history;
     try {
@@ -134,20 +132,20 @@ class DayzRBot extends Client {
     });
     let lines = [];
     for await (const line of rl) { lines.push(line); }
-    
+
     let logIndex = lines.indexOf(history.lastLog);
-    
+
     let guild = await this.GetGuild(guildId);
     if (!this.exists(guild.playerstats)) guild.playerstats = [];
     let s = guild.playerstats;
 
-    s.map(p => p.connected = false) // assume all players not connected
+    s.map(p => p.connected = false); // assume all players not connected
 
     for (let i = logIndex + 1; i < lines.length; i++) {
       if (lines[i].includes('| ####')) continue;
       if (lines[i].includes("(id=Unknown") || lines[i].includes("Player \"Unknown Entity\"")) continue;
-      if ((i - 1) >= 0 && lines[i] == lines[i-1]) continue; // continue if this line is a duplicate of the last line
-      if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[1].includes('hit by Player')) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
+      if ((i - 1) >= 0 && lines[i] == lines[i - 1]) continue; // continue if this line is a duplicate of the last line
+      if (lines[i].includes('connected') || lines[i].includes('pos=<') || lines[i].includes('hit by Player')) s = await HandlePlayerLogs(this, guildId, s, lines[i]);
       if (lines[i].includes('killed by  with') || lines[i].includes('killed by LandMineTrap')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles explosive deaths
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by') && lines[i].includes('TransportHit')) s = await HandleKillfeed(this, guildId, s, lines[i]) // Handles vehicle deaths
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles regular deaths
@@ -155,13 +153,14 @@ class DayzRBot extends Client {
     }
 
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
+    const playerSessions = new Map();
     let previouslyConnected = s.filter(p => p.connected); // All players with connection log captured above and no disconnect log
     let detectedAsConnected = [];
     let lastDetectedTime;
 
     for (let i = lines.length - 1; i > 0; i--) {
       if (lines[i].includes('PlayerList log:')) {
-        for (let j = i + 1; i < lines.length; j++) {
+        for (let j = i + 1; j < lines.length; j++) {
           let line = lines[j];
           if (line.includes('| ####')) break;
 
@@ -178,15 +177,29 @@ class DayzRBot extends Client {
 
           if (!this.exists(info.player) || !this.exists(info.playerID)) continue;
 
+          // Check if the player session exists in the map.
+          if (playerSessions.has(info.playerID)) {
+            // Player is already in a session, update the session's end time.
+            const session = playerSessions.get(info.playerID);
+            session.endTime = await this.getDateEST(info.time); // Update end time.
+          } else {
+            // Player is not in a session, create a new session.
+            const newSession = {
+              startTime: await this.getDateEST(info.time),
+              endTime: null, // Initialize end time as null.
+            };
+            playerSessions.set(info.playerID, newSession);
+          }
+
           let playerStat = s.find(stat => stat.playerID == info.playerID);
           let playerStatIndex = s.indexOf(playerStat);
           if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
-          if (!previouslyConnected.includes(playerStat)) {
 
-            // This player was not connected before, i.e missing connection log?
+          if (!previouslyConnected.includes(playerStat)) {
+            // Check if the player has been marked as connected before.
             playerStat.connected = true;
-            playerStat.lastConnectionDate = await this.getDateEST(info.time); // Assume connected now
-            detectedAsConnected.push()
+            playerStat.lastConnectionDate = await this.getDateEST(info.time); // Update last connection date.
+            detectedAsConnected.push(playerStat);
           }
 
           if (playerStatIndex == -1) s.push(playerStat);
@@ -194,24 +207,6 @@ class DayzRBot extends Client {
           detectedAsConnected.push(playerStat);
         }
         break;
-      }
-    }
-
-    for (let i = 0; i < previouslyConnected.length; i++) {
-      if (!detectedAsConnected.includes(previouslyConnected[i])) {
-
-        let playerStat = previouslyConnected[i];
-        let playerStatIndex = s.indexOf(playerStat);
-        
-        playerStat.connected = false;
-        s[playerStatIndex] = playerStat;
-        
-        SendConnectionLogs(this, guildId, {
-          time: lastDetectedTime,
-          player: playerStat.gamertag,
-          connected: false,
-          lastConnectionDate: playerStat.lastConnectionDate,
-        });
       }
     }
 
@@ -223,7 +218,7 @@ class DayzRBot extends Client {
       if (err) this.sendError(this.GetChannel(guild.adminLogsChannel), err);
     });
 
-    history.lastLog = lines[lines.length-1];
+    history.lastLog = lines[lines.length - 1];
 
     // write JSON string to a file
     fs.writeFileSync(logHistoryDir, JSON.stringify(history));
@@ -233,7 +228,7 @@ class DayzRBot extends Client {
     let t = new Date();
     // c.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
     c.activePlayersTick++;
-    
+
     await DownloadNitradoFile(c, `/games/${c.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async (status) => {
       if (status == 1) return c.error('...Failed to Download logs...');
       // c.log('...Downloaded logs...');
@@ -267,14 +262,14 @@ class DayzRBot extends Client {
 
     try {
       // Connect to Mongo database.
-      this.db = await MongoClient.connect(mongoURI, {connectTimeoutMS: 1000});
+      this.db = await MongoClient.connect(mongoURI, { connectTimeoutMS: 1000 });
       this.dbo = this.db.db(dbo);
       mongoose.connect(`mongodb://${mongoURI.split('@')[1]}/${dbo}`, {
         authSource: "admin",
         user: mongoURI.split('//')[1].split(':')[0],
         pass: mongoURI.split('//')[1].split(':')[1].split('@')[0],
-        useNewUrlParser: true, 
-      }).catch(e=>this.error(e));
+        useNewUrlParser: true,
+      }).catch(e => this.error(e));
       this.log('Successfully connected to mongoDB');
       databaselogs.connected = true;
       databaselogs.attempts = 0; // reset attempts
@@ -296,7 +291,7 @@ class DayzRBot extends Client {
     await this.connectMongo(this.config.mongoURI, this.config.dbo);
 
     let is_enabled = undefined;
-    if (this.databaseConnected) is_enabled = await this.dbo.collection("guilds").findOne({"server.autoRestart":1}).then(is_enabled => is_enabled);
+    if (this.databaseConnected) is_enabled = await this.dbo.collection("guilds").findOne({ "server.autoRestart": 1 }).then(is_enabled => is_enabled);
 
     if (is_enabled) {
       this.log('Starting periodic Nitrado server status check.');
@@ -304,15 +299,15 @@ class DayzRBot extends Client {
     }
   }
 
-  exists(n) {return null != n && undefined != n && "" != n}
+  exists(n) { return null != n && undefined != n && "" != n }
 
   secondsToDhms(seconds) {
     seconds = Number(seconds);
-    const d = Math.floor(seconds / (3600*24));
-    const h = Math.floor(seconds % (3600*24) / 3600);
+    const d = Math.floor(seconds / (3600 * 24));
+    const h = Math.floor(seconds % (3600 * 24) / 3600);
     const m = Math.floor(seconds % 3600 / 60);
     const s = Math.floor(seconds % 60);
-    
+
     const dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
     const hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
     const mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
@@ -330,8 +325,8 @@ class DayzRBot extends Client {
           if (!this.exists(cmd.name) || !this.exists(cmd.description))
             return this.error(
               "Unable to load Command: " +
-                file.split(".")[0] +
-                ", Reason: File doesn't had name/desciption"
+              file.split(".")[0] +
+              ", Reason: File doesn't had name/desciption"
             );
           this.commands.set(file.split(".")[0].toLowerCase(), cmd);
           if (this.exists(cmd.Interactions)) {
@@ -351,7 +346,7 @@ class DayzRBot extends Client {
       else
         files.forEach((file) => {
           const event = require(EventsDir + "/" + file);
-          if (['interactionCreate','guildMemberAdd'].includes(file.split(".")[0])) this.on(file.split(".")[0], i => event(this, i));
+          if (['interactionCreate', 'guildMemberAdd'].includes(file.split(".")[0])) this.on(file.split(".")[0], i => event(this, i));
           else this.on(file.split(".")[0], event.bind(null, this));
           this.log("Event Loaded: " + file.split(".")[0]);
         });
@@ -376,7 +371,7 @@ class DayzRBot extends Client {
     const embed = new EmbedBuilder()
       .setDescription(`**Internal Error:**\nUh Oh D:  Its not you, its me.\nThis command has crashed\nContact the Developers\nhttps://discord.gg/YCXhvy9uZw`)
       .setColor(this.config.Colors.Red)
-  
+
     try {
       Interaction.send({ embeds: [embed] });
     } catch {
