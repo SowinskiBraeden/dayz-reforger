@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 
 module.exports = {
   name: "bounty",
@@ -14,37 +15,37 @@ module.exports = {
     name: "set",
     description: "Set a bounty on a player",
     value: "set",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "gamertag",
       description: "Gamertag of player for bounty",
       value: "gamertag",
-      type: 3,
+      type: CommandOptions.String,
       required: true,
     }, {
       name: "value",
       description: "Amount of the bounty",
       value: "value",
-      type: 10,
+      type: CommandOptions.Float,
       min_value: 0.01,
       required: true
     }, {
       name: "anonymous",
       description: "Make this bounty anonymous",
       value: false,
-      type: 5,
+      type: CommandOptions.Boolean,
       required: false
     }]
   }, {
     name: "pay",
     description: "Pay off your bounty (double price)",
     value: "pay",
-    type: 1,
+    type: CommandOptions.SubCommand,
   }, {
     name: "view",
     description: "View all active bounties",
     value: "view",
-    type: 1,
+    type: CommandOptions.SubCommand,
   }],
   SlashCommand: {
     /**

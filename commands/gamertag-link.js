@@ -1,4 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 
 module.exports = {
   name: "gamertag-link",
@@ -14,7 +15,7 @@ module.exports = {
     name: "gamertag",
     description: "Gamertag of player",
     value: "gamertag",
-    type: 3,
+    type: CommandOptions.String,
     required: true,
   }],
   SlashCommand: {

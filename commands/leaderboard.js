@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 
 module.exports = {
   name: "leaderboard",
@@ -14,7 +15,7 @@ module.exports = {
     name: "category",
     description: "Leaderboard Category",
     value: "category",
-    type: 3,
+    type: CommandOptions.String,
     required: true,
     choices: [
       { name: "money", value: "money" },
@@ -33,7 +34,7 @@ module.exports = {
     name: "limit",
     description: "leaderboard limit",
     value: "limit",
-    type: 4,
+    type: CommandOptions.Integer,
     min_value: 1,
     max_value: 25,
     required: true,

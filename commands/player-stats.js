@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 
 module.exports = {
   name: "player-stats",
@@ -14,7 +15,7 @@ module.exports = {
     name: "category",
     description: "Leaderboard Category",
     value: "category",
-    type: 3,
+    type: CommandOptions.String,
     required: true,
     choices: [
       { name: "money", value: "money" },
@@ -33,12 +34,12 @@ module.exports = {
     name: "discord",
     description: "discord user to lookup stats",
     value: "discord",
-    type: 6,
+    type: CommandOptions.User,
     required: false,
   }, {
     name: "gamertag",
     description: "gamertag to lookup stats",
-    type: 3,
+    type: CommandOptions.String,
     required: false,
   }],
   SlashCommand: {

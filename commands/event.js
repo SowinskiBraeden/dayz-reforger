@@ -1,4 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -15,19 +16,19 @@ module.exports = {
     name: "player-track",
     description: "track a player and announce location",
     value: "player-track",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "gamertag",
       description: "Gamertag of player",
       value: "gamertag",
-      type: 3,
+      type: CommandOptions.String,
       required: true,
     },
     {
       name: "time",
       description: "duration of tracking",
       value: "time",
-      type: 4,
+      type: CommandOptions.Integer,
       required: true,
       choices: [
         { name: '30-minutes', value: 30 }, { name: '60-minutes', value: 60 }, { name: '90-minutes', value: 90 }, { name: '120-minutes', value: 120 },
@@ -37,14 +38,14 @@ module.exports = {
       name: "event-name",
       description: "name of the event",
       value: "event-name",
-      type: 3,
+      type: CommandOptions.String,
       required: true,
     },
     {
       name: "channel",
       description: "channel to host event",
       value: "channel",
-      type: 7,
+      type: CommandOptions.Channel,
       channel_types: [0], // Restrict to text channel
       required: true,
     }]
@@ -52,7 +53,7 @@ module.exports = {
     name: "delete",
     description: "delete an active event",
     value: "delete",
-    type: 1
+    type: CommandOptions.SubCommand
   }],
   SlashCommand: {
     /**

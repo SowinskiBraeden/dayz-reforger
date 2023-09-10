@@ -1,4 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const { addUser } = require('../structures/user');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
@@ -16,7 +17,7 @@ module.exports = {
     name: "user",
     description: "User to reset",
     value: "user",
-    type: 6,
+    type: CommandOptions.User,
     required: true,
   }],
   SlashCommand: {

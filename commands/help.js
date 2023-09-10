@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 
 module.exports = {
   name: "help",
@@ -15,12 +16,12 @@ module.exports = {
       name: "commands",
       description: "List all commands",
       value: "commands",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "command",
         description: "Get information on a specific command",
         value: "command",
-        type: 3,
+        type: CommandOptions.String,
         required: false,
       }]
     },
@@ -28,19 +29,19 @@ module.exports = {
       name: "support",
       description: "Get support for Applicatz",
       value: "support",
-      type: 1,
+      type: CommandOptions.SubCommand,
     },
     { 
       name: "credits",
       description: "DayZR Bot Credits",
       value: "credits",
-      type: 1,
+      type: CommandOptions.SubCommand,
     },
     {
       name: "stats",
       description: "Current Bot Statistics",
       value: "stats",
-      type: 1,
+      type: CommandOptions.SubCommand,
     }
   ],
   SlashCommand: {

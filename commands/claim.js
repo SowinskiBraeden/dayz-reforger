@@ -1,4 +1,5 @@
 const { ActionRowBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const { Armbands } = require('../config/armbandsdb.js');
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
     name: "faction_role",
     description: "Claim an armband for this faction role.",
     value: "faction_role",
-    type: 8,
+    type: CommandOptions.Role,
     required: true,
   }],
   SlashCommand: {

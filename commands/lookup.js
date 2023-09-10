@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 
 module.exports = {
   name: "lookup",
@@ -14,24 +15,24 @@ module.exports = {
     name: "discord",
     description: "Find a Discord user from a Gamertag",
     value: "discord",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "gamertag",
       description: "Gamertag of player",
       value: "gamertag",
-      type: 3,
+      type: CommandOptions.String,
       required: true,
     }]
   }, {
     name: "gamertag",
     description: "Find a Gamertag from a Discord user",
     value: "gamertag",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "user",
       description: "Discord User",
       value: "user",
-      type: 6,
+      type: CommandOptions.User,
       required: true,
     }]
   }],

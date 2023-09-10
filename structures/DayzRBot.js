@@ -78,7 +78,7 @@ class DayzRBot extends Client {
 
           return await rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
             body: {
-              type: 4,
+              type: CommandOptions.Integer,
               data: message,
             }
           });
@@ -391,7 +391,7 @@ class DayzRBot extends Client {
       autoRestart: 0,
       allowedChannels: [],
       killfeedChannel: "",
-      showKillfeedCoords: false,
+      showKillfeedCoords: 0,
       connectionLogsChannel: "",
       activePlayersChannel: "",
       welcomeChannel: "",

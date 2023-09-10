@@ -1,4 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
 const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus } = require('../util/NitradoAPI');
 const { Armbands } = require('../config/armbandsdb.js');
@@ -17,92 +18,92 @@ module.exports = {
     name: "gamertag-link",
     description: "link a gamertag for a user",
     value: "gamertag-link",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "user",
       description: "User to link gamertag to",
       value: "user",
-      type: 6,
+      type: CommandOptions.User,
       required: true,
     },
     {
       name: "gamertag",
       description: "Gamertag of player",
       value: "gamertag",
-      type: 3,
+      type: CommandOptions.String,
       required: true,
     }]
   }, {
     name: "gamertag-unlink",
     description: "unlink a gamertag for a user",
     value: "gamertag-unlink",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "user",
       description: "User to link gamertag to",
       value: "user",
-      type: 6,
+      type: CommandOptions.User,
       required: true,
     }]
   }, {
     name: "claim-armband",
     description: "Claim an armband for a faction",
     value: "claim-armband",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "faction_role",
       description: "Claim an armband for this faction role.",
       value: "faction_role",
-      type: 8,
+      type: CommandOptions.Role,
       required: true,
     }]
   }, {
     name: "bounty-clear",
     description: "clear a bounty off a player",
     value: "bounty-clear",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "gamertag",
       description: "Gamertag of player",
       value: "gamertag",
-      type: 3,
+      type: CommandOptions.String,
       required: true,
     }]
   }, {
     name: "ban-player",
     description: "Ban a player from the DayZ server",
     value: "ban-player",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "gamertag",
       description: "gamertag of the player to ban.",
       value: "gamertag",
-      type: 3,
+      type: CommandOptions.String,
       required: true,
     }]
   }, {
     name: "unban-player",
     description: "Unban a player from the DayZ server",
     value: "unban-player",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [{
       name: "gamertag",
       description: "gamertag of the player to unban.",
       value: "gamertag",
-      type: 3,
+      type: CommandOptions.String,
       required: true,
     }]
   }, {
     name: "add-money",
     description: "Add money to user",
     value: "add",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [
       {
         name: "amount",
         description: "The amount to add to balance",
         value: "amount",
-        type: 10,
+        type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
       },
@@ -110,7 +111,7 @@ module.exports = {
         name: "to",
         description: "User to alter balance",
         value: "to",
-        type: 6,
+        type: CommandOptions.User,
         required: true,
       },
     ]
@@ -119,13 +120,13 @@ module.exports = {
     name: "remove-money",
     description: "Remove or remove money from a user",
     value: "remove",
-    type: 1,
+    type: CommandOptions.SubCommand,
     options: [
       {
         name: "amount",
         description: "The amount to add to balance",
         value: "amount",
-        type: 10,
+        type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
       },
@@ -133,7 +134,7 @@ module.exports = {
         name: "from",
         description: "User to alter balance",
         value: "from",
-        type: 6,
+        type: CommandOptions.User,
         required: true,
       },
     ]
@@ -141,12 +142,24 @@ module.exports = {
     name: "restart",
     description: "Restart the DayZ Server",
     value: "restart",
-    type: 1,
+    type: CommandOptions.SubCommand,
   }, {
     name: "auto-restart",
     description: "Enable/Disable periodic server checks and restart if stopped.",
     value: "auto-restart",
-    type: 1,
+    type: CommandOptions.SubCommand,
+  }, {
+    name: "combat-log-timer",
+    description: "Set the number of minutes to elapse for a player to not combat log. (Set to 0 to disbable combat logging detection)",
+    value: "combat-log-timer",
+    type: CommandOptions.SubCommand,
+    options: [{
+      name: "minutes",
+      description: "Minutes to qualify combat log",
+      value: 5,
+      type: CommandOptions.Integer, // Integer
+
+    }]
   }],
   SlashCommand: {
     /**

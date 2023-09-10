@@ -1,4 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -16,18 +17,18 @@ module.exports = {
       name: "allowed_channels",
       description: "Set channels you're allowed to use the bot in",
       value: "allowed_channels",
-      type: 2,
+      type: CommandOptions.SubCommandGroup,
       options: [
         {
           name: "add",
           description: "Add channel",
           value: "add",
-          type: 1,
+          type: CommandOptions.SubCommand,
           options: [{
             name: "channel",
             description: "The channel to configure",
             value: "channel",
-            type: 7,
+            type: CommandOptions.Channel,
             channel_types: [0], // Restrict to text channel
             required: true,
           }]
@@ -36,12 +37,12 @@ module.exports = {
           name: "remove",
           description: "Remove channel",
           value: "remove",
-          type: 1,
+          type: CommandOptions.SubCommand,
           options: [{
             name: "channel",
             description: "The channel to configure",
             value: "channel",
-            type: 7,
+            type: CommandOptions.Channel,
             channel_types: [0], // Restrict to text channel
             required: true,
           }]
@@ -52,12 +53,12 @@ module.exports = {
       name: "killfeed_channel",
       description: "Set the Killfeed Channel",
       value: "killfeed_channel",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "channel",
         description: "The channel to configure",
         value: "channel",
-        type: 7,
+        type: CommandOptions.Channel,
         channel_types: [0], // Restrict to text channel
         required: true,
       }]
@@ -66,12 +67,12 @@ module.exports = {
       name: "admin_logs_channel",
       description: "Set the Admin Logs Channel",
       value: "admin_logs_channel",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "channel",
         description: "The channel to configure",
         value: "channel",
-        type: 7,
+        type: CommandOptions.Channel,
         channel_types: [0], // Restrict to text channel
         required: true,
       }]
@@ -80,12 +81,12 @@ module.exports = {
       name: "welcome_channel",
       description: "Set the channel for users to gain access",
       value: "welcome_channel",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "channel",
         description: "The channel to configure",
         value: "channel",
-        type: 7,
+        type: CommandOptions.Channel,
         channel_types: [0], // Restrict to text channel
         required: true,
       }]
@@ -94,12 +95,12 @@ module.exports = {
       name: "active_players_channel",
       description: "Set the channel for active players update",
       value: "active_players_channel",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "channel",
         description: "The channel to configure",
         value: "channel",
-        type: 7,
+        type: CommandOptions.Channel,
         channel_types: [0], // Restrict to text channel
         required: true,
       }]
@@ -108,12 +109,12 @@ module.exports = {
       name: "linked_gt_role",
       description: "Access Role to give to users",
       value: "linked_gt_role",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "role",
         description: "Role to configure",
         value: "role",
-        type: 8,
+        type: CommandOptions.Role,
         required: true,
       }]
     },
@@ -121,12 +122,12 @@ module.exports = {
       name: "member_role",
       description: "Role to give users when they join.",
       value: "member_role",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "role",
         description: "Role to configure",
         value: "role",
-        type: 8,
+        type: CommandOptions.Role,
         required: true,
       }]
     },
@@ -134,13 +135,13 @@ module.exports = {
       name: "bot_admin_role",
       description: "Set/remove bot admin role",
       value: "bot_admin_role",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [
         {
           name: "action",
           description: "Add or remove a role from the exclude list.",
           value: "action",
-          type: 3,
+          type: CommandOptions.String,
           choices: [
             { name: 'add', value: 'add' }, { name: 'remove', value: 'remove' },
           ],
@@ -150,7 +151,7 @@ module.exports = {
           name: "role",
           description: "Role to configure",
           value: "role",
-          type: 8,
+          type: CommandOptions.Role,
           required: true,
         },
       ]
@@ -159,12 +160,12 @@ module.exports = {
       name: "admin_role",
       description: "Discord Server's dedicated admin role",
       value: "admin_role",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "role",
         description: "Role to configure",
         value: "role",
-        type: 8,
+        type: CommandOptions.Role,
         required: true,
       }]
     },
@@ -172,13 +173,13 @@ module.exports = {
       name: "exclude",
       description: "Exclude roles from users to use to claim a flag.",
       value: "exclude",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [
         {
           name: "action",
           description: "Add or remove a role from the exclude list.",
           value: "action",
-          type: 3,
+          type: CommandOptions.String,
           choices: [
             { name: 'add', value: 'add' }, { name: 'remove', value: 'remove' },
           ],
@@ -188,7 +189,7 @@ module.exports = {
           name: "role",
           description: "The role to manage",
           value: "role",
-          type: 8,
+          type: CommandOptions.Role,
           required: true,
         },
       ]
@@ -197,24 +198,24 @@ module.exports = {
       name: "reset",
       description: "Restore all settings to default configurations",
       value: "reset",
-      type: 1,
+      type: CommandOptions.SubCommand,
     },
     {
       name: "view",
       description: "View current settings configuration",
       value: "view",
-      type: 1,
+      type: CommandOptions.SubCommand,
     },
     {
       name: "starting_balance",
       description: "Set the starting balance",
       value: "starting_balance",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "amount",
         description: "The amount to set the starting balance",
         value: "amount",
-        type: 10,
+        type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
       }]
@@ -223,12 +224,12 @@ module.exports = {
       name: "uav-price",
       description: "Configure the price of a UAV",
       value: "uav-price",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "amount",
         description: "The amount to set the UAV price",
         value: "amount",
-        type: 10,
+        type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
       }]
@@ -237,12 +238,12 @@ module.exports = {
       name: "emp-price",
       description: "Configure the price of an EMP",
       value: "emp-price",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "amount",
         description: "The amount to set the EMP price",
         value: "amount",
-        type: 10,
+        type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
       }]
@@ -251,26 +252,26 @@ module.exports = {
       name: "income_role",
       description: "Add/update a role to earn income on /collect-income command",
       value: "set_income_role",
-      type: 2,
+      type: CommandOptions.SubCommandGroup,
       options: [
         {
           name: "set",
           description: "Set role",
           value: "set",
-          type: 1,
+          type: CommandOptions.SubCommand,
           options: [
             {
               name: "role",
               description: "Role to set",
               value: "role",
-              type: 8,
+              type: CommandOptions.Role,
               required: true,
             },
             {
               name: "amount",
               description: "The amount to collect",
               value: 120.00,
-              type: 10,
+              type: CommandOptions.Float,
               min_value: 0.01,
               required: true,
             }
@@ -280,12 +281,12 @@ module.exports = {
           name: "remove",
           description: "Remove role",
           value: "remove",
-          type: 1,
+          type: CommandOptions.SubCommand,
           options: [{
             name: "role",
             description: "Role to remove",
             value: "role",
-            type: 8,
+            type: CommandOptions.Role,
             required: true,
           }]
         },
@@ -295,12 +296,12 @@ module.exports = {
       name: "income_limiter",
       description: "Change the number of hours to wait before collecting income",
       value: "income_limiter",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "hours",
         description: "Number of hours till income can be collected",
         value: 168.00, // 1 week
-        type: 10,
+        type: CommandOptions.Float,
         required: true,
       }]
     },
@@ -308,12 +309,12 @@ module.exports = {
       name: "show_killfeed_coords",
       description: "Show the coordinates of the killer or victim in the killfeed channel.",
       value: "show_killfeed_coords",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "configuration",
         description: "True or False",
         value: false,
-        type: 5,
+        type: CommandOptions.Boolean,
         required: true,
       }]
     }

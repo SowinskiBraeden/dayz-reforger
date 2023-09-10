@@ -1,4 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {
@@ -16,13 +17,13 @@ module.exports = {
       name: "create",
       description: "Create a new Zone Ping Alarm",
       value: "create",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [
         {
           name: "x-coord",
           description: "X Coordinate of the origin",
           value: "x-coord",
-          type: 10,
+          type: CommandOptions.Float,
           min_value: 0.01,
           required: true,
         },
@@ -30,7 +31,7 @@ module.exports = {
           name: "y-coord",
           description: "Y Coordinate of the origin",
           value: "y-coord",
-          type: 10,
+          type: CommandOptions.Float,
           min_value: 0.01,
           required: true,
         },
@@ -38,7 +39,7 @@ module.exports = {
           name: "radius",
           description: "Radius of Zone Alarm",
           value: "radius",
-          type: 10,
+          type: CommandOptions.Float,
           min_value: 25.00,
           required: true,
         },
@@ -46,14 +47,14 @@ module.exports = {
           name: "name",
           description: "Zone Alarm Name",
           value: "name",
-          type: 3,
+          type: CommandOptions.String,
           required: true,
         },
         {
           name: "channel",
           description: "The channel to configure",
           value: "channel",
-          type: 7,
+          type: CommandOptions.Channel,
           channel_types: [0], // Restrict to text channel
           required: true,
         },
@@ -61,21 +62,21 @@ module.exports = {
           name: "role",
           description: "Role to Ping on Zone Alarm",
           value: "role",
-          type: 8,
+          type: CommandOptions.Role,
           required: true,
         },
         {
           name: "emp-exempt",
           description: "Is this Alarm Exempt to EMP Attacks?",
           value: false,
-          type: 5,
+          type: CommandOptions.Boolean,
           required: false,
         },
         {
           name: "show-player-coords",
           description: "Show a players coords when in the zone",
           value: true,
-          type: 5,
+          type: CommandOptions.Boolean,
           required: false,
         }
       ]
@@ -84,18 +85,18 @@ module.exports = {
       name: "delete",
       description: "Delete a Zone Alarm",
       value: "delete",
-      type: 1,
+      type: CommandOptions.SubCommand,
     },
     {
       name: "add-player",
       description: "Add Player to be Ignored in a Zone Alarm Pings",
       value: "add-player",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "gamertag",
         description: "Gamertag of Player to Ignore",
         value: "gamertag",
-        type: 3,
+        type: CommandOptions.String,
         required: true,
       }]
     },
@@ -103,12 +104,12 @@ module.exports = {
       name: "remove-player",
       description: "Remove a Player from being Ignored in a Zone Alarm Pings",
       value: "remove-player",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "gamertag",
         description: "Gamertag of Player to Ignore",
         value: "gamertag",
-        type: 3,
+        type: CommandOptions.String,
         required: true,
       }]
     },
@@ -116,24 +117,24 @@ module.exports = {
       name: "disable",
       description: "Disable an Zone Alarm",
       value: "disable",
-      type: 1,
+      type: CommandOptions.SubCommand,
     },
     {
       name: "enable",
       description: "Enable an Zone Alarm",
       value: "enable",
-      type: 1,
+      type: CommandOptions.SubCommand,
     },
     {
       name: "set-rule",
       description: "Add a Rule to an Alarm",
       value: "set-rule",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "rule",
         description: "Rule to Add to an Alarm",
         value: "rule",
-        type: 3,
+        type: CommandOptions.String,
         required: true,
         choices: [
           { name: 'Ban on Entry', value: 'ban_on_entry' },
@@ -145,18 +146,18 @@ module.exports = {
       name: "remove-rule",
       description: "Remove a Rule from an Alarm",
       value: "remove-rule",
-      type: 1,
+      type: CommandOptions.SubCommand,
     },
     {
       name: "rename",
       description: "Rename an Alarm",
       value: "rename",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "name",
         description: "New Alarm Name",
         value: "name",
-        type: 3,
+        type: CommandOptions.String,
         required: true,
       }]
     },
@@ -164,12 +165,12 @@ module.exports = {
       name: "move-origin",
       description: "Move an alarms origin to new coordinates",
       value: "move-origin",
-      type: 1,
+      type: CommandOptions.SubCommand,
       options: [{
         name: "x-coord",
         description: "X Coordinate of the origin",
         value: "x-coord",
-        type: 10,
+        type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
       },
@@ -177,7 +178,7 @@ module.exports = {
         name: "y-coord",
         description: "Y Coordinate of the origin",
         value: "y-coord",
-        type: 10,
+        type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
       }]

@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const { Armbands } = require('../config/armbandsdb.js');
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
     name: "faction_role",
     description: "View a specific faction's armband by role",
     value: "faction_role",
-    type: 8,
+    type: CommandOptions.Role,
     required: false,
   }],
   SlashCommand: {
