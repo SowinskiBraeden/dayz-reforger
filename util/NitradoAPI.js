@@ -219,15 +219,15 @@ module.exports = {
     const settings = await module.exports.FetchServerSettings(client, 'ToggleBaseDamage');  // Fetch server settings
     if (!settings || settings == 1) return 1;
    
-    const posted = await PostServerSettings(client, "config", "disableBaseDamage", preference);
+    const posted = await PostServerSettings(client, "config", "disableBaseDamage", preference ? 1 : 0);
     if (!posted || posted == 1) return 1;
-
+   
     const remoteDir = '/games/ni8434545_1/ftproot/dayzxb_missions/dayzOffline.chernarusplus';
     const remoteFilename = 'cfggameplay.json';
 
     const jsonDir = path.join(__dirname, '.', 'logs', remoteFilename);
     await module.exports.DownloadNitradoFile(client, `${remoteDir}/${remoteFilename}`, jsonDir);
-
+   
     let gameplay = JSON.parse(fs.readFileSync(jsonDir));
     gameplay.GeneralData.disableBaseDamage = preference;
 
@@ -236,7 +236,7 @@ module.exports = {
 
     const uploaded = await UploadNitradoFile(client, remoteDir, remoteFileName, jsonDir);
     if (!uploaded || uploaded == 1) return 1;
-
+   
     return 0; 
   }
 }
