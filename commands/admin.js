@@ -477,10 +477,10 @@ module.exports = {
       } else if (args[0].name == 'disable-base-damage') {
         const preference = args[0].options[0].value;
 
-        const toggle = ToggleBaseDamage(client, preference);
+        const toggle = await ToggleBaseDamage(client, preference);
         if (toggle == 1) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to update ` disableBaseDamage `, try again later.')] });
 
-        return interaciton.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully updated \` disableBaseDamage \` to ${preference}.\nRestart the DayZ server to apply these changes.`)] });
+        return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully updated \` disableBaseDamage \` to ${preference}.\nRestart the DayZ server to apply these changes.`)] });
       }
     }
   },
