@@ -224,7 +224,7 @@ module.exports = {
     const posted = await PostServerSettings(client, "config", "disableBaseDamage", pref);
     if (posted == 1) return 1;
    
-    const remoteDir = `/games/${client.config.Nitrado.ServerID}/ftproot/dayzxb_missions/dayzOffline.chernarusplus`;
+    const remoteDir = `/games/${client.config.Nitrado.UserID}/ftproot/dayzxb_missions/dayzOffline.chernarusplus`;
     const remoteFilename = 'cfggameplay.json';
 
     const jsonDir = `../logs/${remoteFilename}`;
