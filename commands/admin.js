@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
-const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus } = require('../util/NitradoAPI');
+const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, ToggleBaseDamage } = require('../util/NitradoAPI');
 const { Armbands } = require('../config/armbandsdb.js');
 
 module.exports = {
@@ -148,6 +148,18 @@ module.exports = {
     description: "Enable/Disable periodic server checks and restart if stopped.",
     value: "auto-restart",
     type: CommandOptions.SubCommand,
+  }, {
+    name: "disable-base-damage",
+    description: "Disable/Enable base damage",
+    value: "disable-base-damage",
+    type: CommandOptions.SubCommand,
+    options: [{
+      name: "preference",
+      description: "DisableBaseDamage Preference",
+      value: true,
+      type: CommandOptions.Boolean,
+      required: true,
+    }]
   }],
   SlashCommand: {
     /**
@@ -462,6 +474,13 @@ module.exports = {
         });
 
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(msg)], flags: (1 << 6) });
+      } else if (args[0].name == 'disable-base-damage') {
+        const preference = args[0].options[0].value;
+
+        const toggle = ToggleBaseDamage(client, preference);
+        if (toggle == 1) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to update ` disableBaseDamage `, try again later.')] });
+
+        return interaciton.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully updated \` disableBaseDamage \` to ${preference}.\nRestart the DayZ server to apply these changes.`)] });
       }
     }
   },
