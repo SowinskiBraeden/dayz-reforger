@@ -1,6 +1,5 @@
 const { RegisterGlobalCommands, RegisterGuildCommands } = require("../util/RegisterSlashCommands");
 const { Collection, Client, EmbedBuilder, Routes } = require('discord.js');
-const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const MongoClient = require('mongodb').MongoClient;
 const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
@@ -80,7 +79,7 @@ class DayzRBot extends Client {
 
           return await rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
             body: {
-              type: CommandOptions.Integer,
+              type: 4,
               data: message,
             }
           });
