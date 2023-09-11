@@ -224,10 +224,10 @@ module.exports = {
     const posted = await PostServerSettings(client, "config", "disableBaseDamage", pref);
     if (posted == 1) return 1;
    
-    const remoteDir = '/games/ni8434545_1/ftproot/dayzxb_missions/dayzOffline.chernarusplus';
+    const remoteDir = `/games/${client.config.Nitrado.ServerID}/ftproot/dayzxb_missions/dayzOffline.chernarusplus`;
     const remoteFilename = 'cfggameplay.json';
 
-    const jsonDir = path.join(__dirname, '.', 'logs', remoteFilename);
+    const jsonDir = `../logs/${remoteFilename}`;
     await module.exports.DownloadNitradoFile(client, `${remoteDir}/${remoteFilename}`, jsonDir);
    
     let gameplay = JSON.parse(fs.readFileSync(jsonDir));
