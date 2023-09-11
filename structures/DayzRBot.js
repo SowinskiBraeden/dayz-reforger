@@ -141,7 +141,9 @@ class DayzRBot extends Client {
     if (!this.exists(guild.playerstats)) guild.playerstats = [];
     let s = guild.playerstats;
 
-    s.map(p => p.connected = false); // assume all players not connected
+    if (this.playerSessions.size === 0) {
+      s.map(p => p.connected = false); // assume all players not connected on init only.
+    }
 
     for (let i = logIndex + 1; i < lines.length; i++) {
       if (lines[i].includes('| ####')) continue;

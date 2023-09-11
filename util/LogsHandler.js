@@ -223,7 +223,7 @@ module.exports = {
       const nodes = activePlayers.length === 0;
       const PlayersEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setTitle(`Online List  \` ${playersOnline} \`  Player${playersOnline > 1 ? 's' : ''} Online`)
+        .setTitle(`Online List  \` ${playersOnline === undefined ? 0 : playersOnline} \`  Player${playersOnline !== 1 ? 's' : ''} Online`)
         .addFields(
           { name: 'Server:', value: `\` ${hostname} \``, inline: false },
           { name: 'Map:', value: `\` ${map} \``, inline: true },
