@@ -173,13 +173,15 @@ class DayzRBot extends Client {
             playerID: data[3],
           };
 
-          lastDetectedTime = await this.getDateEST(info.time);
-
           if (!this.exists(info.player) || !this.exists(info.playerID)) continue;  // Skip this player if the player does not exist.
+
+          lastDetectedTime = await this.getDateEST(info.time);
           let playerStat = s.find(stat => stat.playerID == info.playerID);
+          if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
+
           if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
-          // Check if the player session exists in the map.
+          // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
           if (playerSessions.has(info.playerID)) {
             // Player is already in a session, update the session's end time.
             const session = playerSessions.get(info.playerID);
@@ -191,17 +193,16 @@ class DayzRBot extends Client {
               endTime: null, // Initialize end time as null.
             };
             playerSessions.set(info.playerID, newSession);
+
+            // Check if the player has been marked as connected before, but only if a session doesn't exist
+            // in the map, indicating the connection was discovered in the logs during this session.
+            if (!previouslyConnected.includes(playerStat)) {
+              playerStat.connected = true;
+              playerStat.lastConnectionDate = lastDetectedTime; // Update last connection date.
+            }
           }
 
           let playerStatIndex = s.indexOf(playerStat);
-          if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
-
-          if (!previouslyConnected.includes(playerStat)) {
-            // Check if the player has been marked as connected before.
-            playerStat.connected = true;
-            playerStat.lastConnectionDate = lastDetectedTime; // Update last connection date.
-          }
-
           if (playerStatIndex == -1) s.push(playerStat);
           else s[playerStatIndex] = playerStat;
         }
