@@ -41,6 +41,7 @@ class DayzRBot extends Client {
     this.databaseConnected = false;
     this.arInterval = arInterval;
     this.arIntervalId; // Interval for auto-restart functions
+    this.playerSessions = new Map();
     this.autoRestartInit();
     this.LoadCommandsAndInteractionHandlers();
     this.LoadEvents();
@@ -154,7 +155,6 @@ class DayzRBot extends Client {
     }
 
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
-    const playerSessions = new Map();
     let previouslyConnected = s.filter(p => p.connected); // All players with connection log captured above and no disconnect log
     let lastDetectedTime;
 
@@ -182,9 +182,9 @@ class DayzRBot extends Client {
           if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
           // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
-          if (playerSessions.has(info.playerID)) {
+          if (this.playerSessions.has(info.playerID)) {
             // Player is already in a session, update the session's end time.
-            const session = playerSessions.get(info.playerID);
+            const session = this.playerSessions.get(info.playerID);
             session.endTime = lastDetectedTime; // Update end time.
           } else {
             // Player is not in a session, create a new session.
@@ -192,7 +192,7 @@ class DayzRBot extends Client {
               startTime: lastDetectedTime,
               endTime: null, // Initialize end time as null.
             };
-            playerSessions.set(info.playerID, newSession);
+            this.playerSessions.set(info.playerID, newSession);
 
             // Check if the player has been marked as connected before, but only if a session doesn't exist
             // in the map, indicating the connection was discovered in the logs during this session.

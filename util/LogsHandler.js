@@ -38,6 +38,20 @@ module.exports = {
       playerStat.lastConnectionDate = newDt;
       playerStat.connected = true;
 
+      // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
+      if (client.playerSessions.has(info.playerID)) {
+        // Player is already in a session, update the session's end time.
+        const session = client.playerSessions.get(info.playerID);
+        session.endTime = newDt; // Update end time.
+      } else {
+        // Player is not in a session, create a new session.
+        const newSession = {
+          startTime: newDt,
+          endTime: null, // Initialize end time as null.
+        };
+        client.playerSessions.set(info.playerID, newSession);
+      }
+
       if (playerStatIndex === -1) stats.push(playerStat);
       else stats[playerStatIndex] = playerStat;
 
