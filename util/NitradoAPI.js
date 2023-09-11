@@ -2,11 +2,53 @@ const { finished } = require('stream/promises');
 const concat = require('concat-stream');
 const { Readable } = require('stream');
 const FormData = require('form-data');
+const path = require("path");
 const fs = require('fs');
 const maxRetries = 5;
 const retryDelay = 5000; // 5 seconds
 
 // Private functions (only called locally)
+
+const UploadNitradoFile = async (client, remoteDir, remoteFilename, localFileDir) => {
+  for (let retries = 0; retries <= maxRetries; retries++) {
+    try {
+      const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/file_server/upload?` + new URLSearchParams({
+        path: remoteDir,
+        file: remoteFilename
+      }), {
+        method: "POST",
+        headers: {
+          "Authorization": client.config.Nitrado.Auth
+        },
+      }).then(response => 
+        response.json().then(data => data)  
+      ).then(res => res);
+
+      let contents = fs.readFileSync(localFileDir, 'utf8');
+      
+      const uploadRes = await fetch(res.data.token.url, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/binary',
+          token: res.data.token.token
+        },
+        body: contents,
+      });
+      if (!uploadRes.ok) {
+        const errorText = await uploadRes.text();
+        client.error(`Failed to upload file to Nitrado (${client.config.Nitrado.ServerID}): status: ${uploadRes.status}, message: ${errorText}: UploadNitradoFile`);
+        if (retries === 2) return 1; // Return error status on the second failed status code.
+      } else {
+        const data = await uploadRes.json();
+        return data;
+      }
+    } catch (error) {
+      client.error(`UploadNitradoFile: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
+      if (retries === maxRetries) throw new Error(`UploadNitradoFile: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`);
+    }
+    await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
+  }
+}
 
 const PostServerSettings = async (client, category, key, value) => {
   for (let retries = 0; retries <= maxRetries; retries++) {
@@ -176,35 +218,27 @@ module.exports = {
 
   ToggleBaseDamage: async (client, preference) => {
     const settings = await module.exports.FetchServerSettings(client, 'ToggleBaseDamage');  // Fetch server settings
+    if (settings == 1) return 1;
+   
+    const pref = preference ? 1 : 0;
+    const posted = await PostServerSettings(client, "config", "disableBaseDamage", pref);
+    if (posted == 1) return 1;
+   
+    const remoteDir = `/games/${client.config.Nitrado.UserID}/ftproot/dayzxb_missions/dayzOffline.chernarusplus`;
+    const remoteFilename = 'cfggameplay.json';
 
-    if (settings && settings != 1) {
-      for (let retries = 0; retries <= maxRetries; retries++) {
-        try {
-          const formData = new FormData();
-          formData.append("category", "config");
-          formData.append("key", "disableBaseDamage");
-          formData.append("value", preference);
-          formData.pipe(concat(data => {
-            async function sendList() {
-              await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/settings`, {
-                method: "POST",
-                credentials: 'include',
-                headers: {
-                  ...formData.getHeaders(),
-                  "Authorization": client.config.Nitrado.Auth
-                },
-                body: data,
-              });
-            }
-            sendList();
-          }));
-          return 0;
-        } catch (error) {
-          client.error(`HandlePlayerBan: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
-          if (retries === maxRetries) throw new Error(`HandlePlayerBan: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`);
-        }
-        await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
-      }
-    }
+    const jsonDir = `../logs/${remoteFilename}`;
+    await module.exports.DownloadNitradoFile(client, `${remoteDir}/${remoteFilename}`, jsonDir);
+   
+    let gameplay = JSON.parse(fs.readFileSync(jsonDir));
+    gameplay.GeneralData.disableBaseDamage = preference;
+
+    // write JSON to file
+    fs.writeFileSync(jsonDir, JSON.stringify(gameplay), null, 2);
+
+    const uploaded = await UploadNitradoFile(client, remoteDir, remoteFileName, jsonDir);
+    if (uploaded == 1) return 1;
+   
+    return 0; 
   }
 }

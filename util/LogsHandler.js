@@ -109,6 +109,7 @@ module.exports = {
           lastDamageDate: playerStat.lastDamageDate,
           lastHitBy: playerStat.lastHitBy,
           lastDeathDate: playerStat.lastDeathDate,
+          combatLogTimer: combatLogTimer,
         });
       }
     }
@@ -169,9 +170,7 @@ module.exports = {
       let playerStatIndex = stats.indexOf(playerStat);
       if (playerStat === undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
 
-      const newDt = await client.getDateEST(info.time);
-
-      playerStat.lastDamageDate = newDt;
+      playerStat.lastDamageDate = await client.getDateEST(info.time);
       playerStat.lastHitBy = info.attacker;
 
       if (playerStatIndex === -1) stats.push(playerStat);

@@ -72,8 +72,8 @@ module.exports = {
     else if (killedBy == Templates.Explosion) info.causeOfDeath = data[5];
     else return stats; // Unknown template;
 
-    let newDt = await client.getDateEST(info.time);
-    let unixTime = Math.floor(newDt.getTime()/1000);
+    const newDt = await client.getDateEST(info.time);
+    const unixTime = Math.floor(newDt.getTime()/1000);
 
     const showCoords = client.exists(guild.showKillfeedCoords) ? guild.showKillfeedCoords : false; // default to false if no record of configuration.
 

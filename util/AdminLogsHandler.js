@@ -28,14 +28,13 @@ module.exports = {
   DetectCombatLog: async (client, guildId, data) => {
     if (data.lastDamageDate == null) return;
 
-    let newDt = await client.getDateEST(data.time);
-
-    let diffSeconds = Math.round((newDt.getTime() - data.lastDamageDate.getTime()) / 1000);
+    const newDt = await client.getDateEST(data.time);
+    const diffSeconds = Math.round((newDt.getTime() - data.lastDamageDate.getTime()) / 1000);
 
     // If diff is greater than 5 minutes, not a combat log
     // or if death after last combat
+    if (diffSeconds > (data.combatLogTimer * 60)) return;
     if (data.lastDamageDate <= data.lastDeathDate) return;
-    if (diffSeconds > 5 * 60) return;
 
     let guild = await client.GetGuild(guildId);
     if (!client.exists(guild.connectionLogsChannel)) return;
