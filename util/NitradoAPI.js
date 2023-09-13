@@ -33,14 +33,13 @@ const UploadNitradoFile = async (client, remoteDir, remoteFilename, localFileDir
           token: res.data.token.token
         },
         body: contents,
-      });
+      })
       if (!uploadRes.ok) {
         const errorText = await uploadRes.text();
         client.error(`Failed to upload file to Nitrado (${client.config.Nitrado.ServerID}): status: ${uploadRes.status}, message: ${errorText}: UploadNitradoFile`);
         if (retries === 2) return 1; // Return error status on the second failed status code.
       } else {
-        const data = await uploadRes.json();
-        return data;
+        return uploadRes;
       }
     } catch (error) {
       client.error(`UploadNitradoFile: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
@@ -216,27 +215,27 @@ module.exports = {
     }
   },
 
-  ToggleBaseDamage: async (client, preference) => {
+  DisableBaseDamage: async (client, preference) => {
     const settings = await module.exports.FetchServerSettings(client, 'ToggleBaseDamage');  // Fetch server settings
     if (settings == 1) return 1;
    
-    const pref = preference ? 1 : 0;
-    const posted = await PostServerSettings(client, "config", "disableBaseDamage", pref);
+    const pref = preference ? '1' : '0';
+    const posted = await PostServerSettings(client, "config", "ToggleBaseDamage", pref);
     if (posted == 1) return 1;
-   
+
     const remoteDir = `/games/${client.config.Nitrado.UserID}/ftproot/dayzxb_missions/dayzOffline.chernarusplus`;
     const remoteFilename = 'cfggameplay.json';
 
-    const jsonDir = `../logs/${remoteFilename}`;
+    const jsonDir = `./logs/${remoteFilename}`;
     await module.exports.DownloadNitradoFile(client, `${remoteDir}/${remoteFilename}`, jsonDir);
-   
+
     let gameplay = JSON.parse(fs.readFileSync(jsonDir));
     gameplay.GeneralData.disableBaseDamage = preference;
 
     // write JSON to file
-    fs.writeFileSync(jsonDir, JSON.stringify(gameplay), null, 2);
+    fs.writeFileSync(jsonDir, JSON.stringify(gameplay, null, 2));
 
-    const uploaded = await UploadNitradoFile(client, remoteDir, remoteFileName, jsonDir);
+    const uploaded = await UploadNitradoFile(client, remoteDir, remoteFilename, jsonDir);
     if (uploaded == 1) return 1;
    
     return 0; 

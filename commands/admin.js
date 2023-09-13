@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
-const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, ToggleBaseDamage } = require('../util/NitradoAPI');
+const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage } = require('../util/NitradoAPI');
 const { Armbands } = require('../config/armbandsdb.js');
 const { User, addUser } = require('../structures/user');
 
@@ -193,7 +193,7 @@ module.exports = {
         }
 
         let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == args[0].options[1].value );
-        if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[1].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
+        if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].options[1].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
         if (client.exists(playerStat.discordID)) {
           const warnGTOverwrite = new EmbedBuilder()
@@ -478,7 +478,7 @@ module.exports = {
       } else if (args[0].name == 'disable-base-damage') {
         const preference = args[0].options[0].value;
 
-        const toggle = await ToggleBaseDamage(client, preference);
+        const toggle = await DisableBaseDamage(client, preference);
         if (toggle == 1) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to update ` disableBaseDamage `, try again later.')] });
 
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully updated \` disableBaseDamage \` to ${preference}.\nRestart the DayZ server to apply these changes.`)] });
