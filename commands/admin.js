@@ -3,6 +3,7 @@ const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
 const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, ToggleBaseDamage } = require('../util/NitradoAPI');
 const { Armbands } = require('../config/armbandsdb.js');
+const { User, addUser } = require('../structures/user');
 
 module.exports = {
   name: "admin",
