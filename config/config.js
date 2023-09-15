@@ -27,7 +27,7 @@ module.exports = {
   mongoURI: process.env.mongoURI || "mongodb://localhost:27017",
   dbo: process.env.dbo || "knoldus",
   Presence: {
-    type: 1, // Watching, Playing = 0, Streaming = 1, Listening = 2, Custom = 4, Competing = 5
+    type: 3, // Playing = 0, Streaming = 1, Listening = 2, Watching = 3, Custom = 4, Competing = 5
     name: "DayZ Logs", // What message you want after type
     status: "online", // You can show either "idle", "dnd", "online", or "offline"
   },
