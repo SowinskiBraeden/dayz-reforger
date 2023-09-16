@@ -27,7 +27,7 @@ module.exports = {
     let meleeTemplate      = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*)/g;
     let vehicleTemplate    = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by (.*) with TransportHit/g;
 
-    let killedBy = line.includes('hit by Player') && line.includes('(DEAD)') ? Templates.HitByAndDead :
+    let killedBy = line.includes('hit by Player') && line.includes('(DEAD)') && line.includes('meters') ? Templates.HitByAndDead :
                    line.includes('hit by Player') && !line.includes('meters') ? Templates.Melee : // Missing meters indicates it was a melee attack.
                    line.includes('hit by Player') ? Templates.HitBy :
                    line.includes('killed by Player') ? Templates.Killed : 
