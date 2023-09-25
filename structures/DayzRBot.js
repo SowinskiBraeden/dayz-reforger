@@ -156,13 +156,13 @@ class DayzRBot extends Client {
       if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles deaths missing hit by log
     }
 
-    for (const [channel_id, role] of Object.entries(client.alarmPingQueue)) {
-      const channel = client.GetChannel(channel_id);
+    for (const [channel_id, role] of Object.entries(this.alarmPingQueue)) {
+      const channel = this.GetChannel(channel_id);
 
-      channel.send({ content: `<@&${role}>`, embeds: client.alarmPingQueue[channel_id][role] });
+      channel.send({ content: `<@&${role}>`, embeds: this.alarmPingQueue[channel_id][role] });
     }
 
-    client.alarmPingQueue = {};
+    this.alarmPingQueue = {};
 
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
     let previouslyConnected = s.filter(p => p.connected); // All players with connection log captured above and no disconnect log
