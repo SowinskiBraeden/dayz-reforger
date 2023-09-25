@@ -156,10 +156,11 @@ class DayzRBot extends Client {
       if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles deaths missing hit by log
     }
 
-    for (const [channel_id, role] of Object.entries(this.alarmPingQueue)) {
+    for (const [channel_id, data] of Object.entries(this.alarmPingQueue)) {
       const channel = this.GetChannel(channel_id);
-
-      channel.send({ content: `<@&${role}>`, embeds: this.alarmPingQueue[channel_id][role] });
+      for (const [role, embeds] of Object.entries(data)) {
+        channel.send({ content: `<@&${role}>`, embeds: embeds });
+      }
     }
 
     this.alarmPingQueue = {};
