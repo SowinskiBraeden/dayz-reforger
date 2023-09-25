@@ -57,29 +57,33 @@ module.exports = {
       let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2)
 
       if (distance < alarm.radius) {
-        const channel = client.GetChannel(alarm.channel);
 
         let newDt = await client.getDateEST(data.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
-        
-        if (alarm.rules.includes['ban_on_entry']) {
 
-          let alarmEmbed = new EmbedBuilder()
-            .setColor(client.config.Colors.Default)
-            .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned.__`)
-            .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
-        
-          channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+        if (!client.alarmPingQueue[alarm.channel]) client.alarmPingQueue[alarm.channel] = {};
+        if (!client.alarmPingQueue[alarm.channel][alarm.role]) client.alarmPingQueue[alarm.channel][alarm.role] = [];
+
+        if (alarm.rules.includes['ban_on_entry']) {
+          client.alarmPingQueue[alarm.channel][alarm.role].push(
+            new EmbedBuilder()
+              .setColor(client.config.Colors.Default)
+              .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned.__`)
+              .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
+          );
 
           BanPlayer(client, data.player);
+          return;
         }
 
-        let alarmEmbed = new EmbedBuilder()
-          .setColor(client.config.Colors.Default)
-          .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}**`)
-          .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
+        client.alarmPingQueue[alarm.channel][alarm.role].push(
+          new EmbedBuilder()
+            .setColor(client.config.Colors.Default)
+            .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}**`)
+            .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
+        );
       
-        return await channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+        return;
       }
     }
 
