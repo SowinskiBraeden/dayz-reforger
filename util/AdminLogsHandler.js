@@ -26,7 +26,7 @@ module.exports = {
   },
 
   DetectCombatLog: async (client, guildId, data) => {
-    if (data.lastDamageDate == null) return;
+    if (!client.exists(data.lastDamageDate)) return;
 
     const newDt = await client.getDateEST(data.time);
     const diffSeconds = Math.round((newDt.getTime() - data.lastDamageDate.getTime()) / 1000);

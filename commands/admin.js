@@ -476,6 +476,7 @@ module.exports = {
 
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(msg)], flags: (1 << 6) });
       } else if (args[0].name == 'disable-base-damage') {
+        return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription('This command is disabled as it is currently in development.')] });
         const preference = args[0].options[0].value;
 
         const toggle = await DisableBaseDamage(client, preference);
