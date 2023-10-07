@@ -1,4 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
+const { destinations } = require('../config/locations');
+const { calculateVector } = require('./vector');
 
 module.exports = {
 
@@ -49,9 +51,22 @@ module.exports = {
 
     let unixTime = Math.floor(newDt.getTime() / 1000);
 
+    let tempDest;
+    let lastDist = 1000000;
+    let destination_dir;
+    for (let i = 0; i < destinations.length; i++) {
+      let { distance, theta, dir } = calculateVector(data.pos, destinations[i].coord);
+      if (distance < lastDist) {
+        tempDest = destinations[i].name;
+        lastDist = distance;
+        destination_dir = dir;
+      }
+    }
+    const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : tempDest;
+
     let combatLog = new EmbedBuilder()
       .setColor(client.config.Colors.Red)
-      .setDescription(`**NOTICE:**\n**${data.player}** has combat logged at <t:${unixTime}> when fighting **${data.lastHitBy}\nLocation [${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`);
+      .setDescription(`**NOTICE:**\n**${data.player}** has combat logged at <t:${unixTime}> when fighting **${data.lastHitBy}\nLocation [${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**\nNear ${destination}`);
 
     if (client.exists(guild.adminRole)) channel.send({ content: `<@&${guild.adminRole}>` });
 

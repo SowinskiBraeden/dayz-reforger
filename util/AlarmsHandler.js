@@ -1,5 +1,6 @@
 const { BanPlayer, UnbanPlayer } = require('./NitradoAPI');
 const { EmbedBuilder } = require('discord.js');
+const { calculateVector } = require('./vector');
 
 // Private functions (only called locally)
 
@@ -23,9 +24,22 @@ const HandlePlayerTrackEvent = async (client, guild, e) => {
   let newDt = await client.getDateEST(player.time);
   let unixTime = Math.floor(newDt.getTime()/1000);
 
+  let tempDest;
+  let lastDist = 1000000;
+  let destination_dir;
+  for (let i = 0; i < destinations.length; i++) {
+    let { distance, theta, dir } = calculateVector(player.pos, destinations[i].coord);
+    if (distance < lastDist) {
+      tempDest = destinations[i].name;
+      lastDist = distance;
+      destination_dir = dir;
+    }
+  }
+  const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : tempDest;
+
   const trackEvent = new EmbedBuilder()
     .setColor(client.config.Colors.Default)
-    .setDescription(`**${e.name} Event**\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>`);
+    .setDescription(`**${e.name} Event**\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>\nNear ${destination}`);
 
   if (!client.exists(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
   const channel = client.GetChannel(e.channel);
@@ -97,9 +111,22 @@ module.exports = {
         let newDt = await client.getDateEST(data.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
 
+        let tempDest;
+        let lastDist = 1000000;
+        let destination_dir;
+        for (let i = 0; i < destinations.length; i++) {
+          let { distance, theta, dir } = calculateVector(info.victimPOS, destinations[i].coord);
+          if (distance < lastDist) {
+            tempDest = destinations[i].name;
+            lastDist = distance;
+            destination_dir = dir;
+          }
+        }
+        const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : tempDest;
+
         let uavEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`**UAV Detection - <t:${unixTime}>**\n**${data.player}** was spotted in the UAV zone at **[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`)
+          .setDescription(`**UAV Detection - <t:${unixTime}>**\n**${data.player}** was spotted in the UAV zone at **[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})\nNear ${destination}**`)
       
         client.users.fetch(uav.owner, false).then((user) => {
           user.send({ embeds: [uavEmbed] });

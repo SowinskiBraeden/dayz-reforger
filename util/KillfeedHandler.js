@@ -1,6 +1,8 @@
 const { EmbedBuilder } = require('discord.js');
 const { User, addUser } = require('../structures/user');
 const { KillInAlarm } = require('./AlarmsHandler');
+const { destinations } = require('../config/locations');
+const { calculateVector } = require('./vector');
 
 const Templates = {
   Killed: 1,
@@ -76,10 +78,23 @@ module.exports = {
     const unixTime = Math.floor(newDt.getTime()/1000);
 
     const showCoords = client.exists(guild.showKillfeedCoords) ? guild.showKillfeedCoords : false; // default to false if no record of configuration.
+    let tempDest;
+    let lastDist = 1000000;
+    let destination_dir;
+    for (let i = 0; i < destinations.length; i++) {
+      let { distance, theta, dir } = calculateVector(info.victimPOS, destinations[i].coord);
+      if (distance < lastDist) {
+        tempDest = destinations[i].name;
+        lastDist = distance;
+        destination_dir = dir;
+      }
+    }
+
+    const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : tempDest;
 
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
       const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : info.causeOfDeath;
-      const coord = showCoords ? `\n**Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})**` : '';
+      const coord = showCoords ? `\n**Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})**\nNear ${destination}` : '';
       const killMessage = killedBy == Templates.Vehicle ? 'run over by' : 'blew up from';
 
       const killEvent = new EmbedBuilder()
@@ -169,7 +184,7 @@ module.exports = {
     if (victimStatIndex == -1) stats.push(victimStat);
     else stats[victimStatIndex] = victimStat;
     
-    const coord = showCoords ? `\n**Location [${info.killerPOS[0]}, ${info.killerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.killerPOS[0]};${info.killerPOS[1]})**` : '';
+    const coord = showCoords ? `\n**Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})*\nNear ${destination}` : '';
     
     const killEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
