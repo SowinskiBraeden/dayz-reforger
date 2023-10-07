@@ -115,7 +115,7 @@ module.exports = {
         let lastDist = 1000000;
         let destination_dir;
         for (let i = 0; i < destinations.length; i++) {
-          let { distance, theta, dir } = calculateVector(info.victimPOS, destinations[i].coord);
+          let { distance, theta, dir } = calculateVector(data.pos, destinations[i].coord);
           if (distance < lastDist) {
             tempDest = destinations[i].name;
             lastDist = distance;
