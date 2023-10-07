@@ -48,6 +48,12 @@ module.exports = {
       type: CommandOptions.Channel,
       channel_types: [0], // Restrict to text channel
       required: true,
+    }, {
+      name: "role",
+      description: "Optional role to ping",
+      value: "role",
+      type: CommandOptions.Role,
+      required: false,
     }]
   }, {
     name: "delete",
@@ -84,6 +90,7 @@ module.exports = {
           name: args[0].options[2].value,
           gamertag: args[0].options[0].value,
           channel: args[0].options[3].value,
+          role: args[0].options[4] ? args[0].options[4].value : null,
           time: args[0].options[1].value,
           creationDate: new Date(),
         };

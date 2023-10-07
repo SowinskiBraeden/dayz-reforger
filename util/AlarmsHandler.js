@@ -19,7 +19,6 @@ const ExpireEvent = async(client, guild, e) => {
 
 const HandlePlayerTrackEvent = async (client, guild, e) => {
   let player = guild.playerstats.find(stat => stat.gamertag == e.gamertag );
-  let hasMR = (guild.memberRole != "")
 
   let newDt = await client.getDateEST(player.time);
   let unixTime = Math.floor(newDt.getTime()/1000);
@@ -30,7 +29,8 @@ const HandlePlayerTrackEvent = async (client, guild, e) => {
 
   if (!client.exists(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
   const channel = client.GetChannel(e.channel);
-  channel.send({ embeds: [trackEvent], content: `${hasMR ? `\n<@&${guild.memberRole}>`:'@here'}` });
+  if (e.role) channel.send({ content: `<@&${e.role}>`, embeds: [trackEvent] });
+  else channel.send({ embeds: [trackEvent] });
 
   let now = new Date();
   let diff = ((now - e.creationDate) / 1000) / 60;
