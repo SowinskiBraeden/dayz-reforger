@@ -1,6 +1,7 @@
 const { BanPlayer, UnbanPlayer } = require('./NitradoAPI');
 const { EmbedBuilder } = require('discord.js');
 const { calculateVector } = require('./vector');
+const { destinations } = require('../config/destinations');
 
 // Private functions (only called locally)
 

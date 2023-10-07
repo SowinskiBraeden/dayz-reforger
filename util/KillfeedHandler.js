@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { User, addUser } = require('../structures/user');
 const { KillInAlarm } = require('./AlarmsHandler');
-const { destinations } = require('../config/locations');
+const { destinations } = require('../config/destinations');
 const { calculateVector } = require('./vector');
 
 const Templates = {
