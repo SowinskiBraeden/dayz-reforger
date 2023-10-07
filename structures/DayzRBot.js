@@ -42,6 +42,7 @@ class DayzRBot extends Client {
     this.arIntervalId; // Interval for auto-restart functions
     this.playerSessions = new Map();
     this.alarmPingQueue = {};
+    this.processingLogs = false;
     this.autoRestartInit();
     this.LoadCommandsAndInteractionHandlers();
     this.LoadEvents();
@@ -236,6 +237,8 @@ class DayzRBot extends Client {
   }
 
   async logsUpdateTimer(c) {
+    if (this.processingLogs) return; // Process is already running, wait till next scheduled time.
+    this.processingLogs = true;
     let t = new Date();
     // c.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
     c.activePlayersTick++;
@@ -250,6 +253,7 @@ class DayzRBot extends Client {
         if (c.activePlayersTick == 12) await HandleActivePlayersList(c, c.config.GuildID);
       })
     });
+    this.processingLogs = false;
   }
 
   async connectMongo(mongoURI, dbo) {

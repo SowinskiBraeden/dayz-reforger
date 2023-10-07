@@ -4,7 +4,6 @@ node_modules/*
 # Testing/dev related
 *_test.js
 dev-*.js
-commands/debug.js
 
 # Logs
 logs/*
