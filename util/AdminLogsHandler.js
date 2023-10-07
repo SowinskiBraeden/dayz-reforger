@@ -28,6 +28,9 @@ module.exports = {
   DetectCombatLog: async (client, guildId, data) => {
     if (!client.exists(data.lastDamageDate)) return;
 
+    let guild = await client.GetGuild(guildId);
+    if (!client.exists(guild.connectionLogsChannel)) return;
+
     const newDt = await client.getDateEST(data.time);
     const diffSeconds = Math.round((newDt.getTime() - data.lastDamageDate.getTime()) / 1000);
 
@@ -36,8 +39,11 @@ module.exports = {
     if (diffSeconds > (data.combatLogTimer * 60)) return;
     if (data.lastDamageDate <= data.lastDeathDate) return;
 
-    let guild = await client.GetGuild(guildId);
-    if (!client.exists(guild.connectionLogsChannel)) return;
+    // If lastHitBy (attacker) died to this player or another,
+    // then it does not count as combat logging, (the combat ended)
+    let attacker = guild.playerstats.find(stat => stat.gamertag = data.lastHitBy);
+    if (attacker.lastDeathDate > data.lastDamageDate) return;    
+
     const channel = client.GetChannel(guild.connectionLogsChannel);
     if (!channel) return;
 
