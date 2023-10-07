@@ -31,6 +31,7 @@ module.exports = {
       type: CommandOptions.Integer,
       required: true,
       choices: [
+        { name: '10-minutes', value: 10 }, { name: '15-minutes', value: 15 }, { name: '20-minutes', value: 20 }, { name: '25-minutes', value: 25 }, 
         { name: '30-minutes', value: 30 }, { name: '60-minutes', value: 60 }, { name: '90-minutes', value: 90 }, { name: '120-minutes', value: 120 },
       ]
     },
