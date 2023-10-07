@@ -34,7 +34,9 @@ const Vehicles = {
   Truck_01_Covered:        'Green V3S Truck',
   Truck_01_Covered_Blue:   'Blue V3S Truck',
   Truck_01_Covered_Orange: 'Orange V3S Truck',
-}
+
+  Offroad_02:              'M1025 Humvee'
+};
 
 module.exports = {
   
