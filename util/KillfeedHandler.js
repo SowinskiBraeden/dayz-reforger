@@ -5,14 +5,36 @@ const { destinations } = require('../config/destinations');
 const { calculateVector } = require('./vector');
 
 const Templates = {
-  Killed: 1,
-  HitBy: 2,
+  Killed:       1,
+  HitBy:        2,
   HitByAndDead: 3,
-  Explosion: 4,
-  LandMine: 5,
-  Melee: 6,
-  Vehicle: 7,
+  Explosion:    4,
+  LandMine:     5,
+  Melee:        6,
+  Vehicle:      7,
 };
+
+const Vehicles = {
+  CivilianSedan:           'White Olga',
+  CivilianSedan_Black:     'Black Olga',
+  CivilianSedan_Wine:      'Wine Olga',
+  
+  Hatchback_02:            'Red Gunter',
+  Hatchback_02_Black:      'Black Gunter',
+  Hatchback_02_Blue:       'Blue Gunter',
+
+  OffroadHatchBack:        'Green ADA 4x4',
+  OffroadHatchBack_Blue:   'Blue ADA 4x4',
+  OffroadHatchBack_White:  'White ADA 4x4', 
+  
+  Sedan_02:                'Yellow Sarka',
+  Sedan_02_Grey:           'Grey Sarka',
+  Sedan_02_Red:            'Red Sarka',
+  
+  Truck_01_Covered:        'Green V3S Truck',
+  Truck_01_Covered_Blue:   'Blue V3S Truck',
+  Truck_01_Covered_Orange: 'Orange V3S Truck',
+}
 
 module.exports = {
   
@@ -93,7 +115,8 @@ module.exports = {
     const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
 
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
-      const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : info.causeOfDeath;
+      const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : 
+                  killedBy == Templates.Vehicle ? Vehicles[info.causeOfDeath] : info.causeOfDeath;
       const coord = showCoords ? `\n***Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})***\n${destination}` : '';
       const killMessage = killedBy == Templates.Vehicle ? 'run over by' : 'blew up from';
 
