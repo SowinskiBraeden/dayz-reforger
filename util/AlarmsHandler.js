@@ -36,11 +36,11 @@ const HandlePlayerTrackEvent = async (client, guild, e) => {
       destination_dir = dir;
     }
   }
-  const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : tempDest;
+  const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
 
   const trackEvent = new EmbedBuilder()
     .setColor(client.config.Colors.Default)
-    .setDescription(`**${e.name} Event**\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>\nNear ${destination}`);
+    .setDescription(`**${e.name} Event**\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>\n${destination}`);
 
   if (!client.exists(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
   const channel = client.GetChannel(e.channel);
@@ -123,11 +123,11 @@ module.exports = {
             destination_dir = dir;
           }
         }
-        const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : tempDest;
+        const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
 
         let uavEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`**UAV Detection - <t:${unixTime}>**\n**${data.player}** was spotted in the UAV zone at **[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})\nNear ${destination}**`)
+          .setDescription(`**UAV Detection - <t:${unixTime}>**\n**${data.player}** was spotted in the UAV zone at **[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})\n${destination}**`)
       
         client.users.fetch(uav.owner, false).then((user) => {
           user.send({ embeds: [uavEmbed] });

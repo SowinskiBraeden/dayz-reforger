@@ -62,11 +62,11 @@ module.exports = {
         destination_dir = dir;
       }
     }
-    const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : tempDest;
+    const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
 
     let combatLog = new EmbedBuilder()
       .setColor(client.config.Colors.Red)
-      .setDescription(`**NOTICE:**\n**${data.player}** has combat logged at <t:${unixTime}> when fighting **${data.lastHitBy}\nLocation [${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**\nNear ${destination}`);
+      .setDescription(`**NOTICE:**\n**${data.player}** has combat logged at <t:${unixTime}> when fighting **${data.lastHitBy}\nLocation [${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**\n${destination}`);
 
     if (client.exists(guild.adminRole)) channel.send({ content: `<@&${guild.adminRole}>` });
 
