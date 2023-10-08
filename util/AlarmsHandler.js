@@ -77,10 +77,11 @@ module.exports = {
         let unixTime = Math.floor(newDt.getTime()/1000);
 
         if (!client.alarmPingQueue[alarm.channel]) client.alarmPingQueue[alarm.channel] = {};
-        if (!client.alarmPingQueue[alarm.channel][alarm.role]) client.alarmPingQueue[alarm.channel][alarm.role] = [];
+        let route = alarm.mute ? '-no-role-ping-' : alarm.role;
+        if (!client.alarmPingQueue[alarm.channel][route]) client.alarmPingQueue[alarm.channel][route] = [];
 
         if (alarm.rules.includes['ban_on_entry']) {
-          client.alarmPingQueue[alarm.channel][alarm.role].push(
+          client.alarmPingQueue[alarm.channel][route].push(
             new EmbedBuilder()
               .setColor(client.config.Colors.Default)
               .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned.__`)
@@ -91,7 +92,7 @@ module.exports = {
           return;
         }
 
-        client.alarmPingQueue[alarm.channel][alarm.role].push(
+        client.alarmPingQueue[alarm.channel][route].push(
           new EmbedBuilder()
             .setColor(client.config.Colors.Default)
             .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}**`)

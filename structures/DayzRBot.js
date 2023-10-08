@@ -158,10 +158,12 @@ class DayzRBot extends Client {
       if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) s = await UpdateLastDeathDate(this, s, lines[i]); // Updates users last death date for non PVP deaths.
     }
 
+    // Handle alarm pings
     for (const [channel_id, data] of Object.entries(this.alarmPingQueue)) {
       const channel = this.GetChannel(channel_id);
       for (const [role, embeds] of Object.entries(data)) {
-        channel.send({ content: `<@&${role}>`, embeds: embeds });
+        if (role == '-no-role-ping-') channel.send({ embeds: embeds });
+        else channel.send({ content: `<@&${role}>`, embeds: embeds });
       }
     }
 

@@ -126,6 +126,19 @@ module.exports = {
       type: CommandOptions.SubCommand,
     },
     {
+      name: "mute",
+      description: "Toggle mute on this alarm",
+      value: "mute",
+      type: CommandOptions.SubCommand,
+      options: [{
+        name: "toggle",
+        description: "Turn on or off role pings for this alarm",
+        value: false,
+        type: CommandOptions.Boolean,
+        required: true,
+      }]
+    },
+    {
       name: "set-rule",
       description: "Add a Rule to an Alarm",
       value: "set-rule",
@@ -348,13 +361,11 @@ module.exports = {
 
       } else if (args[0].name == 'move-origin') {
 
-        if (GuildDB.alarms.length == 0)  return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
-
-        let disable = args[0].name == 'disable' ? true : false;
+        if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
 
         let alarms = new StringSelectMenuBuilder()
           .setCustomId(`MoveOrigin-${args[0].options[0].value}-${args[0].options[1].value}-${interaction.member.user.id}`)
-          .setPlaceholder(`Select an Alarm to ${disable ? 'disable' : 'enable'}.`);
+          .setPlaceholder(`Select an Alarm to move.`);
 
         for (let i = 0; i < GuildDB.alarms.length; i++) {
           alarms.addOptions({
@@ -368,6 +379,25 @@ module.exports = {
 
         return interaction.send({ components: [opt], flags: (1 << 6) });
 
+      } else if (args[0].name == 'mute') {
+
+        if (GuildDB.alarms.length == 0)  return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
+
+        let alarms = new StringSelectMenuBuilder()
+          .setCustomId(`MuteAlarm-${args[0].options[0].value ? 1 : 0}-${interaction.member.user.id}`)
+          .setPlaceholder(`Select an Alarm to mute.`);
+
+        for (let i = 0; i < GuildDB.alarms.length; i++) {
+          alarms.addOptions({
+            label: GuildDB.alarms[i].name,
+            description: `Mute the role pings of this Alarm`,
+            value: GuildDB.alarms[i].name,
+          })
+        }
+
+        const opt = new ActionRowBuilder().addComponents(alarms);
+
+        return interaction.send({ components: [opt], flags: (1 << 6) });
       }
     },
   },
@@ -639,7 +669,37 @@ module.exports = {
 
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
-    }
+    },
 
+    MuteAlarm: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return interaction.reply({
+            content: "This menu is not for you",
+            flags: (1 << 6)
+          })
+        }
+
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
+        let alarmIndex = GuildDB.alarms.indexOf(alarm);
+        let mute = parseInt(interaction.customId.split('-')[1]);
+        alarm.mute = mute;
+        GuildDB.alarms[alarmIndex] = alarm
+
+        client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
+          $set: {
+            'server.alarms': GuildDB.alarms,
+          }
+        }, (err, res) => {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+
+        let successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setDescription(`**Success:** Successfully ${mute?'Muted':'Unmuted'} this alarm.`);
+
+        return interaction.update({ embeds: [successEmbed], components: [] });
+      }
+    }
   } 
 }
