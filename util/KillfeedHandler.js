@@ -42,8 +42,8 @@ module.exports = {
   
   // Update last death date for non PVP deaths
   UpdateLastDeathDate: async (client, stats, line) => {
-    let killedByZmb  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>) killed by (.*)/g;
-    let diedTemplate = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>) died. Stats> Water: (.*) Energy: (.*) Bleed sources: (.*)/g;
+    let killedByZmb  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by (.*)/g;
+    let diedTemplate = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) died\. Stats> Water: (.*) Energy: (.*) Bleed sources: (.*)/g;
   
     let data = line.includes('>) died.') ? [...line.matchAll(diedTemplate)][0] : [...line.matchAll(killedByZmb)][0];
     if (!data) return stats;
