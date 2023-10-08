@@ -193,6 +193,7 @@ module.exports = {
           .setColor(client.config.Colors.Default)
           .setDescription('**Active Boutnies**');
 
+        if (activeBounties.length == 0) bountiesEmbed.setDescription('**There are No Active Boutnies**')
         for (let i = 0; i < activeBounties.length; i++) {
           for (let j = 0; j < activeBounties[i].bounties.length; j++) {
             bountiesEmbed.addFields({ name: `${activeBounties[i].gamertag} has a:`, value: `**$${activeBounties[i].bounties[j].value.toFixed(2).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** bounty set by ${activeBounties[i].bounties[j].setBy == null ? 'Anonymous' : `<@${activeBounties[i].bounties[j].setBy}>`}`, inline: false });
