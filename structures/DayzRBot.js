@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 // custom util imports
 const { DownloadNitradoFile, CheckServerStatus } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
-const { HandleKillfeed } = require('../util/KillfeedHandler');
+const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents } = require('../util/AlarmsHandler');
 
 const path = require("path");
@@ -155,6 +155,7 @@ class DayzRBot extends Client {
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by') && lines[i].includes('TransportHit')) s = await HandleKillfeed(this, guildId, s, lines[i]) // Handles vehicle deaths
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles regular deaths
       if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles deaths missing hit by log
+      if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) s = await UpdateLastDeathDate(this, s, lines[i]); // Updates users last death date for non PVP deaths.
     }
 
     for (const [channel_id, data] of Object.entries(this.alarmPingQueue)) {

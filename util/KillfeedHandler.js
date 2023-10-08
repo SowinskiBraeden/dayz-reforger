@@ -40,6 +40,33 @@ const Vehicles = {
 
 module.exports = {
   
+  // Update last death date for non PVP deaths
+  UpdateLastDeathDate: async (client, stats, line) => {
+    let killedByZmb  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>) killed by (.*)/g;
+    let diedTemplate = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>) died. Stats> Water: (.*) Energy: (.*) Bleed sources: (.*)/g;
+  
+    let data = line.includes('>) died.') ? [...line.matchAll(diedTemplate)][0] : [...line.matchAll(killedByZmb)][0];
+    if (!data) return stats;
+
+    let info = {
+      time:      data[1],
+      victim:    data[2],
+      victimID:  data[3],
+      victimPOS: data[4].split(', ').map(v => parseFloat(v)),
+    };
+
+    const newDt = await client.getDateEST(info.time);
+
+    let victimStat = stats.find(stat => stat.playerID == info.victimID);
+    let victimStatIndex = stats.indexOf(victimStat);
+    if (victimStat == undefined) victimStat = client.getDefaultPlayerStats(info.victim, info.victimID);
+    victimStat.lastDeathDate = newDt;
+    if (victimStatIndex == -1) stats.push(victimStat);
+    else stats[victimStatIndex] = victimStat;
+
+    return stats;
+  },
+
   HandleKillfeed: async (client, guildId, stats, line) => {
     
     let guild = await client.GetGuild(guildId);
@@ -117,6 +144,13 @@ module.exports = {
     const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
 
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
+      let victimStat = stats.find(stat => stat.playerID == info.victimID)
+      let victimStatIndex = stats.indexOf(victimStat);
+      if (victimStat == undefined) victimStat = client.getDefaultPlayerStats(info.victim, info.victimID);
+      victimStat.lastDeathDate = newDt;
+      if (victimStatIndex == -1) stats.push(victimStat);
+      else stats[victimStatIndex] = victimStat;
+
       const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : 
                   killedBy == Templates.Vehicle ? Vehicles[info.causeOfDeath] : info.causeOfDeath;
       const coord = showCoords ? `\n***Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})***\n${destination}` : '';

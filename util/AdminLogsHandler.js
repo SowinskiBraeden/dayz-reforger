@@ -41,8 +41,8 @@ module.exports = {
     if (diffSeconds > (data.combatLogTimer * 60)) return;
     if (data.lastDamageDate <= data.lastDeathDate) return;
 
-    // If lastHitBy (attacker) died to this player or another,
-    // then it does not count as combat logging, (the combat ended)
+    // If lastHitBy (attacker) died after shooting this player
+    // then it does not count as combat logging, (the combat ended due to death)
     let attacker = guild.playerstats.find(stat => stat.gamertag = data.lastHitBy);
     if (attacker.lastDeathDate > data.lastDamageDate) return;    
 
