@@ -8,7 +8,7 @@ const { destinations } = require('../config/destinations');
 const ExpireEvent = async(client, guild, e) => {
   let hasMR = (guild.memberRole != "");
   const channel = client.GetChannel(e.channel);
-  if (client.exists(e.channel)) channel.send({ embeds: [new EmbedBuilder().setColor(client.config.colors.Default).setDescription(`${hasMR ? `<@&${guild.memberRole}>\n`:''}**The ${e.name} Event has ended!**`)] });
+  if (client.exists(e.channel)) channel.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription(`${hasMR ? `<@&${guild.memberRole}>\n`:''}**The ${e.name} Event has ended!**`)] });
 
   client.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
     $pull: {
