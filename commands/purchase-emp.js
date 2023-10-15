@@ -69,7 +69,7 @@ module.exports = {
         .setPlaceholder(`Select an Alarm to EMP.`)
 
       for (let i = 0; i < GuildDB.alarms.length; i++) {
-        if (!alarm.empExempt) {
+        if (!GuildDB.alarms[i].empExempt) {
           alarms.addOptions({
             label: GuildDB.alarms[i].name,
             description: `EMP this Alarm for $${GuildDB.empPrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}}`,
