@@ -47,10 +47,7 @@ module.exports = {
           userID: interaction.member.user.id,
           guilds: {
             [GuildDB.serverID]: {
-              bankAccount: {
-                balance: GuildDB.startingBalance,
-                cash: 0.00,
-              }
+              balance: GuildDB.startingBalance,
             }
           }
         }

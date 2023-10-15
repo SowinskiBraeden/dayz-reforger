@@ -502,6 +502,7 @@ class DayzRBot extends Client {
       incomeLimiter: guild.server.incomeLimiter,
       startingBalance: guild.server.startingBalance,
       uavPrice: guild.server.uavPrice,
+      empPrice: guild.server.empPrice,
       memberRole: guild.server.memberRole,
       adminRole: guild.server.adminRole,
       combatLogTimer: guild.server.combatLogTimer,
