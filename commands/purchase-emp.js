@@ -29,21 +29,18 @@ module.exports = {
           userID: interaction.member.user.id,
           guilds: {
             [GuildDB.serverID]: {
-              bankAccount: {
-                balance: GuildDB.startingBalance,
-                cash: 0.00,
-              }
+              balance: GuildDB.startingBalance,
             }
           }
         }
 
-        // Register bank for user  
+        // Register bank for user
         let newBank = new User();
-        newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, 0);
+        newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance);
         newBank.save().catch(err => {
           if (err) return client.sendInternalError(interaction, err);
         });
-        
+
       } else banking = banking.user;
 
       if (!client.exists(banking.guilds[GuildDB.serverID])) {
@@ -72,10 +69,10 @@ module.exports = {
         .setPlaceholder(`Select an Alarm to EMP.`)
 
       for (let i = 0; i < GuildDB.alarms.length; i++) {
-        if (!alarm.empExempt) {
+        if (!GuildDB.alarms[i].empExempt) {
           alarms.addOptions({
             label: GuildDB.alarms[i].name,
-            description: `EMP this Alarm for $500,000`,
+            description: `EMP this Alarm for $${GuildDB.empPrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}}`,
             value: GuildDB.alarms[i].name
           });
         }
