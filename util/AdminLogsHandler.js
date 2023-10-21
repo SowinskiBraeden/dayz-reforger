@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { destinations } = require('../config/destinations');
+const { destinations } = require('../database/destinations');
 const { calculateVector } = require('./vector');
 
 module.exports = {

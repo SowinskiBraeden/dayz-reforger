@@ -1,8 +1,9 @@
 const { EmbedBuilder } = require('discord.js');
-const { User, addUser } = require('../structures/user');
+const { createUser, addUser } = require('../database/user');
 const { KillInAlarm } = require('./AlarmsHandler');
-const { destinations } = require('../config/destinations');
+const { destinations } = require('../database/destinations');
 const { calculateVector } = require('./vector');
+const { getDefaultPlayerStats } = require('../database/playerStatistics');
 
 const Templates = {
   Killed:       1,
@@ -59,7 +60,7 @@ module.exports = {
 
     let victimStat = stats.find(stat => stat.playerID == info.victimID);
     let victimStatIndex = stats.indexOf(victimStat);
-    if (victimStat == undefined) victimStat = client.getDefaultPlayerStats(info.victim, info.victimID);
+    if (victimStat == undefined) victimStat = getDefaultPlayerStats(info.victim, info.victimID);
     victimStat.lastDeathDate = newDt;
     if (victimStatIndex == -1) stats.push(victimStat);
     else stats[victimStatIndex] = victimStat;
@@ -146,7 +147,7 @@ module.exports = {
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
       let victimStat = stats.find(stat => stat.playerID == info.victimID)
       let victimStatIndex = stats.indexOf(victimStat);
-      if (victimStat == undefined) victimStat = client.getDefaultPlayerStats(info.victim, info.victimID);
+      if (victimStat == undefined) victimStat = getDefaultPlayerStats(info.victim, info.victimID);
       victimStat.lastDeathDate = newDt;
       if (victimStatIndex == -1) stats.push(victimStat);
       else stats[victimStatIndex] = victimStat;
@@ -172,8 +173,8 @@ module.exports = {
     let victimStat = stats.find(stat => stat.playerID == info.victimID)
     let killerStatIndex = stats.indexOf(killerStat);
     let victimStatIndex = stats.indexOf(victimStat);
-    if (killerStat == undefined) killerStat = client.getDefaultPlayerStats(info.killer, info.killerID);
-    if (victimStat == undefined) victimStat = client.getDefaultPlayerStats(info.victim, info.victimID);
+    if (killerStat == undefined) killerStat = getDefaultPlayerStats(info.killer, info.killerID);
+    if (victimStat == undefined) victimStat = getDefaultPlayerStats(info.victim, info.victimID);
     
     killerStat.kills++;
     killerStat.killStreak++;
@@ -197,28 +198,16 @@ module.exports = {
 
       let banking = await client.dbo.collection("users").findOne({"user.userID": killerStat.discordID}).then(banking => banking);
       
+      
       if (!banking) {
-        banking = {
-          userID: killerStat.discordID,
-          guilds: {
-            [guildId]: {
-              balance: guild.startingBalance,
-            }
-          }
-        }
+        banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
+        if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+      }
+      banking = banking.user;
 
-        // Register bank for user  
-        let newBank = new User();
-        newBank.createUser(killerStat.discordID, guildId, guild.startingBalance);
-        newBank.save().catch(err => {
-          if (err) return client.sendError(client.GetChannel(guild.killfeedChannel), err);
-        });
-        
-      } else banking = banking.user;
-
-      if (!client.exists(banking.guilds[guildId])) {
-        const success = addUser(banking.guilds, guildId, killer.discordID, this, guild.startingBalance);
-        if (!success) return client.sendError(client.GetChannel(guild.killfeedChannel), 'Automatic Bounty Payout: Failed to add bank to database.');
+      if (!client.exists(banking.guilds[GuildDB.serverID])) {
+        const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
+        if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
       }
 
       const newBalance = banking.guilds[guildId].balance + totalBounty;

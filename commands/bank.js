@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
-const { User, addUser } = require('../structures/user');
+const { createUser, addUser } = require('../database/user');
 
 module.exports = {
   name: "bank",
@@ -64,25 +64,12 @@ module.exports = {
       }
 
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
-
+      
       if (!banking) {
-        banking = {
-          userID: interaction.member.user.id,
-          guilds: {
-            [GuildDB.serverID]: {
-              balance: GuildDB.startingBalance,
-            }
-          }
-        }
-
-        // Register bank for user
-        let newBank = new User();
-        newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance);
-        newBank.save().catch(err => {
-          if (err) return client.sendInternalError(interaction, err);
-        });
-
-      } else banking = banking.user;
+        banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
+        if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+      }
+      banking = banking.user;
 
       if (!client.exists(banking.guilds[GuildDB.serverID])) {
         const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
@@ -97,29 +84,16 @@ module.exports = {
           // Show target users balance
 
           let targetUserID = args[0].options[0].value.replace('<@!', '').replace('>', '');
-          let targetUserBanking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
+          let targetUserBanking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(targetUserBanking => targetUserBanking);
 
           if (!targetUserBanking) {
-            targetUserBanking = {
-              userID: targetUserID,
-              guilds: {
-                [GuildDB.serverID]: {
-                  balance: GuildDB.startingBalance,
-                }
-              }
-            }
-
-            // Register bank for user
-            let newBank = new User();
-            newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
-            newBank.save().catch(err => {
-              if (err) return client.sendInternalError(interaction, err);
-            });
-
-          } else targetUserBanking = targetUserBanking.user;
-
+            targetUserBanking = await createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, client)
+            if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+          }
+          targetUserBanking = targetUserBanking.user;
+    
           if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
-            const success = addUser(targetUserBanking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
+            const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
             if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
           }
 
@@ -160,25 +134,18 @@ module.exports = {
           if (err) return client.sendInternalError(interaction, err);
         });
 
-        let targetUserBanking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
+        let targetUserBanking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(targetUserBanking => targetUserBanking);
 
         if (!targetUserBanking) {
-          targetUserBanking = {
-            userID: targetUserID,
-            guilds: {
-              [GuildDB.serverID]: {
-                balance: (GuildDB.startingBalance + args[0].options[1].value),
-              }
-            }
-          }
-
-          // Register bank for user
-          let newBank = new User();
-          newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, 0);
-          newBank.save().catch(err => {
-            if (err) return client.sendInternalError(interaction, err);
-          });
-        } else targetUserBanking = targetUserBanking.user;
+          targetUserBanking = await createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, client)
+          if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+        }
+        targetUserBanking = targetUserBanking.user;
+  
+        if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
+          const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
+          if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
+        }
 
         const newTargetBalance = targetUserBanking.guilds[GuildDB.serverID].balance + args[0].options[1].value;
 

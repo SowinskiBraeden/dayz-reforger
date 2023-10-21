@@ -3,13 +3,16 @@ const { Collection, Client, EmbedBuilder, Routes } = require('discord.js');
 const MongoClient = require('mongodb').MongoClient;
 const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
-const mongoose = require('mongoose');
 
 // custom util imports
 const { DownloadNitradoFile, CheckServerStatus } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents } = require('../util/AlarmsHandler');
+
+// Data structures imports
+const { getDefaultPlayerStats } = require('../database/playerStatistics');
+const { getDefaultSettings } = require('../database/guildSettings');
 
 const path = require("path");
 const fs = require('fs');
@@ -193,7 +196,7 @@ class DayzRBot extends Client {
 
           lastDetectedTime = await this.getDateEST(info.time);
           let playerStat = s.find(stat => stat.playerID == info.playerID);
-          if (playerStat == undefined) playerStat = this.getDefaultPlayerStats(info.player, info.playerID);
+          if (playerStat == undefined) playerStat = getDefaultPlayerStats(info.player, info.playerID);
 
           if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
@@ -283,19 +286,13 @@ class DayzRBot extends Client {
       // Connect to Mongo database.
       this.db = await MongoClient.connect(mongoURI, { connectTimeoutMS: 1000 });
       this.dbo = this.db.db(dbo);
-      mongoose.connect(`mongodb://${mongoURI.split('@')[1]}/${dbo}`, {
-        authSource: "admin",
-        user: mongoURI.split('//')[1].split(':')[0],
-        pass: mongoURI.split('//')[1].split(':')[1].split('@')[0],
-        useNewUrlParser: true,
-      }).catch(e => this.error(e));
       this.log('Successfully connected to mongoDB');
       databaselogs.connected = true;
       databaselogs.attempts = 0; // reset attempts
       this.databaseConnected = true;
     } catch (err) {
       databaselogs.attempts++;
-      this.error(`Failed to connect to mongodb (mongodb://${mongoURI.split('@')[1]}/${dbo}): attempt ${databaselogs.attempts} - Error: ${err}`);
+      this.error(`Failed to connect to mongodb (mongodb://${mongoURI.split('@')[1]}/${dbo}): attempt ${databaselogs.attempts} - ${err}`);
       failed = true;
     }
 
@@ -404,66 +401,6 @@ class DayzRBot extends Client {
     this.guilds.cache.forEach((guild) => RegisterGuildCommands(this, guild.id));
   }
 
-  getDefaultSettings(GuildId) {
-    return {
-      serverID: GuildId,
-      autoRestart: 0,
-      allowedChannels: [],
-      killfeedChannel: "",
-      showKillfeedCoords: 0,
-      connectionLogsChannel: "",
-      activePlayersChannel: "",
-      welcomeChannel: "",
-      factionArmbands: {},
-      usedArmbands: [],
-      excludedRoles: [],
-      botAdminRoles: [],
-      playerstats: [],
-      alarms: [],
-      events: [],
-      uavs: [],
-      incomeRoles: [],
-      incomeLimiter: 168, // # of hours in 7 days
-      linkedGamertagRole: "",
-      startingBalance: 500,
-      uavPrice: 50000,
-      empPrice: 500000,
-      memberRole: "",
-      adminRole: "",
-      combatLogTimer: 5, // minutes
-    }
-  }
-
-  getDefaultPlayerStats(gt, pID) {
-    return {
-      gamertag: gt,
-      playerID: pID,
-      discordID: "",
-      KDR: 0.00,
-      kills: 0,
-      deaths: 0,
-      killStreak: 0,
-      bestKillStreak: 0,
-      longestKill: 0,
-      deathStreak: 0,
-      worstDeathStreak: 0,
-      pos: [],
-      lastPos: [],
-      time: null,
-      lastTime: null,
-      lastConnectionDate: null,
-      lastDisconnectionDate: null,
-      lastDamageDate: null,
-      lastDeathDate: null,
-      lastHitBy: null,
-      connected: false,
-      totalSessionTime: 0,
-      lastSessionTime: 0,
-      longestSessionTime: 0,
-      bounties: [],
-    }
-  }
-
   async GetGuild(GuildId) {
     let guild = undefined;
     if (this.databaseConnected) guild = await this.dbo.collection("guilds").findOne({"server.serverID":GuildId}).then(guild => guild);
@@ -471,7 +408,7 @@ class DayzRBot extends Client {
     // If guild not found, generate guild default
     if (!guild) {
       guild = {}
-      guild.server = this.getDefaultSettings(GuildId);
+      guild.server = getDefaultSettings(GuildId);
       if (this.databaseConnected) {
         this.dbo.collection("guilds").insertOne(guild, (err, res) => {
           if (err) throw err;

@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
-const { Armbands } = require('../config/armbandsdb.js');
+const { Armbands } = require('../database/armbands.js');
 
 module.exports = {
   name: "factions",

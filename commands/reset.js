@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
-const { addUser } = require('../structures/user');
+const { addUser } = require('../database/user');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
 module.exports = {

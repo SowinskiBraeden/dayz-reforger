@@ -2,8 +2,8 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelect
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
 const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage } = require('../util/NitradoAPI');
-const { Armbands } = require('../config/armbandsdb.js');
-const { User, addUser } = require('../structures/user');
+const { Armbands } = require('../database/armbands.js');
+const { createUser, addUser } = require('../database/user')
 
 module.exports = {
   name: "admin",
@@ -404,23 +404,10 @@ module.exports = {
         let banking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
 
         if (!banking) {
-          banking = {
-            userID: targetUserID,
-            guilds: {
-              [GuildDB.serverID]: {
-                balance: GuildDB.startingBalance,
-              }
-            }
-          }
-
-          // Register bank for user
-          let newBank = new User();
-          newBank.createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance);
-          newBank.save().catch(err => {
-            if (err) return client.sendInternalError(interaction, err);
-          });
-
-        } else banking = banking.user;
+          banking = await createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, client)
+          if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+        }
+        banking = banking.user;
 
         if (!client.exists(banking.guilds[GuildDB.serverID])) {
           const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);

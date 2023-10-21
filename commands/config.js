@@ -1,6 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
+const { getDefaultSettings } = require('../database/guildSettings');
 
 module.exports = {
   name: "config",
@@ -832,7 +833,7 @@ module.exports = {
         let action = '';
         if (interaction.customId.split('-')[1]=='yes') {
           action = 'reset';
-          const defaultGuildConfig = client.getDefaultSettings(GuildDB.serverID);
+          const defaultGuildConfig = getDefaultSettings(GuildDB.serverID);
           client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$set: {"server": defaultGuildConfig}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });

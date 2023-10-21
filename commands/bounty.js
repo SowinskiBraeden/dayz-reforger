@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
+const { createUser, addUser } = require('../database/user');
 
 module.exports = {
   name: "bounty",
@@ -60,25 +61,12 @@ module.exports = {
       let banking;
       if (args[0].name == 'set' || args[0].name == 'pay') {
         banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
-
+  
         if (!banking) {
-          banking = {
-            userID: interaction.member.user.id,
-            guilds: {
-              [GuildDB.serverID]: {
-                balance: GuildDB.startingBalance,
-              }
-            }
-          }
-
-          // Register bank for user  
-          let newBank = new User();
-          newBank.createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance);
-          newBank.save().catch(err => {
-            if (err) return client.sendInternalError(interaction, err);
-          });
-          
-        } else banking = banking.user;
+          banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
+          if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+        }
+        banking = banking.user;
 
         if (!client.exists(banking.guilds[GuildDB.serverID])) {
           const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);

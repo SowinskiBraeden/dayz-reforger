@@ -1,8 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { HandleAlarmsAndUAVs } = require('./AlarmsHandler');
 const { SendConnectionLogs, DetectCombatLog } = require('./AdminLogsHandler');
-
-// custom util imports
+const { getDefaultPlayerStats } = require('../database/playerStatistics');
 const { FetchServerSettings } = require('../util/NitradoAPI');
 
 let lastSendMessage;
@@ -31,7 +30,7 @@ module.exports = {
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID);
       let playerStatIndex = stats.indexOf(playerStat);
-      if (playerStat === undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
+      if (playerStat === undefined) playerStat = getDefaultPlayerStats(info.player, info.playerID);
 
       const newDt = await client.getDateEST(info.time);
 
@@ -77,7 +76,7 @@ module.exports = {
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID);
       let playerStatIndex = stats.indexOf(playerStat);
-      if (playerStat === undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
+      if (playerStat === undefined) playerStat = getDefaultPlayerStats(info.player, info.playerID);
 
       const newDt = await client.getDateEST(info.time);
       const unixTime = Math.round(newDt.getTime() / 1000); // Seconds
@@ -129,7 +128,7 @@ module.exports = {
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID);
       let playerStatIndex = stats.indexOf(playerStat);
-      if (playerStat === undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
+      if (playerStat === undefined) playerStat = getDefaultPlayerStats(info.player, info.playerID);
       if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
 
       playerStat.lastPos = playerStat.pos;
@@ -168,7 +167,7 @@ module.exports = {
 
       let playerStat = stats.find(stat => stat.playerID == info.playerID);
       let playerStatIndex = stats.indexOf(playerStat);
-      if (playerStat === undefined) playerStat = client.getDefaultPlayerStats(info.player, info.playerID);
+      if (playerStat === undefined) playerStat = getDefaultPlayerStats(info.player, info.playerID);
 
       playerStat.lastDamageDate = await client.getDateEST(info.time);
       playerStat.lastHitBy = info.attacker;

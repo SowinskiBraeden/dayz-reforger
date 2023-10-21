@@ -1,5 +1,5 @@
 const { StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder } = require('discord.js');
-const { Armbands } = require('../config/armbandsdb.js');
+const { Armbands } = require('../database/armbands.js');
 
 module.exports = {
   name: "armbands",
