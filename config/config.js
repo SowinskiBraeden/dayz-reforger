@@ -3,7 +3,7 @@ require('dotenv').config();
 
 module.exports = {
 	Dev: process.env.Dev || "DEV.",                     
-	Version: package.version, // (major).(feature).(patch)
+	Version: package.version, // (major).(minor).(patch)
   Admins: ["362791661274660874", "329371697570381824"], // Admins of the bot
   ServerID: "1050215624053374976",
   GuildID: process.env.GuildID || "",
