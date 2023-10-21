@@ -1,4 +1,4 @@
-# DayZ R. Bot [![Node.js](https://nodejs.org/static/images/logo.svg)](https://nodejs.org/en)
+# DayZ.R Bot
 
 A general purpose Discord Bot to handle DayZ Killfeed, stats, alarms and factions' armbands and more using Nitrado Log files. 
 
