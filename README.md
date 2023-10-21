@@ -3,6 +3,7 @@
 A general purpose Discord Bot to handle DayZ Killfeed, stats, alarms and factions' armbands and more using Nitrado Log files. 
 
 ***Explore the docs »***
+* [Contributing](#contributing)
 * [Getting Started](#getting-started)
 * [Contact](#contact)
 
@@ -16,6 +17,9 @@ A general purpose Discord Bot to handle DayZ Killfeed, stats, alarms and faction
 
 Originally just a simple project to have factions select their armbands, and track that in the Discord. With the increasing difficulty of other DayZ killfeed bots, I  
 expanded this project to include the killfeed, alarms, banking, and much much more.
+
+## Contributing
+[» Contributing](/CONTRIBUTING.md)
 
 ## Getting Started
 
