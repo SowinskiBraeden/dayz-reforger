@@ -46,6 +46,8 @@ module.exports = {
           .setColor(client.config.Colors.Default)
           .setTitle(`Server connection stats`);
 
+        stats.Embed.addFields({ name: 'All time Unique connections', value: `> ${stats.length}`,  inline: false });
+
         let month3 = new Date().setMonth(new Date().getMonth() - 3);
         let month3Players = stats.filter((stat) => stat.lastConnectionDate > month3);
         statsEmbed.addFields({ name: 'Unique connections in the last 3 months', value: `> ${month3Players.length}`, inline: false });
