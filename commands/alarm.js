@@ -151,7 +151,8 @@ module.exports = {
         required: true,
         choices: [
           { name: 'Ban on Entry', value: 'ban_on_entry' },
-          { name: 'Ban on Kill', value: 'ban_on_kill' }
+          { name: 'Ban on Kill', value: 'ban_on_kill' },
+          { name: 'Ban on Fireplace Placement', value: 'ban_on_fireplace_placement' },
         ]
       }]
     },

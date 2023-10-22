@@ -197,6 +197,47 @@ module.exports = {
     }
   },
 
+  PlaceFireplaceInAlarm: async (client, guildId, line) => {
+
+    let fireplacePlacement = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>) placed Fireplace/g;
+    let data = [...line.matchAll(fireplacePlacement)][0];
+    if (!data) return;
+
+    let info = {
+      time:      data[1],
+      victim:    data[2],
+      victimID:  data[3],
+      victimPOS: data[4].split(', ').map(v => parseFloat(v)),
+    };
+
+    let guild = await client.GetGuild(guildId);
+
+    for (let i = 0; i < guild.alarms.length; i++) {
+      let alarm = guild.alarms[i];
+      if (alarm.disabled || !alarm.rules.includes('ban_on_fireplace_placement')) continue;
+      if (alarm.ignoredPlayers.includes(info.playerID)) continue;
+
+      let diff = [Math.round(alarm.origin[0] - info.playerPOS[0]), Math.round(alarm.origin[1] - info.playerPOS[1])];
+      let distance = Math.sqrt(Math.pow(diff[0], 2) + Math.pow(diff[1], 2)).toFixed(2);
+
+      if (distance < alarm.radius) {
+        const channel = client.GetChannel(alarm.channel);
+
+        let newDt = await client.getDateEST(info.time);
+        let unixTime = Math.floor(newDt.getTime()/1000);
+
+        let alarmEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Default)
+          .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${info.player}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned for **placing a fireplace**.__`)
+          .addFields({ name: '**Location**', value: `**[${info.playerPOS[0]}, ${info.playerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.playerPOS[0]};${info.playerPOS[1]})**`, inline: false })
+      
+        channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+
+        BanPlayer(client, info.player);
+      }
+    }
+  },
+
   HandleEvents: async (client, guildId) => {
 
     let guild = await client.GetGuild(guildId);
