@@ -44,23 +44,23 @@ module.exports = {
 
         let statsEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`Server connection stats`);
+          .setTitle(`Server connection stats`);
 
         let month3 = new Date().setMonth(new Date().getMonth() - 3);
         let month3Players = stats.filter((stat) => stat.lastConnectionDate > month3);
-        statsEmbed.addFields({ name: 'Unique connections in the last 3 months', value: `${month3Players.length}`, inline: false });
+        statsEmbed.addFields({ name: 'Unique connections in the last 3 months', value: `> ${month3Players.length}`, inline: false });
 
         let month = new Date().setMonth(new Date().getMonth() - 1);
         let monthlyPlayers = stats.filter((stat) => stat.lastConnectionDate > month);
-        statsEmbed.addFields({ name: 'Unique connections in the last month', value: `${monthlyPlayers.length}`, inline: false });
+        statsEmbed.addFields({ name: 'Unique connections in the last month', value: `> ${monthlyPlayers.length}`, inline: false });
 
         let week = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
         let weeklyPlayers = stats.filter((stat) => stat.lastConnectionDate > week);
-        statsEmbed.addFields({ name: 'Unique connections in the last week', value: `${weeklyPlayers.length}`, inline: false });
+        statsEmbed.addFields({ name: 'Unique connections in the last week', value: `> ${weeklyPlayers.length}`, inline: false });
 
         let today = new Date(new Date().getTime() - 1 * 24 * 60 * 60 * 1000)
         let dailyPlayers = stats.filter((stat) => stat.lastConnectionDate > today);
-        statsEmbed.addFields({ name: 'Unique connections in the last 24 hours', value: `${dailyPlayers.length}`, inline: false });
+        statsEmbed.addFields({ name: 'Unique connections in the last 24 hours', value: `> ${dailyPlayers.length}`, inline: false });
 
         return interaction.send({ embeds: [statsEmbed] });
       }
