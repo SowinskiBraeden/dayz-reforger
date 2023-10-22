@@ -114,13 +114,13 @@ module.exports = {
       info.bodyPart  = data[9];
       info.damage    = data[10];
       info.weapon    = data[12];
-      info.distance  = killedBy == Templates.Melee ? 0 : data[13];
+      info.distance  = killedBy == Templates.Melee ? 0 : data[13].toFixed(2);
     } else if (killedBy == Templates.Killed) {
       info.killer    = data[5];
       info.killerID  = data[6];
       info.killerPOS = data[7].split(', ').map(v => parseFloat(v));
       info.weapon    = data[8];
-      info.distance  = data[9];
+      info.distance  = data[9].toFixed(2);
     }
     else if (killedBy == Templates.Vehicle) info.causeOfDeath = data[6];
     else if (killedBy == Templates.Explosion) info.causeOfDeath = data[5];
