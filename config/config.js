@@ -1,6 +1,22 @@
 const package = require('../package.json');
 require('dotenv').config();
 
+const PresenceTypes = {
+  Playing:   0,
+  Streaming: 1,
+  Listening: 2,
+  Watching:  3,
+  Custom:    4,
+  Competing: 5,
+};
+
+const PresenceStatus = {
+  Online:       "online",
+  Offline:      "offline",
+  Idle:         "idle",
+  DoNotDisturb: "dnd",
+};
+
 module.exports = {
 	Dev: process.env.Dev || "DEV.",                     
 	Version: package.version, // (major).(minor).(patch)
@@ -19,16 +35,16 @@ module.exports = {
   Colors: {
     Default: "#8a7c72",
     DarkRed: "#ba0f0f",
-    Red: "#f55c5c",
-    Green: "#32a852",
-    Yellow: "#ffb01f"
+    Red:     "#f55c5c",
+    Green:   "#32a852",
+    Yellow:  "#ffb01f"
   },
   Permissions: 2205281600,
   mongoURI: process.env.mongoURI || "mongodb://localhost:27017",
   dbo: process.env.dbo || "knoldus",
   Presence: {
-    type: 3, // Playing = 0, Streaming = 1, Listening = 2, Watching = 3, Custom = 4, Competing = 5
+    type: PresenceTypes.Watching,
     name: "DayZ Logs", // What message you want after type
-    status: "online", // You can show either "idle", "dnd", "online", or "offline"
+    status: PresenceStatus.Online
   },
 }
