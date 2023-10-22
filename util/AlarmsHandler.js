@@ -201,7 +201,7 @@ module.exports = {
 
   PlaceFireplaceInAlarm: async (client, guildId, line) => {
 
-    let fireplacePlacement = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>) placed Fireplace/g;
+    let fireplacePlacement = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\) placed Fireplace/g;
     let data = [...line.matchAll(fireplacePlacement)][0];
     if (!data) return;
 
