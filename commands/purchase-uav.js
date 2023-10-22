@@ -39,10 +39,10 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
+      if (client.exists(GuildDB.purchaseUAV) && !GuildDB.purchaseUAV) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Notice:** The admins have disabled this feature')] });
 
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
 
-      
       if (!banking) {
         banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
         if (!client.exists(banking)) return client.sendInternalError(interaction, err);

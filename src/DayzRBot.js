@@ -444,6 +444,8 @@ class DayzRBot extends Client {
       memberRole: guild.server.memberRole,
       adminRole: guild.server.adminRole,
       combatLogTimer: guild.server.combatLogTimer,
+      purchaseUAV: guild.server.purchaseUAV,
+      purchaseEMP: guild.server.purchaseEMP,
     };
   }
 

@@ -2,8 +2,10 @@ module.exports = {
   getDefaultSettings(GuildId) {
     return {
       serverID:              GuildId,
-      autoRestart:           0,
-      showKillfeedCoords:    0,
+      autoRestart:           0, // 
+      showKillfeedCoords:    0, 
+      purchaseUAV:           1, // Allow/Disallow purchase of UAVs
+      purchaseEMP:           1, // Allow/Disallow purchase of EMPs
       allowedChannels:       [],
 
       killfeedChannel:       "",

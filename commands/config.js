@@ -330,7 +330,33 @@ module.exports = {
         type: CommandOptions.Integer,
         min_value: 0,
       }]
-    }
+    },
+    {
+      name: "toggle-uav-purchase",
+      description: "Allow/Disallow UAV purchases",
+      value: "toggle-uav-purchase",
+      type: CommandOptions.SubCommand,
+      options: [{
+        name: "configuration",
+        description: "True or False",
+        value: false,
+        type: CommandOptions.Boolean,
+        required: true,
+      }]
+    },
+    {
+      name: "toggle-emp-purchase",
+      description: "Allow/Disallow EMP purchases",
+      value: "toggle-uav-purchase",
+      type: CommandOptions.SubCommand,
+      options: [{
+        name: "configuration",
+        description: "True or False",
+        value: false,
+        type: CommandOptions.Boolean,
+        required: true,
+      }]
+    },
   ],  
   SlashCommand: {
     /**
@@ -737,7 +763,33 @@ module.exports = {
             .setColor(client.config.Colors.Green)
             .setDescription(`Successfully set combat log timer to **${args[0].options[0].value.toFixed(0)} minutes.**`);
 
-          return interaction.send({ embeds: [successCobatLogTimerEmbed] });          
+          return interaction.send({ embeds: [successCobatLogTimerEmbed] });
+
+        case 'toggle-uav-purchase':
+          const togggleUAVpurchase = args[0].options[0].value ? 1 : 0;  
+
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.purchaseUAV": togggleUAVpurchase}}, (err, res) => {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+    
+          let successToggleUAVpurchaseEmbed = new EmbedBuilder()
+            .setColor(client.config.Colors.Green)
+            .setDescription(`Users can ${togggleUAVpurchase ? 'now' : 'no longer'} purchase UAVs.`);
+
+          return interaction.send({ embeds: [successToggleUAVpurchaseEmbed] });
+
+        case 'toggle-emp-purchase':
+          const togggleEMPpurchase = args[0].options[0].value ? 1 : 0;  
+
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.purchaseEMP": togggleEMPpurchase}}, (err, res) => {
+            if (err) return client.sendInternalError(interaction, err);
+          });
+    
+          let successToggleEMPpurchaseEmbed = new EmbedBuilder()
+            .setColor(client.config.Colors.Green)
+            .setDescription(`Users can ${togggleUAVpurchase ? 'now' : 'no longer'} purchase EMPs.`);
+
+          return interaction.send({ embeds: [successToggleEMPpurchaseEmbed] });
 
         default:
           return client.sendInternalError(interaction, 'There was an error parsing the config command');
