@@ -193,8 +193,10 @@ module.exports = {
         channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
 
         BanPlayer(client, data.killer);
+        break;
       }
     }
+    return;
   },
 
   PlaceFireplaceInAlarm: async (client, guildId, line) => {
@@ -234,8 +236,10 @@ module.exports = {
         channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
 
         BanPlayer(client, info.player);
+        break;
       }
     }
+    return;
   },
 
   HandleEvents: async (client, guildId) => {

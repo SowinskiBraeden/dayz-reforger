@@ -8,7 +8,7 @@ const Logger = require("../util/Logger");
 const { DownloadNitradoFile, CheckServerStatus } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
-const { HandleExpiredUAVs, HandleEvents } = require('../util/AlarmsHandler');
+const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
 
 // Data structures imports
 const { getDefaultPlayerStats } = require('../database/playerStatistics');
@@ -159,6 +159,7 @@ class DayzRBot extends Client {
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles regular deaths
       if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles deaths missing hit by log
       if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) s = await UpdateLastDeathDate(this, s, lines[i]); // Updates users last death date for non PVP deaths.
+      if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(client, guildId, lines[i]);
     }
 
     // Handle alarm pings
