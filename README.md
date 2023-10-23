@@ -46,7 +46,7 @@ The bot requires minimal setup to get started.
   i.  [Create your MongoDB Altas instance.](https://www.mongodb.com/docs/manual/tutorial/getting-started/)  
   ii. [Create your local MongoDB server instance.](https://www.mongodb.com/docs/manual/administration/install-community/)  
 
-  After this, you'll need to get your MongoURI from your database instance, as well as your database name for later configuration.
+    After this, you'll need to get your MongoURI from your database instance, as well as your database name for later configuration.
 
 ### Installation
 
@@ -55,13 +55,7 @@ The bot requires minimal setup to get started.
     $ git clone https://github.com/SowinskiBraeden/dayz-reforger.git
     $ cd dayz-reforger
 ```
-
-<br>
-
 2. Rename `.env.example` to `.env`
-
-<br>
-
 3. Enter desired values into `.env`
 ```
     token='Your Discord Bot token'
@@ -73,9 +67,6 @@ The bot requires minimal setup to get started.
     GuildID='Your Discord Guild ID'
 ```
 
-<br>
-
-<!-- CONTACT -->
 ## Contact
 
 Braeden Sowinski - [@BraedenSowinski](https://twitter.com/BraedenSowinski) - sowinskibraeden@gmail.com - @mcdazzzled on Discord
