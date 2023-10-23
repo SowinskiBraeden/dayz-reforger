@@ -1,6 +1,6 @@
 {
   "name": "dayzr-bot",
-  "version": "11.2.3",
+  "version": "11.2.4",
   "description": "A General Purpose Discord Bot for DayZ Nitrado Servers.",
   "main": "index.js",
   "nodemonConfig": {

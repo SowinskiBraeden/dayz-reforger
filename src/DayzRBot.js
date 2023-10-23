@@ -293,7 +293,8 @@ class DayzRBot extends Client {
       this.databaseConnected = true;
     } catch (err) {
       databaselogs.attempts++;
-      this.error(`Failed to connect to mongodb (mongodb://${mongoURI.split('@')[1]}/${dbo}): attempt ${databaselogs.attempts} - ${err}`);
+      let db = (mongoURI.includes("@") ? mongoURI.split("@")[1] : mongoURI.split("//")[1]).endsWith("/") ? mongoURI.slice(0, -1) : mongoURI;
+      this.error(`Failed to connect to mongodb (mongodb://${db}/${dbo}): attempt ${databaselogs.attempts} - ${err}`);
       failed = true;
     }
 
