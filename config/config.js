@@ -23,7 +23,7 @@ module.exports = {
   Admins: ["362791661274660874", "329371697570381824"], // Admins of the bot
   ServerID: "1050215624053374976",
   GuildID: process.env.GuildID || "",
-	SupportServer: "https://discord.gg/KVFJCvvFtK", //Support Server Link
+	SupportServer: "https://discord.gg/KVFJCvvFtK", // Support Server Link
 	Token: process.env.token || "", //Discord Bot Token
   Scopes: ["identify", "guilds", "applications.commands"], //Discord OAuth2 Scopes
   Nitrado: {
