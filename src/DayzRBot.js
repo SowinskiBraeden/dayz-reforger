@@ -5,7 +5,7 @@ const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
 
 // custom util imports
-const { DownloadNitradoFile, CheckServerStatus } = require('../util/NitradoAPI');
+const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, LogFilenames } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
@@ -251,7 +251,11 @@ class DayzRBot extends Client {
     // c.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
     c.activePlayersTick++;
 
-    await DownloadNitradoFile(c, `/games/${c.config.Nitrado.UserID}/noftp/dayzxb/config/DayZServer_X1_x64.ADM`, './logs/server-logs.ADM').then(async (status) => {
+    const settings = await FetchServerSettings(c, "logsUpdateTimer").then(res => res.data.gameserver);
+    const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
+    const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
+    
+    await DownloadNitradoFile(c, path, './logs/server-logs.ADM').then(async (status) => {
       if (status == 1) return c.error('...Failed to Download logs...');
       // c.log('...Downloaded logs...');
       await c.readLogs(c.config.GuildID).then(async () => {
