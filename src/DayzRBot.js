@@ -5,7 +5,7 @@ const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
 
 // custom util imports
-const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, LogFilenames } = require('../util/NitradoAPI');
+const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
