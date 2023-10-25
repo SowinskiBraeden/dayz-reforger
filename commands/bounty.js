@@ -120,8 +120,7 @@ module.exports = {
           .setDescription(`Successfully set a **$${args[0].options[1].value.toFixed(2).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** bounty on \` ${playerStat.gamertag} \`\nThis can be viewed using </bounty view:1086786904671924267>`)
           .setColor(client.config.Colors.Green);
         
-        if (anonymous && anonymous.value) return interaction.send({ embeds: [successEmbed], flags: (1 << 6) });
-        return interaction.send({ embeds: [successEmbed] });
+        return interaction.send({ embeds: [successEmbed], flags: (1 << 6) });
 
       } else if (args[0].name == 'pay') {
 
