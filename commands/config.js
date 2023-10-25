@@ -51,60 +51,31 @@ module.exports = {
       ]
     },
     {
-      name: "killfeed_channel",
-      description: "Set the Killfeed Channel",
-      value: "killfeed_channel",
+      name: "set_channel",
+      description: "Set one of the desired channels",
+      value: "set_channel",
       type: CommandOptions.SubCommand,
-      options: [{
-        name: "channel",
-        description: "The channel to configure",
-        value: "channel",
-        type: CommandOptions.Channel,
-        channel_types: [0], // Restrict to text channel
-        required: true,
-      }]
-    },
-    {
-      name: "admin_logs_channel",
-      description: "Set the Admin Logs Channel",
-      value: "admin_logs_channel",
-      type: CommandOptions.SubCommand,
-      options: [{
-        name: "channel",
-        description: "The channel to configure",
-        value: "channel",
-        type: CommandOptions.Channel,
-        channel_types: [0], // Restrict to text channel
-        required: true,
-      }]
-    },
-    {
-      name: "welcome_channel",
-      description: "Set the channel for users to gain access",
-      value: "welcome_channel",
-      type: CommandOptions.SubCommand,
-      options: [{
-        name: "channel",
-        description: "The channel to configure",
-        value: "channel",
-        type: CommandOptions.Channel,
-        channel_types: [0], // Restrict to text channel
-        required: true,
-      }]
-    },
-    {
-      name: "active_players_channel",
-      description: "Set the channel for active players update",
-      value: "active_players_channel",
-      type: CommandOptions.SubCommand,
-      options: [{
-        name: "channel",
-        description: "The channel to configure",
-        value: "channel",
-        type: CommandOptions.Channel,
-        channel_types: [0], // Restrict to text channel
-        required: true,
-      }]
+      options:[
+        {
+          name: "channel_type",
+          description: "Select the channel type",
+          value: "channel_type",
+          type: CommandOptions.String,
+          choices: [
+            { name: 'Killfeed', value: 'killfeedChannel' }, { name: 'Admin Logs', value: 'connectionLogsChannel' },
+            { name: 'Welcome', value: 'welcomeChannel' }, { name: 'Online Players', value: 'activePlayersChannel' },
+          ],
+          required: true,
+        },
+        {
+          name: "channel",
+          description: "The channel to configure",
+          value: "channel",
+          type: CommandOptions.Channel,
+          channel_types: [0], // Restrict to text channel
+          required: true,
+        },
+      ]
     },
     {
       name: "linked_gt_role",
@@ -547,18 +518,19 @@ module.exports = {
 
           return interaction.send({ embeds: [settingsEmbed] });
 
-        case 'killfeed_channel':
-          const killfeedChannel = args[0].options[0].value;
+        case 'set_channel':
+          const channelType = args[0].options[0].value;
+          const channel = args[0].options[1].value;
 
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.killfeedChannel": killfeedChannel}}, (err, res) => {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {[`server.${channelType}`]: channel}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
     
-          const successSetKillfeedChannelEmbed = new EmbedBuilder()
-            .setDescription(`Successfully added <#${killfeedChannel}> as the Killfeed Channel.`)
+          const successSetChannelEmbed = new EmbedBuilder()
+            .setDescription(`Successfully set <#${channel}> as the ${channelType} channel.`)
             .setColor(client.config.Colors.Green);
     
-          return interaction.send({ embeds: [successSetKillfeedChannelEmbed] });
+          return interaction.send({ embeds: [successSetChannelEmbed] });
       
         case 'show_killfeed_coords':
           const showKillfeedCoordsConfiguration = args[0].options[0].value ? 1 : 0;
@@ -572,45 +544,6 @@ module.exports = {
             .setColor(client.config.Colors.Green);
 
           return interaction.send({ embeds: [successConfigureShowKillfeedCoords] });
-
-        case 'admin_logs_channel':
-          const adminLogsChannel = args[0].options[0].value;
-  
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.connectionLogsChannel": adminLogsChannel}}, (err, res) => {
-            if (err) return client.sendInternalError(interaction, err);
-          });
-    
-          const successAdminLogsChannelEmbed = new EmbedBuilder()
-            .setDescription(`Successfully set <#${adminLogsChannel}> as the Admin Logs Channel.`)
-            .setColor(client.config.Colors.Green);
-    
-          return interaction.send({ embeds: [successAdminLogsChannelEmbed] });
-        
-        case 'welcome_channel':
-          const welcomeChannel = args[0].options[0].value;
-  
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.welcomeChannel": welcomeChannel}}, (err, res) => {
-            if (err) return client.sendInternalError(interaction, err);
-          });
-    
-          const successWelcomeChannelEmbed = new EmbedBuilder()
-            .setDescription(`Successfully set <#${welcomeChannel}> as the Welcome Channel.`)
-            .setColor(client.config.Colors.Green);
-    
-          return interaction.send({ embeds: [successWelcomeChannelEmbed] });    
-      
-        case 'active_players_channel':
-          const acticePlayersChannel = args[0].options[0].value;
-  
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.activePlayersChannel": acticePlayersChannel}}, (err, res) => {
-            if (err) return client.sendInternalError(interaction, err);
-          });
-    
-          const successActivePlayersChannelEmbed = new EmbedBuilder()
-            .setDescription(`Successfully set <#${acticePlayersChannel}> as the Active Players Channel.`)
-            .setColor(client.config.Colors.Green);
-    
-          return interaction.send({ embeds: [successActivePlayersChannelEmbed] });  
       
         case 'linked_gt_role':
           const linked_gt_role = args[0].options[0].value;
