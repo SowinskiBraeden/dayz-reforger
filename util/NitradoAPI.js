@@ -101,6 +101,27 @@ const HandlePlayerBan = async (client, gamertag, ban) => {
   }
 }
 
+const GetRemoteDir = async (client, dir="") => {
+  const dirParam = client.exists(dir) ? `?dir=${dir}` : "";
+  for (let retries = 0; retries <= maxRetries; retries++) {
+    try {
+      const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/file_server/list${dirParam}`, {
+        headers: {
+          "Authorization": client.config.Nitrado.Auth
+        }
+      }).then(response => 
+        response.json().then(data => data)
+      ).then(res => res);
+      
+      return res.data.entries;  
+    } catch (error) {
+      client.error(`GetRemoteDir: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
+      if (retries == maxRetries) throw new Error(`GetRemoteDir: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`)
+    }
+    await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
+  }
+}
+
 // Public functions (called externally)
 
 module.exports = {
@@ -215,18 +236,19 @@ module.exports = {
   },
 
   DisableBaseDamage: async (client, preference) => {
-    const settings = await module.exports.FetchServerSettings(client, 'ToggleBaseDamage');  // Fetch server settings
+    const settings = await module.exports.FetchServerSettings(client, 'DisableBaseDamage');  // Fetch server settings
     if (settings == 1) return 1;
    
     const pref = preference ? '1' : '0';
-    const posted = await PostServerSettings(client, "config", "ToggleBaseDamage", pref);
+    const posted = await PostServerSettings(client, "config", "disableBaseDamage", pref);
     if (posted == 1) return 1;
 
-    const remoteDir = `/games/${client.config.Nitrado.UserID}/ftproot/dayzxb_missions/dayzOffline.chernarusplus`;
-    const remoteFilename = 'cfggameplay.json';
+    const basePath = await GetRemoteDir(client).then(dirs => dirs.filter(dir => dir.type == 'dir')[0].path)
+    const missionPath = await GetRemoteDir(client, basePath).then(dirs => dirs[0].path)
+    const cfggameplayPath = `${missionPath}/cfggameplay.json`;
 
-    const jsonDir = `./logs/${remoteFilename}`;
-    await module.exports.DownloadNitradoFile(client, `${remoteDir}/${remoteFilename}`, jsonDir);
+    const jsonDir = `./logs/cfggameplay.json`;   
+    await module.exports.DownloadNitradoFile(client, cfggameplayPath, jsonDir);
 
     let gameplay = JSON.parse(fs.readFileSync(jsonDir));
     gameplay.GeneralData.disableBaseDamage = preference;
@@ -234,9 +256,9 @@ module.exports = {
     // write JSON to file
     fs.writeFileSync(jsonDir, JSON.stringify(gameplay, null, 2));
 
-    const uploaded = await UploadNitradoFile(client, remoteDir, remoteFilename, jsonDir);
+    const uploaded = await UploadNitradoFile(client, missionPath, 'cfggameplay.json', jsonDir);
     if (uploaded == 1) return 1;
    
-    return 0; 
+    return 0;
   }
 }

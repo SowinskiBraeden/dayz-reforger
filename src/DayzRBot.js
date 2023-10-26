@@ -77,16 +77,31 @@ class DayzRBot extends Client {
 
         this.log(`Interaction - ${command}`);
 
+        this.rest = new REST({ version: '10' }).setToken(this.config.Token);
+
         // Easy to send response so ;)
         interaction.guild = await this.guilds.fetch(interaction.guild_id);
         interaction.send = async (message) => {
-          const rest = new REST({ version: '10' }).setToken(this.config.Token);
-
-          return await rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
+          return await this.rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
             body: {
               type: 4,
               data: message,
             }
+          });
+        };
+
+        interaction.deferReply = async (message) => {
+          return await this.rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
+            body: {
+              type: 5,
+              data: message,
+            }
+          });
+        };
+
+        interaction.editReply = async (message) => {
+          return await this.rest.patch(Routes.webhookMessage(this.application.id, interaction.token), {
+            body: message,
           });
         };
 
