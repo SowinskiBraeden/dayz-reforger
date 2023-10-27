@@ -6,6 +6,7 @@ A general purpose Discord Bot to handle DayZ Killfeed, stats, alarms and faction
 * [Technologies](#built-with)
 * [About](#about)
 * [Support](#support)
+* [License](#license)
 * [Contributing](#contributing)
 * [Getting Started](#getting-started)  
   * [Prerequisites](#prerequisites)  
@@ -25,6 +26,9 @@ expanded this project to include the killfeed, alarms, banking, and much much mo
 
 ## Support
 [» Community Support](https://discord.gg/KVFJCvvFtK)
+
+## License
+[» License](/LICENSE)
 
 ## Contributing
 [» Contributing](/CONTRIBUTING.md)
