@@ -15,7 +15,7 @@
     "debug": "nodemon index.js"
   },
   "author": "Braeden Sowinski",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@discordjs/rest": "^1.1.0",
     "colors": "^1.4.0",
