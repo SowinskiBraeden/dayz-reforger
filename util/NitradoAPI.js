@@ -236,9 +236,6 @@ module.exports = {
   },
 
   DisableBaseDamage: async (client, preference) => {
-    const settings = await module.exports.FetchServerSettings(client, 'DisableBaseDamage');  // Fetch server settings
-    if (settings == 1) return 1;
-   
     const pref = preference ? '1' : '0';
     const posted = await PostServerSettings(client, "config", "disableBaseDamage", pref);
     if (posted == 1) return 1;
@@ -252,6 +249,30 @@ module.exports = {
 
     let gameplay = JSON.parse(fs.readFileSync(jsonDir));
     gameplay.GeneralData.disableBaseDamage = preference;
+
+    // write JSON to file
+    fs.writeFileSync(jsonDir, JSON.stringify(gameplay, null, 2));
+
+    const uploaded = await UploadNitradoFile(client, missionPath, 'cfggameplay.json', jsonDir);
+    if (uploaded == 1) return 1;
+   
+    return 0;
+  },
+
+  DisableContainerDamage: async (client, preference) => {
+    const pref = preference ? '1' : '0';
+    const posted = await PostServerSettings(client, "config", "disableContainerDamage", pref);
+    if (posted == 1) return 1;
+
+    const basePath = await GetRemoteDir(client).then(dirs => dirs.filter(dir => dir.type == 'dir')[0].path)
+    const missionPath = await GetRemoteDir(client, basePath).then(dirs => dirs[0].path)
+    const cfggameplayPath = `${missionPath}/cfggameplay.json`;
+
+    const jsonDir = `./logs/cfggameplay.json`;   
+    await module.exports.DownloadNitradoFile(client, cfggameplayPath, jsonDir);
+
+    let gameplay = JSON.parse(fs.readFileSync(jsonDir));
+    gameplay.GeneralData.disableContainerDamage = preference;
 
     // write JSON to file
     fs.writeFileSync(jsonDir, JSON.stringify(gameplay, null, 2));

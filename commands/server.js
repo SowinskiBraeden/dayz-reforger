@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
-const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage } = require('../util/NitradoAPI');
+const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage } = require('../util/NitradoAPI');
 
 module.exports = {
   name: "server",
@@ -57,6 +57,18 @@ module.exports = {
     options: [{
       name: "preference",
       description: "DisableBaseDamage Preference",
+      value: true,
+      type: CommandOptions.Boolean,
+      required: true,
+    }]
+  }, {
+    name: "disable-container-damage",
+    description: "Disable/Enable container damage",
+    value: "disable-container-damage",
+    type: CommandOptions.SubCommand,
+    options: [{
+      name: "preference",
+      description: "disableContainerDamage Preference",
       value: true,
       type: CommandOptions.Boolean,
       required: true,
@@ -149,14 +161,25 @@ module.exports = {
         });
 
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(msg)], flags: (1 << 6) });
+      
       } else if (args[0].name == 'disable-base-damage') {
         const preference = args[0].options[0].value;
         await interaction.deferReply({ flags: (1 << 6) });
 
-        const toggle = await DisableBaseDamage(client, preference);
+        const disableBaseDamageFailed = await DisableBaseDamage(client, preference);
 
-        if (toggle == 1) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableBaseDamage**, try again later.')], flags: (1 << 6) });
+        if (disableBaseDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableBaseDamage**, try again later.')], flags: (1 << 6) });
         return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully set **disableBaseDamage** to ${preference}.\nRestart the DayZ server to apply these changes.`)], flags: (1 << 6) });
+      
+      } else if (args[0].name == 'disable-container-damage') {
+        const preference = args[0].options[0].value;
+        await interaction.deferReply({ flags: (1 << 6) });
+
+        const disableContainerDamageFailed = await DisableContainerDamage(client, preference);
+
+        if (disableContainerDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableContainerDamage**, try again later.')], flags: (1 << 6) });
+        return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully set **disableContainerDamage** to ${preference}.\nRestart the DayZ server to apply these changes.`)], flags: (1 << 6) });
+      
       }
     }
   },
