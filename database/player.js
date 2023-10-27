@@ -1,5 +1,11 @@
 module.exports = {
-  getDefaultPlayerStats(gt, pID) {
+  UpdatePlayer: async (client, player) => {
+    return await client.dbo.collection("players").updateOne({"playerID": player.playerID}, {$set: player}, (err, _) => {
+      if (err) client.error(err);
+    });
+  },
+
+  getDefaultPlayer(gt, pID) {
     return {
       gamertag:              gt,
       playerID:              pID,

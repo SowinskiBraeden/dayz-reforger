@@ -20,7 +20,7 @@ const ExpireEvent = async(client, guild, e) => {
 }
 
 const HandlePlayerTrackEvent = async (client, guild, e) => {
-  let player = guild.playerstats.find(stat => stat.gamertag == e.gamertag );
+  let player = await client.dbo.collection("players").findOne({"gamertag": e.gamertag});
 
   let newDt = await client.getDateEST(player.time);
   let unixTime = Math.floor(newDt.getTime()/1000);
@@ -58,8 +58,7 @@ const HandlePlayerTrackEvent = async (client, guild, e) => {
 
 module.exports = {
 
-  HandleAlarmsAndUAVs: async (client, guildId, data) => {
-    let guild = await client.GetGuild(guildId);
+  HandleAlarmsAndUAVs: async (client, guild, data) => {
 
     for (let i = 0; i < guild.alarms.length; i++) {
       let alarm = guild.alarms[i];
@@ -137,8 +136,7 @@ module.exports = {
     }
   },
 
-  HandleExpiredUAVs: async (client, guildId) => {
-    let guild = await client.GetGuild(guildId);
+  HandleExpiredUAVs: async (client, guild) => {
     let uavs = guild.uavs;
     let update = false;
 
@@ -199,7 +197,7 @@ module.exports = {
     return;
   },
 
-  PlaceFireplaceInAlarm: async (client, guildId, line) => {
+  PlaceFireplaceInAlarm: async (client, guild, line) => {
 
     let fireplacePlacement = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\) placed Fireplace/g;
     let data = [...line.matchAll(fireplacePlacement)][0];
@@ -211,8 +209,6 @@ module.exports = {
       victimID:  data[3],
       victimPOS: data[4].split(', ').map(v => parseFloat(v)),
     };
-
-    let guild = await client.GetGuild(guildId);
 
     for (let i = 0; i < guild.alarms.length; i++) {
       let alarm = guild.alarms[i];
@@ -242,10 +238,7 @@ module.exports = {
     return;
   },
 
-  HandleEvents: async (client, guildId) => {
-
-    let guild = await client.GetGuild(guildId);
-
+  HandleEvents: async (client, guild) => {
     for (let i = 0; i < guild.events.length; i++) {
       let event = guild.events[i];
       if (event.type == 'player-track') HandlePlayerTrackEvent(client, guild, event);

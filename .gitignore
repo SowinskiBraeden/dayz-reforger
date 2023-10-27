@@ -7,8 +7,9 @@ dev-*.js
 
 # Logs
 logs/*
-npm-debug.log
 
-#env
+# env
 .env
-.DS_Store
+
+# Admin Script backups
+admin/backup/*
