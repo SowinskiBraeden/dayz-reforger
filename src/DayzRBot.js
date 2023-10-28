@@ -214,7 +214,7 @@ class DayzRBot extends Client {
           lastDetectedTime = await this.getDateEST(info.time);
           
           let playerStat = await this.dbo.collection("players").findOne({"playerID": info.playerID});
-          if (!this.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID);
+          if (!this.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, this.config.Nitrado.ServerID);
 
           if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
