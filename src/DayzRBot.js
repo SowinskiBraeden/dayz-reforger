@@ -165,11 +165,11 @@ class DayzRBot extends Client {
       if (lines[i].includes('| ####')) continue;
       if (lines[i].includes("(id=Unknown") || lines[i].includes("Player \"Unknown Entity\"")) continue;
       if ((i - 1) >= 0 && lines[i] == lines[i - 1]) continue; // continue if this line is a duplicate of the last line
-      
+
       // Handle general logs
       if (lines[i].includes('connected') || lines[i].includes('pos=<')) await HandlePlayerLogs(this, guild, lines[i], guild.combatLogTimer);
       if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) await UpdateLastDeathDate(this, lines[i]); // Updates users last death date for non PVP deaths.
-      if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(client, guild, lines[i]);
+      if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(this, guild, lines[i]);
       
       // Handle killfeed logs
       if (lines[i].includes('killed by  with') || lines[i].includes('killed by LandMineTrap')) await HandleKillfeed(this, guild, lines[i]); // Handles explosive deaths
