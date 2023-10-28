@@ -21,7 +21,7 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
 
-      let activePlayers = GuildDB.playerstats.filter(p => p.connected == true);
+      let activePlayers = await client.dbo.collection("players").find({"connected": true});
 
       let des = activePlayers.length > 0 ? `` : `**No Players Online**`;
       for (let i = 0; i < activePlayers.length; i++) {

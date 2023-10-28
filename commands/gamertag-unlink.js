@@ -20,19 +20,8 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
 
-      if (!client.exists(GuildDB.playerstats)) {
-        GuildDB.playerstats = [{}];
-        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
-          $set: {
-            "server.playerstats": []
-          }
-        }, (err, res) => {
-          if (err) return client.sendInternalError(interaction, err);
-        });
-      }
-
-      let playerStat = GuildDB.playerstats.find(stat => stat.discordID == interaction.member.user.id);
-      if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**No Gamertag Linked** It Appears your don't have a gamertag linked to your account.`)] });
+      let playerStat = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
+      if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**No Gamertag Linked** It Appears your don't have a gamertag linked to your account.`)] });
 
       const warnGTOverwrite = new EmbedBuilder()
         .setColor(client.config.Colors.Yellow)
@@ -62,18 +51,11 @@ module.exports = {
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
-          let playerStat = GuildDB.playerstats.find(stat => stat.discordID == interaction.member.user.id);
+          let playerStat = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
 
           playerStat.discordID = "";
           
-          let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
-          GuildDB.playerstats[playerStatIndex] = playerStat;
-
-          client.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, {
-            $set: {
-              'server.playerstats': GuildDB.playerstats,
-            }
-          });
+          await UpdatePlayer(client, playerStat, interaction);
 
           let connectedEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Default)

@@ -30,11 +30,12 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID);
+      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
       const newDt = await client.getDateEST(info.time);
 
       playerStat.lastConnectionDate = newDt;
       playerStat.connected = true;
+      playerStat.connections++;
 
       // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
       if (client.playerSessions.has(info.playerID)) {
@@ -73,7 +74,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID);
+      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
 
       const newDt = await client.getDateEST(info.time);
       const unixTime = Math.round(newDt.getTime() / 1000); // Seconds
@@ -123,7 +124,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID);
+      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
       if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
 
       playerStat.lastPos = playerStat.pos;
@@ -160,7 +161,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID);
+      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
 
       playerStat.lastDamageDate = await client.getDateEST(info.time);
       playerStat.lastHitBy = info.attacker;

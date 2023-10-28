@@ -1,15 +1,19 @@
 module.exports = {
-  UpdatePlayer: async (client, player) => {
+  UpdatePlayer: async (client, player, interaction=null) => {
     return await client.dbo.collection("players").updateOne({"playerID": player.playerID}, {$set: player}, (err, _) => {
-      if (err) client.error(err);
+      if (err) {
+        if (intearction == null) return client.error(err);
+        else return client.sendInternalError(interaction, err);
+      }
     });
   },
 
-  getDefaultPlayer(gt, pID) {
+  getDefaultPlayer(gt, pID, NSID) {
     return {
       gamertag:              gt,
       playerID:              pID,
       discordID:             "",
+      nitradoServerID:       NSID,
 
       KDR:                   0.00,
       kills:                 0,
@@ -35,6 +39,7 @@ module.exports = {
       totalSessionTime:      0,
       lastSessionTime:       0,
       longestSessionTime:    0,
+      connections:           0,
       
       bounties:              [],
     }

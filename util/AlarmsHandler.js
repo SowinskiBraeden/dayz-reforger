@@ -205,9 +205,9 @@ module.exports = {
 
     let info = {
       time:      data[1],
-      victim:    data[2],
-      victimID:  data[3],
-      victimPOS: data[4].split(', ').map(v => parseFloat(v)),
+      player:    data[2],
+      playerID:  data[3],
+      playerPOS: data[4].split(', ').map(v => parseFloat(v)),
     };
 
     for (let i = 0; i < guild.alarms.length; i++) {

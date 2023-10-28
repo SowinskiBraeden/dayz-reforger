@@ -1,5 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
+const { UpdatePlayer } = require('../database/player');
 
 module.exports = {
   name: "gamertag-link",
@@ -28,19 +29,8 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
 
-      if (!client.exists(GuildDB.playerstats)) {
-        GuildDB.playerstats = [{}];
-        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
-          $set: {
-            "server.playerstats": []
-          }
-        }, (err, res) => {
-          if (err) return client.sendInternalError(interaction, err);
-        });
-      }
-
-      let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == args[0].value );
-      if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
+      let playerStat = await client.dbo.collection("players").findOne({"gamertag": args[0].value});
+      if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
       if (client.exists(playerStat.discordID)) {
         const warnGTOverwrite = new EmbedBuilder()
@@ -64,14 +54,7 @@ module.exports = {
 
       playerStat.discordID = interaction.member.user.id;
       
-      let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
-      GuildDB.playerstats[playerStatIndex] = playerStat;
-
-      client.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, {
-        $set: {
-          'server.playerstats': GuildDB.playerstats,
-        }
-      });
+      await UpdatePlayer(client, playerStat, interaction);
 
       let member = interaction.guild.members.cache.get(interaction.member.user.id);
       if (client.exists(GuildDB.linkedGamertagRole)) {
@@ -100,18 +83,11 @@ module.exports = {
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
-          let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == interaction.customId.split('-')[2]);
+          let playerStat = await client.dbo.collection("players").findOne({"gamertag": interaction.customId.split('-')[2]});
 
           playerStat.discordID = interaction.member.user.id;
           
-          let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
-          GuildDB.playerstats[playerStatIndex] = playerStat;
-
-          client.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, {
-            $set: {
-              'server.playerstats': GuildDB.playerstats,
-            }
-          });
+          await UpdatePlayer(client, player, interaction);
 
           let member = interaction.guild.members.cache.get(interaction.member.user.id);
           if (client.exists(GuildDB.linkedGamertagRole)) {

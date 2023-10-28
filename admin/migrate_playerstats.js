@@ -39,6 +39,7 @@ async function migrate() {
     }
 
     guild.server.playerstats.map(stat => stat.nitradoServerID = NitradoServerID);
+    guild.server.playerstats.map(stat => stat.bountiesLength = stat.bounties.length);
 
     // write JSON to file
     fs.writeFileSync(`${dir}/player_stats_backup.json`, JSON.stringify(guild.server.playerstats, null, 2));
