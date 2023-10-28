@@ -200,13 +200,13 @@ module.exports = {
       
       
       if (!banking) {
-        banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
+        banking = await createUser(interaction.member.user.id, guildId, guild.startingBalance, client)
         if (!client.exists(banking)) return client.sendInternalError(interaction, err);
       }
       banking = banking.user;
 
-      if (!client.exists(banking.guilds[GuildDB.serverID])) {
-        const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
+      if (!client.exists(banking.guilds[guildId])) {
+        const success = addUser(banking.guilds, guildId, interaction.member.user.id, client, guild.startingBalance);
         if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
       }
 
