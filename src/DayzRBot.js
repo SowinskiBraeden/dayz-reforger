@@ -174,7 +174,7 @@ class DayzRBot extends Client {
       if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles regular deaths
       if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles deaths missing hit by log
       if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) s = await UpdateLastDeathDate(this, s, lines[i]); // Updates users last death date for non PVP deaths.
-      if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(client, guildId, lines[i]);
+      if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(this, guildId, lines[i]);
     }
 
     // Handle alarm pings
