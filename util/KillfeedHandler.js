@@ -59,7 +59,7 @@ module.exports = {
     const newDt = await client.getDateEST(info.time);
 
     let victimStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-    if (!client.exits(victimStat)) playerStat = getDefaultPlayer(info.player, info.playerID);
+    if (!client.exits(victimStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client3.config.Nitrado.ServerID);
 
     victimStat.lastDeathDate = newDt;
 
@@ -143,7 +143,7 @@ module.exports = {
 
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
       let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
-      if (!client.exits(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID);
+      if (!client.exits(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
       victimStat.lastDeathDate = newDt;
 
       const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : 
@@ -165,8 +165,8 @@ module.exports = {
 
     let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
     let killerStat = await client.dbo.collection("players").findOne({"playerID": info.killerID});
-    if (!client.exits(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID);
-    if (!client.exits(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID);
+    if (!client.exits(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
+    if (!client.exits(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, client.config.Nitrado.ServerID);
     
     killerStat.kills++;
     killerStat.killStreak++;
@@ -216,6 +216,7 @@ module.exports = {
         .setDescription(`<@${killerStat.discordID}> received **$${totalBounty.toFixed(2).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** in bounty rewards.`);
 
       victimStat.bounties = []; // clear bounties after claimed
+      victimStat.bountiesLength = 0;
     }
 
     await UpdatePlayer(client, victimStat);
