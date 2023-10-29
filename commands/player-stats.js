@@ -68,14 +68,9 @@ module.exports = {
 
       if (category == 'money') {
 
-        const usersCursor = await client.dbo.collection("users").aggregate([
+        leaderboard = await client.dbo.collection("users").aggregate([
           { $sort: { [`user.guilds.${GuildDB.serverID}.balance`]: -1 } }
-        ]);
-
-        for await (const user of usersCursor) {
-          leaderboard.push(user);
-        }
-
+        ]).toArray();
 
         if (discord) { // If searching by discord
           query = leaderboard.find(u => u.user.userID == discord);
@@ -93,13 +88,9 @@ module.exports = {
 
       } else {
         
-        const playersCursor = await client.dbo.collection("players").aggregate([
+        leaderboard = await client.dbo.collection("players").aggregate([
           { $sort: { [`${category}`]: -1 } }
-        ]);
-
-        for await (const player of playersCursor) {
-          leaderboard.push(player);
-        }
+        ]).toArray();
 
         if (discord) { // If searching by discord
           query = leaderboard.find(s => s.discordID == discord);

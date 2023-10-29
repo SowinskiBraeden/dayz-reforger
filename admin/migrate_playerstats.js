@@ -48,7 +48,7 @@ async function migrate() {
     const result = await players.insertMany(guild.server.playerstats, { ordered: true });
     console.log(`${result.insertedCount} documents were inserted`);
 
-    delete guild.server.playerstats;
+    // delete guild.server.playerstats;
 
   } catch (err) {
     throw new Error(`An error occured while attempting to migrate player stats: ${err}`)

@@ -55,27 +55,15 @@ module.exports = {
       let leaderboard = [];
       if (category == 'money') {
 
-        const usersCursor = await client.dbo.collection("users").aggregate([
+        leaderboard = await client.dbo.collection("users").aggregate([
           { $sort: { [`user.guilds.${GuildDB.serverID}.balance`]: -1 } }
-        ]);
-
-        let i = 0;
-        for await (const user of usersCursor) {
-          if (i == limit) break;
-          leaderboard.push(user);
-        }
+        ]).toArray();
 
       } else {
         
-        const playersCursor = await client.dbo.collection("players").aggregate([
+        leaderboard = await client.dbo.collection("players").aggregate([
           { $sort: { [`${category}`]: -1 } }
-        ]);
-
-        let i = 0;
-        for await (const player of playersCursor) {
-          if (i == limit) break;
-          leaderboard.push(player);
-        }
+        ]).toArray();
 
       }
       
