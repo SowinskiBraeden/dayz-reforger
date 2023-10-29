@@ -56,7 +56,7 @@ class DayzRBot extends Client {
     this.ws.on("INTERACTION_CREATE", async (interaction) => {
       const start = new Date().getTime();
       if (interaction.type != 3) {
-        let GuildDB = await this.GetGuild(interaction.guild_id);
+        let GuildDB = await GetGuild(this, interaction.guild_id);
 
         for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
           const guild = this.guilds.cache.get(GuildDB.serverID);
@@ -157,7 +157,11 @@ class DayzRBot extends Client {
     let logIndex = lines.indexOf(history.lastLog);
 
     if (this.playerSessions.size === 0) {
-      s.map(p => p.connected = false); // assume all players not connected on init only.
+      let players = await this.dbo.collection('players').find({"connected": true}).toArray();
+      players.map(p => p.connected = false); // assume all players not connected on init only.
+      for (let i = 0; i < players.length; i++) {
+        UpdatePlayer(this, players[i])
+      }
     }
 
     for (let i = logIndex + 1; i < lines.length; i++) {
@@ -179,19 +183,31 @@ class DayzRBot extends Client {
     }
 
     // Handle alarm pings
+    const maxEmbed = 10;
     for (const [channel_id, data] of Object.entries(this.alarmPingQueue)) {
       const channel = this.GetChannel(channel_id);
       if (!channel) continue;
       for (const [role, embeds] of Object.entries(data)) {
-        if (role == '-no-role-ping-') channel.send({ embeds: embeds });
-        else channel.send({ content: `<@&${role}>`, embeds: embeds });
+        if (embeds.length > maxEmbed) {
+          let embedArrays = [];
+          while (embeds.length > maxEmbed)
+            embedArrays.push(embeds.splice(0, maxEmbed));
+
+          for (let i = 0; i < embedArrays.length; i++) {
+            if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
+            else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
+          }
+        } else {
+          if (role == '-no-role-ping-') channel.send({ embeds: embeds });
+          else channel.send({ content: `<@&${role}>`, embeds: embeds });
+        }
       }
     }
 
     this.alarmPingQueue = {};
 
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
-    let previouslyConnected = s.filter(p => p.connected); // All players with connection log captured above and no disconnect log
+    let previouslyConnected = await this.dbo.collection('players').find({"connected": true}).toArray(); // All players with connection log captured above and no disconnect log
     let lastDetectedTime;
 
     for (let i = lines.length - 1; i > 0; i--) {
@@ -214,7 +230,7 @@ class DayzRBot extends Client {
           lastDetectedTime = await this.getDateEST(info.time);
           
           let playerStat = await this.dbo.collection("players").findOne({"playerID": info.playerID});
-          if (!this.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, this.config.Nitrado.ServerID);
+          if (!this.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, this.config.Nitrado.ServerID);
 
           if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
@@ -262,7 +278,7 @@ class DayzRBot extends Client {
     const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
     const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
     
-    let guild = await c.GetGuild(c, c.config.GuildID);
+    let guild = await GetGuild(c, c.config.GuildID);
 
     await DownloadNitradoFile(c, path, './logs/server-logs.ADM').then(async (status) => {
       if (status == 1) return c.error('...Failed to Download logs...');
@@ -415,8 +431,6 @@ class DayzRBot extends Client {
     RegisterGlobalCommands(this);
     this.guilds.cache.forEach((guild) => RegisterGuildCommands(this, guild.id));
   }
-
-  async GetGuild(GuildId) { return await GetGuild(this, GuildId) }
 
   build() {
     this.login(this.config.Token);

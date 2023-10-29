@@ -30,7 +30,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
+      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
       const newDt = await client.getDateEST(info.time);
 
       playerStat.lastConnectionDate = newDt;
@@ -74,7 +74,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
+      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
 
       const newDt = await client.getDateEST(info.time);
       const unixTime = Math.round(newDt.getTime() / 1000); // Seconds
@@ -124,7 +124,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
+      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
       if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
 
       playerStat.lastPos = playerStat.pos;
@@ -161,7 +161,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exits(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
+      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
 
       playerStat.lastDamageDate = await client.getDateEST(info.time);
       playerStat.lastHitBy = info.attacker;
@@ -203,7 +203,7 @@ module.exports = {
       if (!client.exists(guild.activePlayersChannel)) return;
 
       const channel = client.GetChannel(guild.activePlayersChannel);
-      let activePlayers = client.dbo.collection("players").find({"connected": true})
+      let activePlayers = await client.dbo.collection("players").find({"connected": true}).toArray();
 
       let des = ``;
       for (let i = 0; i < activePlayers.length; i++) {

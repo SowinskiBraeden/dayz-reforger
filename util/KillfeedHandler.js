@@ -47,7 +47,7 @@ module.exports = {
     let diedTemplate = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) died\. Stats> Water: (.*) Energy: (.*) Bleed sources: (.*)/g;
   
     let data = line.includes('>) died.') ? [...line.matchAll(diedTemplate)][0] : [...line.matchAll(killedByZmb)][0];
-    if (!data) return stats;
+    if (!data) return;
 
     let info = {
       time:      data[1],
@@ -59,7 +59,7 @@ module.exports = {
     const newDt = await client.getDateEST(info.time);
 
     let victimStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-    if (!client.exits(victimStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client3.config.Nitrado.ServerID);
+    if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
 
     victimStat.lastDeathDate = newDt;
 
@@ -143,7 +143,7 @@ module.exports = {
 
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
       let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
-      if (!client.exits(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
+      if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
       victimStat.lastDeathDate = newDt;
 
       const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : 
@@ -158,15 +158,15 @@ module.exports = {
       if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
       return await UpdatePlayer(client, victimStat);
     }
-    killerStat
-    KillInAlarm(client, guildId, info); // check if kill happened in a no kill zone
+
+    KillInAlarm(client, guild.serverID, info); // check if kill happened in a no kill zone
 
     if (!client.exists(info.victim) || !client.exists(info.victimID) || !client.exists(info.killer) || !client.exists(info.killerID)) return stats;
 
     let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
     let killerStat = await client.dbo.collection("players").findOne({"playerID": info.killerID});
-    if (!client.exits(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
-    if (!client.exits(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, client.config.Nitrado.ServerID);
+    if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
+    if (!client.exists(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, client.config.Nitrado.ServerID);
     
     killerStat.kills++;
     killerStat.killStreak++;
@@ -191,21 +191,21 @@ module.exports = {
       let banking = await client.dbo.collection("users").findOne({"user.userID": killerStat.discordID}).then(banking => banking);
       
       if (!banking) {
-        banking = await createUser(interaction.member.user.id, guildId, guild.startingBalance, client)
+        banking = await createUser(interaction.member.user.id, guild.serverID, guild.startingBalance, client)
         if (!client.exists(banking)) return client.sendInternalError(interaction, err);
       }
       banking = banking.user;
 
-      if (!client.exists(banking.guilds[guildId])) {
-        const success = addUser(banking.guilds, guildId, interaction.member.user.id, client, guild.startingBalance);
+      if (!client.exists(banking.guilds[ guild.serverID])) {
+        const success = addUser(banking.guilds,  guild.serverID, interaction.member.user.id, client, guild.startingBalance);
         if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
       }
 
-      const newBalance = banking.guilds[guildId].balance + totalBounty;
+      const newBalance = banking.guilds[ guild.serverID].balance + totalBounty;
       
       await client.dbo.collection("users").updateOne({ "user.userID": killerStat.discordID }, {
         $set: {
-          [`user.guilds.${guildId}.balance`]: newBalance,
+          [`user.guilds.${ guild.serverID}.balance`]: newBalance,
         }
       }, (err, res) => {
         if (err) return client.sendError(client.GetChannel(guild.killfeedChannel), `Killfeed Error: Updating killer bank balance\n${err}`);

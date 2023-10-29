@@ -2,6 +2,7 @@ const { BanPlayer, UnbanPlayer } = require('./NitradoAPI');
 const { EmbedBuilder } = require('discord.js');
 const { calculateVector } = require('./vector');
 const { destinations } = require('../database/destinations');
+const { GetGuild } = require('../database/guild');
 
 // Private functions (only called locally)
 
@@ -159,7 +160,7 @@ module.exports = {
     }
 
     if (update) {
-      client.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {$set: { "server.uavs": uavs }}, (err, res) => {
+      client.dbo.collection("guilds").updateOne({ "server.serverID":  guild.serverID }, {$set: { "server.uavs": uavs }}, (err, res) => {
         if (err) return client.sendError(client.GetChannel(guild.adminLogsChannel), err);
       });
     }
@@ -167,7 +168,7 @@ module.exports = {
 
   KillInAlarm: async (client, guildId, data) => {
     
-    let guild = await client.GetGuild(guildId);
+    let guild = await GetGuild(client, guildId);
     
     for (let i = 0; i < guild.alarms.length; i++) {
       let alarm = guild.alarms[i];

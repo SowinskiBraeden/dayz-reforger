@@ -1,8 +1,9 @@
 const { EmbedBuilder } = require('discord.js');
+const { GetGuild } = require('../database/guild');
 
 module.exports = async (client, member) => {
 
-  let GuildDB = await client.GetGuild(member.guild.id);
+  let GuildDB = await GetGuild(client, member.guild.id);
   const channel = client.GetChannel(GuildDB.welcomeChannel);
 
   let embed = new EmbedBuilder()
