@@ -75,11 +75,15 @@ module.exports = {
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
       if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
-
+     
+      let oldUnixTime;
+      let sessionTimeSeconds;
       const newDt = await client.getDateEST(info.time);
       const unixTime = Math.round(newDt.getTime() / 1000); // Seconds
-      const oldUnixTime = Math.round(playerStat.lastConnectionDate.getTime() / 1000); // Seconds
-      const sessionTimeSeconds = unixTime - oldUnixTime;
+      if (playerStat.lastConnectionDate != null) {
+        oldUnixTime = Math.round(playerStat.lastConnectionDate.getTime() / 1000); // Seconds
+        sessionTimeSeconds = unixTime - oldUnixTime;
+      } else sessionTimeSeconds = 0;
       if (!client.exists(playerStat.longestSessionTime)) playerStat.longestSessionTime = 0;
 
       playerStat.totalSessionTime = playerStat.totalSessionTime + sessionTimeSeconds;

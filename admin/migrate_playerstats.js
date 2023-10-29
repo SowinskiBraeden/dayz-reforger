@@ -42,13 +42,15 @@ async function migrate() {
     guild.server.playerstats.map(stat => stat.bountiesLength = stat.bounties.length);
 
     // write JSON to file
-    fs.writeFileSync(`${dir}/player_stats_backup.json`, JSON.stringify(guild.server.playerstats, null, 2));
-    console.log(`A backup of playerstats was successfully created in ./backup/player_stats_backup.json in case of a fatal error.`);
+    // fs.writeFileSync(`${dir}/player_stats_backup.json`, JSON.stringify(guild.server.playerstats, null, 2));
+    // console.log(`A backup of playerstats was successfully created in ./backup/player_stats_backup.json in case of a fatal error.`);
 
-    const result = await players.insertMany(guild.server.playerstats, { ordered: true });
-    console.log(`${result.insertedCount} documents were inserted`);
+    // const result = await players.insertMany(guild.server.playerstats, { ordered: true });
+    // console.log(`${result.insertedCount} documents were inserted`);
 
-    // delete guild.server.playerstats;
+    delete guild.server.playerstats;
+
+    await guilds.updateOne({"server.serverID": guildId}, {$set: guild});
 
   } catch (err) {
     throw new Error(`An error occured while attempting to migrate player stats: ${err}`)
