@@ -346,8 +346,8 @@ class DayzRBot extends Client {
     }
   }
 
-  exists(n) { return null != n && undefined != n && "" != n }
-
+  exists(n) { return null != n && undefined != n && "" != n && NaN != n }
+  
   secondsToDhms(seconds) {
     seconds = Number(seconds);
     const d = Math.floor(seconds / (3600 * 24));

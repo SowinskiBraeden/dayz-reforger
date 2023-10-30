@@ -35,6 +35,7 @@ module.exports = {
 
       playerStat.lastConnectionDate = newDt;
       playerStat.connected = true;
+      if (!client.exists(playerStat.connections)) playerStat.connections = 0;
       playerStat.connections++;
 
       // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
