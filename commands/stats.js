@@ -20,17 +20,19 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
+      let packageDir = path.join(__dirname, '..', 'package.json');
+      let package = JSON.parse(fs.readFileSync(packageDir));
+
       const end = new Date().getTime();
       const stats = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
         .setTitle('DayZ Reforger Bot Statistics')
         .addFields(
-          { name: 'Guilds', value: `${client.guilds.cache.size}`, inline: true },
-          { name: 'Users', value: `${client.users.cache.size}`, inline: true },
           { name: 'Latency', value: `${end - start}ms`, inline: true },
           { name: 'Uptime', value: `${client.secondsToDhms(process.uptime().toFixed(2))}`, inline: true },
           { name: 'Bot Version', value: `${client.config.Dev} v${client.config.Version}`, inline: true },
-          { name: 'Discord Version', value: 'Discord.js v14.8.0', inline: true },
+          { name: 'Discord Version', value: `Discord.js ${package.dependencies["discord.js"]}`, inline: true },
+          { name: 'MongoDB Version', value: `MongoDB    ${package.dependencies.mongodb}`, inline: true},
         )
       
       return interaction.send({ embeds: [stats] })
