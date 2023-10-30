@@ -18,17 +18,18 @@ module.exports = {
     type: CommandOptions.String,
     required: true,
     choices: [
-      { name: "money", value: "money" },
-      { name: "total_time_played", value: "total_time_played" },
-      { name: "longest_time_played", value: "longest_time_played" },
-      { name: "kills", value: "kills" }, 
-      { name: "killstreak", value: "killstreak" },
-      { name: "best_killstreak", value: "best_killstreak" },
-      { name: "deaths", value: "deaths" },
-      { name: "deathstreak", value: "deathstreak" },
-      { name: "worst_deathstreak", value: "worst_deathstreak" },
-      { name: "longest_kill", value: "longest_kill" },
+      { name: "Money", value: "money" },
+      { name: "Total Time Played", value: "totalSessionTime" },
+      { name: "Longest Game Session", value: "longestSessionTime" },
+      { name: "Kills", value: "kills" }, 
+      { name: "Kill Streak", value: "killStreak" },
+      { name: "Best Kill Streak", value: "bestKillStreak" },
+      { name: "Deaths", value: "deaths" },
+      { name: "Death Streak", value: "deathStreak" },
+      { name: "Worst Death Streak", value: "worstDeathStreak" },
+      { name: "Longest Kill", value: "longestKill" },
       { name: "KDR", value: "KDR" },
+      { name: "Server Connections", value: "connections" },
     ]
   }, {
     name: "discord",
@@ -57,20 +58,19 @@ module.exports = {
 
       let playerStat;
       if (!discord && gamertag) {
-        playerStat = GuildDB.playerstats.find(stat => stat.gamertag == gamertag );
+        playerStat = await client.dbo.collection("players").findOne({"gamertag": gamertag});
         if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
       }
 
       let query;
       let leaderboard;
       let leaderboardPos;
+
       if (category == 'money') {
 
-        let users = await client.dbo.collection("users").find({}).toArray();
-
-        leaderboard = users.sort(function(a, b) {
-          return b.user.guilds[GuildDB.serverID].balance - a.user.guilds[GuildDB.serverID].balance;
-        });
+        leaderboard = await client.dbo.collection("users").aggregate([
+          { $sort: { [`user.guilds.${GuildDB.serverID}.balance`]: -1 } }
+        ]).toArray();
 
         if (discord) { // If searching by discord
           query = leaderboard.find(u => u.user.userID == discord);
@@ -88,18 +88,9 @@ module.exports = {
 
       } else {
         
-        leaderboard = GuildDB.playerstats.sort(function(a, b){
-          if (category == 'kills') return b.kills - a.kills;
-          if (category == 'killstreak') return b.killStreak - a.killStreak;
-          if (category == 'best_killstreak') return b.bestKillStreak - a.bestKillStreak;
-          if (category == 'deaths') return b.deaths - a.deaths;
-          if (category == 'deathstreak') return b.deathStreak - a.deathSreak;
-          if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
-          if (category == 'longest_kill') return b.longestKill - a.longestKill;
-          if (category == 'total_time_played') return b.totalSessionTime - a.totalSessionTime;
-          if (category == 'longest_time_played') return b.longestSessionTime - a.longestSessionTime;
-          if (category == 'KDR') return b.KDR - a.KDR;
-        });
+        leaderboard = await client.dbo.collection("players").aggregate([
+          { $sort: { [`${category}`]: -1 } }
+        ]).toArray();
 
         if (discord) { // If searching by discord
           query = leaderboard.find(s => s.discordID == discord);
@@ -113,20 +104,22 @@ module.exports = {
 
         if (query == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
         leaderboardPos = leaderboard.indexOf(query);
+
       }
       leaderboardPos++; // add one to leaderboard pos because it is index in array and we want index zero to be num. one, index one to be num. two, etc. etc.
 
       let title = category == 'kills' ? "Total Kills" :
-        category == 'killstreak' ? "Current Killstreak" :
-        category == 'best_killstreak' ? "Best Killstreak" :
+        category == 'killStreak' ? "Current Killstreak" :
+        category == 'bestkillStreak' ? "Best Killstreak" :
         category == 'deaths' ? "Total Deaths" :
-        category == 'deathstreak' ? "Current Deathstreak" :
-        category == 'worst_deathstreak' ? "Worst Deathstreak" : 
-        category == 'longest_kill' ? "Longest Kill" : 
+        category == 'deathStreak' ? "Current Deathstreak" :
+        category == 'worstDeathStreak' ? "Worst Deathstreak" : 
+        category == 'longestKill' ? "Longest Kill" : 
         category == 'money' ? "Total Money" : 
-        category == 'total_time_played' ? "Total Time Played" :
-        category == 'longest_time_played' ? "Longest Game Session" :
-        category == 'KDR' ? "Kill Death Ratio" : 'N/A Error';
+        category == 'totalSessionTime' ? "Total Time Played" :
+        category == 'longestSessionTime' ? "Longest Game Session" :
+        category == 'KDR' ? "Kill Death Ratio" :
+        category == 'connections' ? "Times Connected" : 'N/A Error';
 
       let statsEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default);
@@ -139,14 +132,15 @@ module.exports = {
 
       let des = ``;
       let stats = category == 'kills' ? `${query.kills} Kill${(query.kills>1||query.kills==0)?'s':''}` :
-                  category == 'killstreak' ? `${query.killStreak} Player Killstreak` :
-                  category == 'best_killstreak' ? `${query.bestKillStreak} Player Killstreak` :
+                  category == 'killStreak' ? `${query.killStreak} Player Killstreak` :
+                  category == 'bestKillStreak' ? `${query.bestKillStreak} Player Killstreak` :
                   category == 'deaths' ? `${query.deaths} Death${query.deaths>1||query.deaths==0?'s':''}` :
-                  category == 'deathstreak' ? `${query.deathStreak} Deathstreak` :
-                  category == 'worst_deathstreak' ? `${query.worstDeathStreak} Deathstreak` :
-                  category == 'longest_kill' ? `${query.longestKill}m` : 
+                  category == 'deathStreak' ? `${query.deathStreak} Deathstreak` :
+                  category == 'worstDeathStreak' ? `${query.worstDeathStreak} Deathstreak` :
+                  category == 'longestKill' ? `${query.longestKill}m` : 
                   category == 'money' ? `$${(query.user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :  
-                  category == 'KDR' ? `${query.KDR.toFixed(2)} KDR` : 'N/A Error';
+                  category == 'KDR' ? `${query.KDR.toFixed(2)} KDR` : 
+                  category == 'connections' ? `${query.connections} connections` : 'N/A Error';
 
       statsEmbed.addFields({ name: 'Leaderboard Position', value: `# ${leaderboardPos}`, inline: true });
       

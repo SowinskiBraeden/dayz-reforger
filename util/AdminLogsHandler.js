@@ -4,8 +4,7 @@ const { calculateVector } = require('./vector');
 
 module.exports = {
 
-  SendConnectionLogs: async (client, guildId, data) => {
-    let guild = await client.GetGuild(guildId);
+  SendConnectionLogs: async (client, guild, data) => {
     if (!client.exists(guild.connectionLogsChannel)) return;
     const channel = client.GetChannel(guild.connectionLogsChannel);
 
@@ -27,10 +26,8 @@ module.exports = {
     if (client.exists(channel)) await channel.send({ embeds: [connectionLog] });
   },
 
-  DetectCombatLog: async (client, guildId, data) => {
+  DetectCombatLog: async (client, guild, data) => {
     if (!client.exists(data.lastDamageDate)) return;
-
-    let guild = await client.GetGuild(guildId);
     if (!client.exists(guild.connectionLogsChannel)) return;
 
     const newDt = await client.getDateEST(data.time);
@@ -43,7 +40,7 @@ module.exports = {
 
     // If lastHitBy (attacker) died after shooting this player
     // then it does not count as combat logging, (the combat ended due to death)
-    let attacker = guild.playerstats.find(stat => stat.gamertag = data.lastHitBy);
+    let attacker = await client.dbo.collection("players").findOne({"gamertag": data.lastHitBy});
     if (attacker.lastDeathDate > data.lastDamageDate) return;    
 
     const channel = client.GetChannel(guild.connectionLogsChannel);

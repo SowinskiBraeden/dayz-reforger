@@ -19,20 +19,8 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
-
-      if (!client.exists(GuildDB.playerstats)) {
-        GuildDB.playerstats = [{}];
-        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
-          $set: {
-            "server.playerstats": []
-          }
-        }, (err, res) => {
-          if (err) return client.sendInternalError(interaction, err);
-        });
-      }
-
-      let playerStat = GuildDB.playerstats.find(stat => stat.discordID == interaction.member.user.id );
-      if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** You haven't linked your gamertag and are unable to use this command.`)], flags: (1 << 6) });
+      let playerStat = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
+      if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** You haven't linked your gamertag and are unable to use this command.`)], flags: (1 << 6) });
 
       let newDt = await client.getDateEST(playerStat.time);
       let unixTime = Math.floor(newDt.getTime()/1000);

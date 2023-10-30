@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const { createUser, addUser } = require('../database/user');
+const { UpdatePlayer } = require('../database/player');
 
 module.exports = {
   name: "bounty",
@@ -76,10 +77,9 @@ module.exports = {
 
       if (args[0].name == 'set') {
 
-        let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == args[0].options[0].value);
-        if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.')] });
-        let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
-
+        let playerStat = await client.dbo.collection("players").findOne({"gamertag": args[0].options[0].value});
+        if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.')] });
+        
         if (args[0].options[1].value > banking.guilds[GuildDB.serverID].balance) {
           let nsf = new EmbedBuilder()
             .setDescription('**Bank Notice:** NSF. Non sufficient funds')
@@ -104,16 +104,9 @@ module.exports = {
           setBy: (anonymous && !anonymous.value) ? interaction.member.user.id : null,
           value: args[0].options[1].value,
         });
+        playerStat.bountiesLength++;
 
-        GuildDB.playerstats[playerStatIndex] = playerStat;
-
-        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
-          $set: {
-            'server.playerstats': GuildDB.playerstats,
-          }
-        }, (err, res) => {
-          if (err) return client.sendInternalError(interaction, err);
-        });
+        await UpdatePlayer(client, playerStat, interaction);
         
         const successEmbed = new EmbedBuilder()
           .setTitle('Success')
@@ -124,10 +117,9 @@ module.exports = {
 
       } else if (args[0].name == 'pay') {
 
-        let playerStat = GuildDB.playerstats.find(stat => stat.discordID == interaction.member.user.id);
-        if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** Your user ID could not be found, contact an Admin.')] });
-        let playerStatIndex = GuildDB.playerstats.indexOf(playerStat);
-
+        let playerStat = await client.dbo.collection("players").findOne({"gamertag": interaction.member.user.id});
+        if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** Your user ID could not be found, contact an Admin.')] });
+        
         if (playerStat.bounties.length == 0) {
           const noBounty = new EmbedBuilder()
             .setColor(client.config.Colors.Yellow)
@@ -156,15 +148,9 @@ module.exports = {
         });
 
         playerStat.bounties = [];
-        GuildDB.playerstats[playerStatIndex] = playerStat;
-
-        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
-          $set: {
-            'server.playerstats': GuildDB.playerstats,
-          }
-        }, (err, res) => {
-          if (err) return client.sendInternalError(interaction, err);
-        });        
+        playerStat.bountiesLength = 0;
+        
+        await UpdatePlayer(client, playerStat, interaction);
 
         const payedOff = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
@@ -174,8 +160,11 @@ module.exports = {
 
       } else if (args[0].name == 'view') {
 
-        let activeBounties = GuildDB.playerstats.filter((p) => p.bounties.length > 0);
-
+        // TODO: only get players with boutnies.length greater than 0
+        const activeBounties = await dbo.collection("players").find({
+          "bountiesLength": { $gt: 0 }
+        });
+        
         let bountiesEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setDescription('**Active Boutnies**');

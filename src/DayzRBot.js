@@ -11,8 +11,8 @@ const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
 
 // Data structures imports
-const { getDefaultPlayerStats } = require('../database/playerStatistics');
-const { getDefaultSettings } = require('../database/guildSettings');
+const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
+const { GetGuild } = require('../database/guild');
 
 const path = require("path");
 const fs = require('fs');
@@ -56,7 +56,7 @@ class DayzRBot extends Client {
     this.ws.on("INTERACTION_CREATE", async (interaction) => {
       const start = new Date().getTime();
       if (interaction.type != 3) {
-        let GuildDB = await this.GetGuild(interaction.guild_id);
+        let GuildDB = await GetGuild(this, interaction.guild_id);
 
         for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
           const guild = this.guilds.cache.get(GuildDB.serverID);
@@ -134,7 +134,7 @@ class DayzRBot extends Client {
     return new Date(f.getTime() + 4 * 3600000);  // Add EST time offset to return timestamp in UTC
   }
 
-  async readLogs(guildId) {
+  async readLogs(guild) {
     const fileStream = fs.createReadStream('./logs/server-logs.ADM');
 
     let logHistoryDir = path.join(__dirname, '..', 'logs', 'history-logs.ADM.json');
@@ -156,41 +156,58 @@ class DayzRBot extends Client {
 
     let logIndex = lines.indexOf(history.lastLog);
 
-    let guild = await this.GetGuild(guildId);
-    if (!this.exists(guild.playerstats)) guild.playerstats = [];
-    let s = guild.playerstats;
-
     if (this.playerSessions.size === 0) {
-      s.map(p => p.connected = false); // assume all players not connected on init only.
+      let players = await this.dbo.collection('players').find({"connected": true}).toArray();
+      players.map(p => p.connected = false); // assume all players not connected on init only.
+      for (let i = 0; i < players.length; i++) {
+        UpdatePlayer(this, players[i])
+      }
     }
 
     for (let i = logIndex + 1; i < lines.length; i++) {
+      // Handle lines to skip
       if (lines[i].includes('| ####')) continue;
       if (lines[i].includes("(id=Unknown") || lines[i].includes("Player \"Unknown Entity\"")) continue;
       if ((i - 1) >= 0 && lines[i] == lines[i - 1]) continue; // continue if this line is a duplicate of the last line
-      if (lines[i].includes('connected') || lines[i].includes('pos=<')) s = await HandlePlayerLogs(this, guildId, s, lines[i], guild.combatLogTimer);
-      if (lines[i].includes('killed by  with') || lines[i].includes('killed by LandMineTrap')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles explosive deaths
-      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by') && lines[i].includes('TransportHit')) s = await HandleKillfeed(this, guildId, s, lines[i]) // Handles vehicle deaths
-      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles regular deaths
-      if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) s = await HandleKillfeed(this, guildId, s, lines[i]); // Handles deaths missing hit by log
-      if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) s = await UpdateLastDeathDate(this, s, lines[i]); // Updates users last death date for non PVP deaths.
-      if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(this, guildId, lines[i]);
+
+      // Handle general logs
+      if (lines[i].includes('connected') || lines[i].includes('pos=<')) await HandlePlayerLogs(this, guild, lines[i], guild.combatLogTimer);
+      if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) await UpdateLastDeathDate(this, lines[i]); // Updates users last death date for non PVP deaths.
+      if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(this, guild, lines[i]);
+      
+      // Handle killfeed logs
+      if (lines[i].includes('killed by  with') || lines[i].includes('killed by LandMineTrap')) await HandleKillfeed(this, guild, lines[i]); // Handles explosive deaths
+      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by') && lines[i].includes('TransportHit')) await HandleKillfeed(this, guild, lines[i]); // Handles vehicle deaths
+      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) await HandleKillfeed(this, guild, lines[i]); // Handles regular deaths
+      if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) await HandleKillfeed(this, guild, lines[i]); // Handles deaths missing hit by log
     }
 
     // Handle alarm pings
+    const maxEmbed = 10;
     for (const [channel_id, data] of Object.entries(this.alarmPingQueue)) {
       const channel = this.GetChannel(channel_id);
       if (!channel) continue;
       for (const [role, embeds] of Object.entries(data)) {
-        if (role == '-no-role-ping-') channel.send({ embeds: embeds });
-        else channel.send({ content: `<@&${role}>`, embeds: embeds });
+        if (embeds.length > maxEmbed) {
+          let embedArrays = [];
+          while (embeds.length > maxEmbed)
+            embedArrays.push(embeds.splice(0, maxEmbed));
+
+          for (let i = 0; i < embedArrays.length; i++) {
+            if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
+            else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
+          }
+        } else {
+          if (role == '-no-role-ping-') channel.send({ embeds: embeds });
+          else channel.send({ content: `<@&${role}>`, embeds: embeds });
+        }
       }
     }
 
     this.alarmPingQueue = {};
 
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
-    let previouslyConnected = s.filter(p => p.connected); // All players with connection log captured above and no disconnect log
+    let previouslyConnected = await this.dbo.collection('players').find({"connected": true}).toArray(); // All players with connection log captured above and no disconnect log
     let lastDetectedTime;
 
     for (let i = lines.length - 1; i > 0; i--) {
@@ -211,8 +228,9 @@ class DayzRBot extends Client {
           if (!this.exists(info.player) || !this.exists(info.playerID)) continue;  // Skip this player if the player does not exist.
 
           lastDetectedTime = await this.getDateEST(info.time);
-          let playerStat = s.find(stat => stat.playerID == info.playerID);
-          if (playerStat == undefined) playerStat = getDefaultPlayerStats(info.player, info.playerID);
+          
+          let playerStat = await this.dbo.collection("players").findOne({"playerID": info.playerID});
+          if (!this.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, this.config.Nitrado.ServerID);
 
           if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
@@ -237,21 +255,11 @@ class DayzRBot extends Client {
             }
           }
 
-          let playerStatIndex = s.indexOf(playerStat);
-          if (playerStatIndex == -1) s.push(playerStat);
-          else s[playerStatIndex] = playerStat;
+          await UpdatePlayer(this, playerStat);
         }
         break;
       }
     }
-
-    await this.dbo.collection("guilds").updateOne({ "server.serverID": guildId }, {
-      $set: {
-        "server.playerstats": s
-      }
-    }, (err, res) => {
-      if (err) this.sendError(this.GetChannel(guild.adminLogsChannel), err);
-    });
 
     history.lastLog = lines[lines.length - 1];
 
@@ -260,8 +268,8 @@ class DayzRBot extends Client {
   }
 
   async logsUpdateTimer(c) {
-    if (this.processingLogs) return; // Process is already running, wait till next scheduled time.
-    this.processingLogs = true;
+    if (c.processingLogs) return; // Process is already running, wait till next scheduled time.
+    c.processingLogs = true;
     let t = new Date();
     // c.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
     c.activePlayersTick++;
@@ -270,17 +278,19 @@ class DayzRBot extends Client {
     const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
     const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
     
+    let guild = await GetGuild(c, c.config.GuildID);
+
     await DownloadNitradoFile(c, path, './logs/server-logs.ADM').then(async (status) => {
       if (status == 1) return c.error('...Failed to Download logs...');
       // c.log('...Downloaded logs...');
-      await c.readLogs(c.config.GuildID).then(async () => {
+      await c.readLogs(guild).then(async () => {
         // c.log('...Analyzed logs...');
-        HandleExpiredUAVs(c, c.config.GuildID);
-        HandleEvents(c, c.config.GuildID)
-        if (c.activePlayersTick == 12) await HandleActivePlayersList(c, c.config.GuildID);
+        HandleExpiredUAVs(c, guild);
+        HandleEvents(c, guild)
+        if (c.activePlayersTick == 12) await HandleActivePlayersList(c, guild);
       })
     });
-    this.processingLogs = false;
+    c.processingLogs = false;
   }
 
   async connectMongo(mongoURI, dbo) {
@@ -420,54 +430,6 @@ class DayzRBot extends Client {
   RegisterSlashCommands() {
     RegisterGlobalCommands(this);
     this.guilds.cache.forEach((guild) => RegisterGuildCommands(this, guild.id));
-  }
-
-  async GetGuild(GuildId) {
-    let guild = undefined;
-    if (this.databaseConnected) guild = await this.dbo.collection("guilds").findOne({"server.serverID":GuildId}).then(guild => guild);
-
-    // If guild not found, generate guild default
-    if (!guild) {
-      guild = {}
-      guild.server = getDefaultSettings(GuildId);
-      if (this.databaseConnected) {
-        this.dbo.collection("guilds").insertOne(guild, (err, res) => {
-          if (err) throw err;
-        });
-      }
-    }
-
-    return {
-      serverID: GuildId,
-      autoRestart: guild.server.autoRestart,
-      customChannelStatus: guild.server.allowedChannels.length > 0 ? true : false,
-      allowedChannels: guild.server.allowedChannels,
-      factionArmbands: guild.server.factionArmbands,
-      usedArmbands: guild.server.usedArmbands,
-      excludedRoles: guild.server.excludedRoles,
-      hasBotAdmin: guild.server.botAdminRoles.length > 0 ? true : false,
-      botAdminRoles: guild.server.botAdminRoles,
-      playerstats: guild.server.playerstats,
-      alarms: guild.server.alarms,
-      events: guild.server.events,
-      uavs: guild.server.uavs,
-      killfeedChannel: guild.server.killfeedChannel,
-      showKillfeedCoords: guild.server.showKillfeedCoords,
-      connectionLogsChannel: guild.server.connectionLogsChannel,
-      welcomeChannel: guild.server.welcomeChannel,
-      activePlayersChannel: guild.server.activePlayersChannel,
-      linkedGamertagRole: guild.server.linkedGamertagRole,
-      incomeRoles: guild.server.incomeRoles,
-      incomeLimiter: guild.server.incomeLimiter,
-      startingBalance: guild.server.startingBalance,
-      uavPrice: guild.server.uavPrice,
-      empPrice: guild.server.empPrice,
-      memberRole: guild.server.memberRole,
-      adminRole: guild.server.adminRole,
-      combatLogTimer: guild.server.combatLogTimer,
-      purchaseUAV: guild.server.purchaseUAV,
-      purchaseEMP: guild.server.purchaseEMP,
-    };
   }
 
   build() {

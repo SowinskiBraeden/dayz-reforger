@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
-const { getDefaultSettings } = require('../database/guildSettings');
+const { getDefaultSettings } = require('../database/guild');
 
 module.exports = {
   name: "config",

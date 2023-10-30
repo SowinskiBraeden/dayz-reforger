@@ -8,6 +8,7 @@ const { HandleActivePlayersList } = require('./util/LogsHandler');
 
 // Log all uncaught exceptions before killing process.
 process.on('uncaughtException', async (error) => {
+	console.trace(error);
 	let d = new Date();
 	// Asynchronously write the error message to a log file using Promises
 	await new Promise((resolve, reject) => {

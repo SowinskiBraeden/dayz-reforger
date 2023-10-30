@@ -46,20 +46,9 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
 
-      if (!client.exists(GuildDB.playerstats)) {
-        GuildDB.playerstats = [{}];
-        client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
-          $set: {
-            "server.playerstats": []
-          }
-        }, (err, res) => {
-          if (err) return client.sendInternalError(interaction, err);
-        });
-      }
-
       if (args[0].name == 'discord') {
 
-        let playerStat = GuildDB.playerstats.find(stat => stat.gamertag == args[0].options[0].value );
+        let playerStat = await client.dbo.collection("players").findOne({"gamertag": args[0].options[0].value});
         if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].options[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
   
         if (client.exists(playerStat.discordID)) {
@@ -78,7 +67,7 @@ module.exports = {
 
       } else if (args[0].name == 'gamertag') {
 
-        let playerStat = GuildDB.playerstats.find(stat => stat.discordID == args[0].options[0].value );
+        let playerStat = await client.dbo.collection("players").findOne({"discordID": args[0].options[0].value});
         if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** The user <@${args[0].options[0].value}> has not linked a gamertag.`)] });
 
         const found = new EmbedBuilder()

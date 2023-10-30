@@ -18,17 +18,18 @@ module.exports = {
     type: CommandOptions.String,
     required: true,
     choices: [
-      { name: "money", value: "money" },
-      { name: "total_time_played", value: "total_time_played" },
-      { name: "longest_time_played", value: "longest_time_played" },
-      { name: "kills", value: "kills" }, 
-      { name: "killstreak", value: "killstreak" },
-      { name: "best_killstreak", value: "best_killstreak" },
-      { name: "deaths", value: "deaths" },
-      { name: "deathstreak", value: "deathstreak" },
-      { name: "worst_deathstreak", value: "worst_deathstreak" },
-      { name: "longest_kill", value: "longest_kill" },
+      { name: "Money", value: "money" },
+      { name: "Total Time Played", value: "totalSessionTime" },
+      { name: "Longest Game Session", value: "longestSessionTime" },
+      { name: "Kills", value: "kills" }, 
+      { name: "Kill Streak", value: "killStreak" },
+      { name: "Best Kill Streak", value: "bestKillStreak" },
+      { name: "Deaths", value: "deaths" },
+      { name: "Death Streak", value: "deathStreak" },
+      { name: "Worst Death Streak", value: "worstDeathStreak" },
+      { name: "Longest Kill", value: "longestKill" },
       { name: "KDR", value: "KDR" },
+      { name: "Server Connections", value: "connections" },
     ]
   }, {
     name: "limit",
@@ -48,50 +49,39 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
-      let category = args[0].value;
+      const category = args[0].value;
+      const limit = args[1].value;
 
-      let leaderboard;
+      let leaderboard = [];
       if (category == 'money') {
 
-        let users = await client.dbo.collection("users").find({}).toArray();
-
-        leaderboard = users.sort(function(a, b) {
-          return b.user.guilds[GuildDB.serverID].balance - a.user.guilds[GuildDB.serverID].balance;
-        });
+        leaderboard = await client.dbo.collection("users").aggregate([
+          { $sort: { [`user.guilds.${GuildDB.serverID}.balance`]: -1 } }
+        ]).toArray();
 
       } else {
         
-        leaderboard = GuildDB.playerstats.sort(function(a, b){
-          if (category == 'kills') return b.kills - a.kills;
-          if (category == 'killstreak') return b.killStreak - a.killStreak;
-          if (category == 'best_killstreak') return b.bestKillStreak - a.bestKillStreak;
-          if (category == 'deaths') return b.deaths - a.deaths;
-          if (category == 'deathstreak') return b.deathStreak - a.deathSreak;
-          if (category == 'worst_deathstreak') return b.worstDeathStreak - a.worstDeathStreak;
-          if (category == 'longest_kill') return b.longestKill - a.longestKill;
-          if (category == 'total_time_played') return b.totalSessionTime - a.totalSessionTime;
-          if (category == 'longest_time_played') return b.longestSessionTime - a.longestSessionTime;
-          if (category == 'KDR') return b.KDR - a.KDR;
-        });
+        leaderboard = await client.dbo.collection("players").aggregate([
+          { $sort: { [`${category}`]: -1 } }
+        ]).toArray();
 
       }
-      
-      let limit = args[1].value > leaderboard.length ? leaderboard.length : args[1].value;
       
       let leaderboardEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default);
       
       let title = category == 'kills' ? "Total Kills Leaderboard" :
-        category == 'killstreak' ? "Current Killstreak Leaderboard" :
-        category == 'best_killstreak' ? "Best Killstreak Leaderboard" :
+        category == 'killStreak' ? "Current Killstreak Leaderboard" :
+        category == 'bestKillStreak' ? "Best Killstreak Leaderboard" :
         category == 'deaths' ? "Total Deaths Leaderboard" :
-        category == 'deathstreak' ? "Current Deathstreak Leaderboard" :
-        category == 'worst_deathstreak' ? "Worst Deathstreak Leaderboard" : 
-        category == 'longest_kill' ? "Longest Kill Leaderboard" : 
+        category == 'deathStreak' ? "Current Deathstreak Leaderboard" :
+        category == 'worstDeathStreak' ? "Worst Deathstreak Leaderboard" : 
+        category == 'longestKill' ? "Longest Kill Leaderboard" : 
         category == 'money' ? "Money Leaderboard" : 
-        category == 'total_time_played' ? "Total Time Played" : 
-        category == 'longest_time_played' ? "Longest Game Session" : 
-        category == 'KDR' ? "Kill Death Ratio" : 'N/A Error';
+        category == 'totalSessionTime' ? "Total Time Played" : 
+        category == 'longestSessionTime' ? "Longest Game Session" : 
+        category == 'KDR' ? "Kill Death Ratio" : 
+        category == 'connections' ? "Times Connected" : 'N/A Error';
 
       leaderboardEmbed.setTitle(`**${title} - DayZ Reforger**`);
 
@@ -100,25 +90,26 @@ module.exports = {
         if (leaderboard.length < limit && i == leaderboard.length) break;
         
         let stats = category == 'kills' ? `${leaderboard[i].kills} Kill${(leaderboard[i].kills>1||leaderboard[i].kills==0)?'s':''}` :
-                    category == 'killstreak' ? `${leaderboard[i].killStreak} Player Killstreak` :
-                    category == 'best_killstreak' ? `${leaderboard[i].bestKillStreak} Player Killstreak` :
+                    category == 'killStreak' ? `${leaderboard[i].killStreak} Player Killstreak` :
+                    category == 'bestKillStreak' ? `${leaderboard[i].bestKillStreak} Player Killstreak` :
                     category == 'deaths' ? `${leaderboard[i].deaths} Death${leaderboard[i].deaths>1||leaderboard[i].deaths==0?'s':''}` :
-                    category == 'deathstreak' ? `${leaderboard[i].deathStreak} Deathstreak` :
-                    category == 'worst_deathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
-                    category == 'longest_kill' ? `${leaderboard[i].longestKill}m` : 
+                    category == 'deathStreak' ? `${leaderboard[i].deathStreak} Deathstreak` :
+                    category == 'worstDeathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
+                    category == 'longestKill' ? `${leaderboard[i].longestKill}m` : 
                     category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 
-                    category == 'total_time_played' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${client.secondsToDhms(leaderboard[i].lastSessionTime)}` : 
-                    category == 'longest_time_played' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 
-                    category == 'KDR' ? `**KDR: ${leaderboard[i].KDR.toFixed(2)}**` : 'N/A Error';
+                    category == 'totalSessionTime' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${client.secondsToDhms(leaderboard[i].lastSessionTime)}` : 
+                    category == 'longestSessionTime' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 
+                    category == 'KDR' ? `**KDR: ${leaderboard[i].KDR.toFixed(2)}**` : 
+                    category == 'connection' ? `**Connections: ${leaderboard[i].connections}**` : 'N/A Error';
 
         if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
-        else if (category == 'total_time_played' || category == 'longest_time_played') {
+        else if (category == 'totalSessionTime' || category == 'longestSessionTime') {
           tag = leaderboard[i].discordID != "" ? `<@${leaderboard[i].discordID}>` : leaderboard[i].gamertag;
           des += `**${i+1}.** ${tag}\n> ${stats}\n\n`;
         } else leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });
       }
 
-      if (['money', 'total_time_played', 'longest_time_played'].includes(category)) leaderboardEmbed.setDescription(des);
+      if (['money', 'totalSessionTime', 'longestSessionTime'].includes(category)) leaderboardEmbed.setDescription(des);
       
       return interaction.send({ embeds: [leaderboardEmbed] });
     },
