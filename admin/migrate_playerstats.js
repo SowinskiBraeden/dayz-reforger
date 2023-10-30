@@ -23,7 +23,8 @@ async function migrate() {
   const package = await JSON.parse(fs.readFileSync('../package.json'));
   const version = package.version.split('.').map(v => parseInt(v));
 
-  if (version[0] < 12) throw new Error('Bot version does not meet requirements: v^12.0.0');
+  // Ensure version is 12.0.4 or higher.
+  if (version[0] < 12, version[2] < 4) throw new Error('Bot version does not meet requirements: v^12.0.4');
 
   try {
     // Get the database and collection on which to run the operation
@@ -31,32 +32,38 @@ async function migrate() {
     const players = database.collection("players");
     const guilds = database.collection("guilds");
 
+    // Get current guild settings + player stats
     let guild = await guilds.findOne({"server.serverID": guildId});
 
+    // Create backup dir
     const dir = __dirname + '/backup';
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir);
     }
 
+    // Ensure new required values are inserted into player stat.
     guild.server.playerstats.map(stat => stat.nitradoServerID = NitradoServerID);
     guild.server.playerstats.map(stat => stat.bountiesLength = stat.bounties.length);
 
     // write JSON to file
-    // fs.writeFileSync(`${dir}/player_stats_backup.json`, JSON.stringify(guild.server.playerstats, null, 2));
-    // console.log(`A backup of playerstats was successfully created in ./backup/player_stats_backup.json in case of a fatal error.`);
+    fs.writeFileSync(`${dir}/player_stats_backup.json`, JSON.stringify(guild.server.playerstats, null, 2));
+    console.log(`A backup of playerstats was successfully created in ./backup/player_stats_backup.json in case of a fatal error.`);
 
-    // const result = await players.insertMany(guild.server.playerstats, { ordered: true });
-    // console.log(`${result.insertedCount} documents were inserted`);
+    // Move player stats to new collection.
+    const result = await players.insertMany(guild.server.playerstats, { ordered: true });
+    console.log(`${result.insertedCount} documents were inserted to "players" collections.`);
 
+    // Removes player stats from guild settings.
     delete guild.server.playerstats;
 
+    // Update guild settings with removed player stats.
     await guilds.updateOne({"server.serverID": guildId}, {$set: guild});
 
   } catch (err) {
     throw new Error(`An error occured while attempting to migrate player stats: ${err}`)
   } finally {
     await client.close();
-    console.log(`Successfully migrated player stats into the 'players' collection.`);
+    console.log(`Successfully migrated player stats into the "players" collection.`);
   }
 }
 
