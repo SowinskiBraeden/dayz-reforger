@@ -21,7 +21,7 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
-      let package = JSON.parse(fs.readFileSync('../package.json'));
+      const package = require('../package.json');
 
       const end = new Date().getTime();
       const stats = new EmbedBuilder()
