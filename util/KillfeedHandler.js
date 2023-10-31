@@ -63,7 +63,8 @@ module.exports = {
 
     victimStat.lastDeathDate = newDt;
 
-    return await UpdatePlayer(client, victimStat);
+    await UpdatePlayer(client, victimStat);
+    return
   },
 
   HandleKillfeed: async (client, guild, line) => {
@@ -156,7 +157,8 @@ module.exports = {
         .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** ${killMessage} a **${cod}.**${coord}`);
 
       if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
-      return await UpdatePlayer(client, victimStat);
+      await UpdatePlayer(client, victimStat);
+      return
     }
 
     KillInAlarm(client, guild.serverID, info); // check if kill happened in a no kill zone

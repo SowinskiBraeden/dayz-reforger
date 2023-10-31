@@ -59,7 +59,8 @@ module.exports = {
         lastConnectionDate: null,
       });
 
-      return await UpdatePlayer(client, playerStat);
+      await UpdatePlayer(client, playerStat);
+      return;
     }
 
     if (line.includes(' disconnected')) {
@@ -112,7 +113,8 @@ module.exports = {
         });
       }
 
-      return await UpdatePlayer(client, playerStat);
+      await UpdatePlayer(client, playerStat);
+      return;
     }
 
     if (line.includes('pos=<') && !line.includes('hit by')) {
@@ -171,7 +173,8 @@ module.exports = {
       playerStat.lastDamageDate = await client.getDateEST(info.time);
       playerStat.lastHitBy = info.attacker;
 
-      return await UpdatePlayer(client, playerStat);
+      await UpdatePlayer(client, playerStat);
+      return;
     }
 
     return;
