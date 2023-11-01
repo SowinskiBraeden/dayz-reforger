@@ -37,7 +37,7 @@ module.exports = {
       playerStat.connected = true;
       if (!client.exists(playerStat.connections)) playerStat.connections = 0;
       playerStat.connections++;
-
+      
       // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
       if (client.playerSessions.has(info.playerID)) {
         // Player is already in a session, update the session's end time.
@@ -161,7 +161,7 @@ module.exports = {
         playerID:   data[3],
         attacker:   data[6],
         attackerID: data[7],
-        bodyPart:   data[9],
+        bodyPart:   data[9].split("(")[0],
         weapon:     data[12],
       };
 
