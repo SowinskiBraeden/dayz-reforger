@@ -189,7 +189,7 @@ module.exports = {
         attackerStat.shotsLanded++;
         attackerStat.shotsLandedPerBodyPart[info.bodyPart]++;
         attackerStat.weaponStats[info.weapon].shotsLanded++;
-        attackerStat.weaponStats[info,weapon].shotsLandedPerBodyPart[info.bodyPart]++;
+        attackerStat.weaponStats[info.weapon].shotsLandedPerBodyPart[info.bodyPart]++;
       }
 
       await UpdatePlayer(client, playerStat);
