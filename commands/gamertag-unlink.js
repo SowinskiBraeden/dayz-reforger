@@ -1,4 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
+const { UpdatePlayer } = require('../database/player');
 
 module.exports = {
   name: "gamertag-unlink",
