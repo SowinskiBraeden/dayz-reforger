@@ -3,7 +3,7 @@ const { HandleAlarmsAndUAVs } = require('./AlarmsHandler');
 const { SendConnectionLogs, DetectCombatLog } = require('./AdminLogsHandler');
 const { getDefaultPlayer } = require('../database/player');
 const { FetchServerSettings } = require('../util/NitradoAPI');
-const { UpdatePlayer } = require('../database/player')
+const { UpdatePlayer, insertPVPstats } = require('../database/player')
 
 let lastSendMessage;
 
@@ -60,7 +60,6 @@ module.exports = {
       });
 
       await UpdatePlayer(client, playerStat);
-      return;
     }
 
     if (line.includes(' disconnected')) {
@@ -114,7 +113,6 @@ module.exports = {
       }
 
       await UpdatePlayer(client, playerStat);
-      return;
     }
 
     if (line.includes('pos=<') && !line.includes('hit by')) {
@@ -150,7 +148,7 @@ module.exports = {
         pos: info.pos,
       });
 
-      return await UpdatePlayer(client, playerStat)
+      await UpdatePlayer(client, playerStat)
     }
 
     if (line.includes('hit by Player')) {
@@ -158,23 +156,44 @@ module.exports = {
       if (!data) return;
 
       const info = {
-        time: data[1],
-        player: data[2],
-        playerID: data[3],
-        attacker: data[6],
-        attackerID: data[7]
+        time:       data[1],
+        player:     data[2],
+        playerID:   data[3],
+        attacker:   data[6],
+        attackerID: data[7],
+        bodyPart:   data[9],
+        weapon:     data[12],
       };
 
-      if (!client.exists(info.player) || !client.exists(info.playerID)) return;
+      if (!client.exists(info.player) || !client.exists(info.playerID) || !client.exists(info.attacker) || !client.exists(info.attackerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
+      let attackerStat = await client.dbo.collection("players").findOne({"playerID": info.attackerID});
       if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
+      if (!client.exists(attackerStat)) attackerStat = getDefaultPlayer(info.attacker, info.attackerID, client.config.Nitrado.ServerID);
 
       playerStat.lastDamageDate = await client.getDateEST(info.time);
       playerStat.lastHitBy = info.attacker;
 
+      if (!client.exists(playerStat.shotsLanded)) playerStat = insertPVPstats(playerStat);
+      if (!client.exists(attackerStat.shotsLanded)) attackerStat = insertPVPstats(attackerStat);
+
+      // Update in depth PVP stats if non Melee weapon\
+      if (info.weapon.includes("Sawed-off")) info.weapon = info.weapon.split("Sawed-off ")[1];
+      if (info.weapon in playerStat.weaponStats) {
+        playerStat.timesShot++;
+        playerStat.timesShotPerBodyPart[info.bodyPart]++;
+        playerStat.weaponStats[info.weapon].timesShot++;
+        playerStat.weaponStats[info.weapon].timesShotPerBodyPart[info.bodyPart]++;
+
+        attackerStat.shotsLanded++;
+        attackerStat.shotsLandedPerBodyPart[info.bodyPart]++;
+        attackerStat.weaponStats[info.weapon].shotsLanded++;
+        attackerStat.weaponStats[info,weapon].shotsLandedPerBodyPart[info.bodyPart]++;
+      }
+
       await UpdatePlayer(client, playerStat);
-      return;
+      await UpdatePlayer(client, attackerStat);
     }
 
     return;

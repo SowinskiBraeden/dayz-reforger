@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
+const { insertPVPstats } = require('../database/player');
 
 module.exports = {
   name: "player-stats",
@@ -30,6 +31,8 @@ module.exports = {
       { name: "Longest Kill", value: "longestKill" },
       { name: "KDR", value: "KDR" },
       { name: "Server Connections", value: "connections" },
+      { name: "Shots Landed", value: "shotsLanded" },
+      { name: "Times Shot", value: "timesShot" },
     ]
   }, {
     name: "discord",
@@ -53,15 +56,10 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
       let category = args[0].value;
-      let discord  = args[1] && args[1].name == 'discord'  ? args[1].value : undefined
+      let discord  = args[1] && args[1].name == 'discord'  ? args[1].value : undefined;
       let gamertag = args[1] && args[1].name == 'gamertag' ? args[1].value : undefined;
-
-      let playerStat;
-      if (!discord && gamertag) {
-        playerStat = await client.dbo.collection("players").findOne({"gamertag": gamertag});
-        if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
-      }
-
+      let self = !discord && !gamertag; // searching for self if both discord and gamertag are undefined;
+      
       let query;
       let leaderboard;
       let leaderboardPos;
@@ -72,18 +70,11 @@ module.exports = {
           { $sort: { [`user.guilds.${GuildDB.serverID}.balance`]: -1 } }
         ]).toArray();
 
-        if (discord) { // If searching by discord
-          query = leaderboard.find(u => u.user.userID == discord);
+        if (discord) query = leaderboard.find(u => u.user.userID == discord);                 // Searching by discord user
+        if (gamertag) query = leaderboard.find(u => u.user.userID == playerStat.discordID);   // Searching by gamertag
+        if (self) query = leaderboard.find(u => u.user.userID == interaction.member.user.id); // Searching for self
 
-        } else if (gamertag) { // If searching by gamertag
-          if (playerStat.discordID == "") return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Unlinked** No Discord User has linked to the gamertag \` ${gamertag} \`.`)] });
-          query = leaderboard.find(u => u.user.userID == playerStat.discordID);
-        
-        } else { // If searching for self
-          query = leaderboard.find(u => u.user.userID == interaction.member.user.id);
-        }
-
-        if (query == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
+        if (!client.exists(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
         leaderboardPos = leaderboard.indexOf(query);
 
       } else {
@@ -92,17 +83,11 @@ module.exports = {
           { $sort: { [`${category}`]: -1 } }
         ]).toArray();
 
-        if (discord) { // If searching by discord
-          query = leaderboard.find(s => s.discordID == discord);
+        if (discord) query = leaderboard.find(s => s.discordID == discord);                 // Searching by discord user
+        if (gamertag) query = leaderboard.find(s => s.gamertag == gamertag);                // Searching by gamertag
+        if (self) query = leaderboard.find(s => s.discordID == interaction.member.user.id); // Searching for self
 
-        } else if (gamertag ) { // If searching by gamertag
-          query = leaderboard.find(s => s.gamertag == gamertag);
-        
-        } else { // If searching for self
-          query = leaderboard.find(s => s.discordID == interaction.member.user.id);
-        }
-
-        if (query == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
+        if (!client.exists(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
         leaderboardPos = leaderboard.indexOf(query);
 
       }
@@ -119,7 +104,9 @@ module.exports = {
         category == 'totalSessionTime' ? "Total Time Played" :
         category == 'longestSessionTime' ? "Longest Game Session" :
         category == 'KDR' ? "Kill Death Ratio" :
-        category == 'connections' ? "Times Connected" : 'N/A Error';
+        category == 'connections' ? "Times Connected" : 
+        category == 'shotsLanded' ? "Shots Landed" :
+        category == 'timesShot' ? "Times Shot" : 'N/A Error';
 
       let statsEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default);
@@ -130,7 +117,6 @@ module.exports = {
 
       statsEmbed.setDescription(`${tag}'s ${title}`);
 
-      let des = ``;
       let stats = category == 'kills' ? `${query.kills} Kill${(query.kills>1||query.kills==0)?'s':''}` :
                   category == 'killStreak' ? `${query.killStreak} Player Killstreak` :
                   category == 'bestKillStreak' ? `${query.bestKillStreak} Player Killstreak` :
@@ -144,6 +130,8 @@ module.exports = {
 
       statsEmbed.addFields({ name: 'Leaderboard Position', value: `# ${leaderboardPos}`, inline: true });
       
+      if ((category == 'shotsLanded' || category == 'timesShot') && !client.exists(query.shotsLanded)) query = insertPVPstats(query);
+
       if (category == 'total_time_played') {
         statsEmbed.addFields(
           { name: 'Total Time Played', value: client.secondsToDhms(query.totalSessionTime), inline: true },
@@ -154,6 +142,64 @@ module.exports = {
           { name: 'Longest Game Session', value: client.secondsToDhms(query.longestSessionTime), inline: true },
           { name: 'Last Session Time', value: client.secondsToDhms(query.lastSessionTime), inline: true }
         );
+      } else if (category == 'shotsLanded') { 
+        statsEmbed.addFields(
+          { name: 'Total Shots Landed', value: `${query.shotsLanded}`, inline: true },
+          { name: 'View Weapon stats', value: `</weapon-stats:0>`, inline: true }
+        );  
+
+        const chart = {
+          type: 'bar',
+          data: {
+            labels: ['Head', 'Torso', 'Left Arm', 'Right Arm', 'Left Leg', 'Right Leg'],
+            datasets: [{
+              label: 'Shots Landed',
+              data: [
+                query.shotsLandedPerBodyPart.Head,
+                query.shotsLandedPerBodyPart.Torso,
+                query.shotsLandedPerBodyPart.LeftArm,
+                query.shotsLandedPerBodyPart.RightArm,
+                query.shotsLandedPerBodyPart.LeftLeg,
+                query.shotsLandedPerBodyPart.RightLeg,
+              ],
+            }],
+          },
+        };
+        
+        const encodedChart = encodeURIComponent(JSON.stringify(chart));
+        const chartURL = `https://quickchart.io/chart?c=${encodedChart}`;
+        
+        statsEmbed.setImage(chartURL);
+
+      } else if (category == 'timesShot') { 
+        statsEmbed.addFields(
+          { name: 'Total Times Shot', value: `${query.timesShot}`, inline: true },
+          { name: 'View Weapon stats', value: `</weapon-stats:0>`, inline: true },
+        );
+    
+        const chart = {
+          type: 'bar',
+          data: {
+            labels: ['Head', 'Torso', 'Left Arm', 'Right Arm', 'Left Leg', 'Right Leg'],
+            datasets: [{
+              label: 'Times Shot',
+              data: [
+                query.timesShotPerBoduPart.Head,
+                query.timesShotPerBoduPart.Torso,
+                query.timesShotPerBoduPart.LeftArm,
+                query.timesShotPerBoduPart.RightArm,
+                query.timesShotPerBoduPart.LeftLeg,
+                query.timesShotPerBoduPart.RightLeg,
+              ],
+            }],
+          },
+        };
+        
+        const encodedChart = encodeURIComponent(JSON.stringify(chart));
+        const chartURL = `https://quickchart.io/chart?c=${encodedChart}`;
+        
+        statsEmbed.setImage(chartURL);
+    
       } else statsEmbed.addFields({ name: title, value: stats, inline: true });
  
       return interaction.send({ embeds: [statsEmbed] });
