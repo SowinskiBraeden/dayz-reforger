@@ -184,12 +184,12 @@ module.exports = {
             datasets: [{
               label: 'Times Shot',
               data: [
-                query.timesShotPerBoduPart.Head,
-                query.timesShotPerBoduPart.Torso,
-                query.timesShotPerBoduPart.LeftArm,
-                query.timesShotPerBoduPart.RightArm,
-                query.timesShotPerBoduPart.LeftLeg,
-                query.timesShotPerBoduPart.RightLeg,
+                query.timesShotPerBodyPart.Head,
+                query.timesShotPerBodyPart.Torso,
+                query.timesShotPerBodyPart.LeftArm,
+                query.timesShotPerBodyPart.RightArm,
+                query.timesShotPerBodyPart.LeftLeg,
+                query.timesShotPerBodyPart.RightLeg,
               ],
             }],
           },
