@@ -145,7 +145,7 @@ module.exports = {
       } else if (category == 'shotsLanded') { 
         statsEmbed.addFields(
           { name: 'Total Shots Landed', value: `${query.shotsLanded}`, inline: true },
-          { name: 'View Weapon stats', value: `</weapon-stats:0>`, inline: true }
+          { name: 'View Weapon stats', value: `</weapon-stats:1169369568104415262>`, inline: true }
         );  
 
         const chart = {
@@ -174,7 +174,7 @@ module.exports = {
       } else if (category == 'timesShot') { 
         statsEmbed.addFields(
           { name: 'Total Times Shot', value: `${query.timesShot}`, inline: true },
-          { name: 'View Weapon stats', value: `</weapon-stats:0>`, inline: true },
+          { name: 'View Weapon stats', value: `</weapon-stats:1169369568104415262>`, inline: true },
         );
     
         const chart = {
