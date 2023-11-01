@@ -143,7 +143,7 @@ module.exports = {
 
         const newBalance = banking.guilds[GuildDB.serverID].balance - (totalBounty * 2);
       
-        client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
+        await client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
@@ -161,7 +161,7 @@ module.exports = {
       } else if (args[0].name == 'view') {
 
         // TODO: only get players with boutnies.length greater than 0
-        const activeBounties = await dbo.collection("players").find({
+        const activeBounties = await client.dbo.collection("players").find({
           "bountiesLength": { $gt: 0 }
         });
         
