@@ -8,7 +8,7 @@ module.exports = {
       guild = {}
       guild.server = module.exports.getDefaultSettings(GuildId);
       if (client.databaseConnected) {
-        thiclients.dbo.collection("guilds").insertOne(guild, (err, res) => {
+        client.dbo.collection("guilds").insertOne(guild, (err, res) => {
           if (err) throw err;
         });
       }
