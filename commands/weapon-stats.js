@@ -98,7 +98,7 @@ module.exports = {
         const weapon = interaction.values[0];
         const playerID = interaction.customId.split('-')[1];
         let player = await client.dbo.collection("players").findOne({"playerID": playerID});
-        const tag = player.discordID != "" ? `<@${player.discordID}>'s` : `**${player.gamertag}'s**>`;
+        const tag = player.discordID != "" ? `<@${player.discordID}>'s` : `**${player.gamertag}'s**`;
 
         if (!client.exists(player.shotsLanded)) player = insertPVPstats(player);
 
