@@ -106,7 +106,8 @@ module.exports = {
         category == 'KDR' ? "Kill Death Ratio" :
         category == 'connections' ? "Times Connected" : 
         category == 'shotsLanded' ? "Shots Landed" :
-        category == 'timesShot' ? "Times Shot" : 'N/A Error';
+        category == 'timesShot' ? "Times Shot" :
+        category == 'combatRating' ? "Combat Rating" : 'N/A Error';
 
       let statsEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default);
@@ -126,7 +127,8 @@ module.exports = {
                   category == 'longestKill' ? `${query.longestKill}m` : 
                   category == 'money' ? `$${(query.user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :  
                   category == 'KDR' ? `${query.KDR.toFixed(2)} KDR` : 
-                  category == 'connections' ? `${query.connections} connections` : 'N/A Error';
+                  category == 'connections' ? `${query.connections} connections` : 
+                  category == 'combatRating' ? `${query.combatRating}` : 'N/A Error';
 
       statsEmbed.addFields({ name: 'Leaderboard Position', value: `# ${leaderboardPos}`, inline: true });
       
@@ -200,6 +202,32 @@ module.exports = {
         
         statsEmbed.setImage(chartURL);
     
+      } else if (category == 'combatRating') {
+
+        statsEmbed.addFields({ name: 'Combat Rating', value: `${query.combatRating}`, inline: true });
+
+        const chart = {
+          type: 'bar',
+          data: {
+            labels: new Array(query.combatRatingHistory),
+            datasets: [
+              {
+                type: 'line',
+                label: 'Combat Rating over time',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 2,
+                fill: false,
+                data: query.combatRatingHistory,
+              },
+            ],
+          },
+        }
+      
+        const encodedChart = encodeURIComponent(JSON.stringify(chart));
+        const chartURL = `https://quickchart.io/chart?c=${encodedChart}`;
+        
+        statsEmbed.setImage(chartURL);
+
       } else statsEmbed.addFields({ name: title, value: stats, inline: true });
  
       return interaction.send({ embeds: [statsEmbed] });

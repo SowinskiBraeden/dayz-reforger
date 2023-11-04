@@ -30,6 +30,9 @@ module.exports = {
       { name: "Longest Kill", value: "longestKill" },
       { name: "KDR", value: "KDR" },
       { name: "Server Connections", value: "connections" },
+      { name: "Shots Landed", value: "shotsLanded" },
+      { name: "Times Shot", value: "timesShot" },
+      { name: "Combat Rating", value: "combatRating" },
     ]
   }, {
     name: "limit",
@@ -81,7 +84,10 @@ module.exports = {
         category == 'totalSessionTime' ? "Total Time Played" : 
         category == 'longestSessionTime' ? "Longest Game Session" : 
         category == 'KDR' ? "Kill Death Ratio" : 
-        category == 'connections' ? "Times Connected" : 'N/A Error';
+        category == 'connections' ? "Times Connected" : 
+        category == 'shotsLanded' ? "Shots Landed" :
+        category == 'timesShot' ? "Times Shot" :
+        category == 'combatRating' ? "Combat Rating" : 'N/A Error';
 
       leaderboardEmbed.setTitle(`**${title} - DayZ Reforger**`);
 
@@ -100,16 +106,17 @@ module.exports = {
                     category == 'totalSessionTime' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${client.secondsToDhms(leaderboard[i].lastSessionTime)}` : 
                     category == 'longestSessionTime' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 
                     category == 'KDR' ? `**KDR: ${leaderboard[i].KDR.toFixed(2)}**` : 
-                    category == 'connection' ? `**Connections: ${leaderboard[i].connections}**` : 'N/A Error';
+                    category == 'connection' ? `**Connections: ${leaderboard[i].connections}**` : 
+                    category == 'combatRating' ? `**Combat Rating:** ${leaderboard[i].combatRating}` : 'N/A Error';
 
         if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
-        else if (category == 'totalSessionTime' || category == 'longestSessionTime') {
+        else if (category == 'totalSessionTime' || category == 'longestSessionTime' || category == 'combatRating') {
           tag = leaderboard[i].discordID != "" ? `<@${leaderboard[i].discordID}>` : leaderboard[i].gamertag;
           des += `**${i+1}.** ${tag}\n> ${stats}\n\n`;
         } else leaderboardEmbed.addFields({ name: `**${i+1}. ${leaderboard[i].gamertag}**`, value: `**${stats}**`, inline: true });
       }
 
-      if (['money', 'totalSessionTime', 'longestSessionTime'].includes(category)) leaderboardEmbed.setDescription(des);
+      if (['money', 'totalSessionTime', 'longestSessionTime', 'combatRating'].includes(category)) leaderboardEmbed.setDescription(des);
       
       return interaction.send({ embeds: [leaderboardEmbed] });
     },

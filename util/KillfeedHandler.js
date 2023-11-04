@@ -4,6 +4,7 @@ const { KillInAlarm } = require('./AlarmsHandler');
 const { destinations } = require('../database/destinations');
 const { calculateVector } = require('./vector');
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
+const { calculateNewCombatRating } = require('./combatRatingHandler');
 
 const Templates = {
   Killed:       1,
@@ -182,6 +183,16 @@ module.exports = {
     victimStat.killStreak = 0;
     victimStat.lastDeathDate = newDt;
     killerStat.deathStreak = 0;
+    if (!client.exists(killerStat.combatRating)) killerStat.combatRating = 800;
+    if (!client.exists(victimStat.combatRating)) victimStat.combatRating = 800;
+    if (!client.exists(killerStat.combatRatingHistory)) killerStat.combatRatingHistory = [800];
+    if (!client.exists(victimStat.combatRatingHistory)) victimStat.combatRatingHistory = [800];
+    let killerOldRating = killerStat.combatRating;
+    let victimOldRating = victimStat.combatRating;
+    killerStat.combatRating = calculateNewCombatRating(killerStat.combatRating, victimStat.combatRating, 1);
+    victimStat.combatRating = calculateNewCombatRating(victimStat.combatRating, killerStat.combatRating, 0);
+    let kdiff = killerStat.combatRating - killerOldRating;
+    let vdiff = victimStat.combatRating - victimOldRating;
 
     let receivedBounty = null;
     if (victimStat.bounties.length > 0 && killerStat.discordID != "") {
@@ -228,7 +239,7 @@ module.exports = {
     
     const killEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
-      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> Weapon:    \` ${info.weapon} \`\n> Distance:  \` ${info.distance}m \`\n> Body Part: \` ${info.bodyPart != undefined ? info.bodyPart.split('(')[0] : 'N/A'} \`\n> Damage:    \` ${info.damage != undefined ? info.damage : 'N/A'} \`\n **Killer**\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kill${(killerStat.kills == 0 || killerStat.kills > 1) ? 's':''} - Killstreak: ${killerStat.killStreak}\n**Victim**\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Death${victimStat.deaths == 0 || victimStat.deaths>1?'s':''} - Deathstreak: ${victimStat.deathStreak}${coord}`);
+      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> Weapon:    \` ${info.weapon} \`\n> Distance:  \` ${info.distance}m \`\n> Body Part: \` ${info.bodyPart != undefined ? info.bodyPart.split('(')[0] : 'N/A'} \`\n> Damage:    \` ${info.damage != undefined ? info.damage : 'N/A'} \`\n **Killer**\n**${info.killer}'s New Combat Rating:** (${kdiff >= 0 ? '+' : ''}${kdiff}) ${killerStat.combatRating}\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kill${(killerStat.kills == 0 || killerStat.kills > 1) ? 's':''} - Killstreak: ${killerStat.killStreak}\n**Victim**\n**${info.victim}'s New Combat Rating:** (${vdiff >= 0 ? '+' : ''}${vdiff}) ${victimStat.combatRating}\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Death${victimStat.deaths == 0 || victimStat.deaths>1?'s':''} - Deathstreak: ${victimStat.deathStreak}${coord}`);
 
     if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
     if (client.exists(receivedBounty) && client.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
