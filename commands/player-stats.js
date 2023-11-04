@@ -33,6 +33,7 @@ module.exports = {
       { name: "Server Connections", value: "connections" },
       { name: "Shots Landed", value: "shotsLanded" },
       { name: "Times Shot", value: "timesShot" },
+      { name: "Combat Rating", value: "combatRating" }
     ]
   }, {
     name: "discord",
