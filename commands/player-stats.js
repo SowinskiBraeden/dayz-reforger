@@ -207,12 +207,14 @@ module.exports = {
 
         statsEmbed.addFields({ name: 'Combat Rating', value: `${query.combatRating}`, inline: true });
 
+        if (query.combatRatingHistory.length == 1) query.combatRatingHistory.push(query.combatRating) // Make array 2 long for a straight line in the graph
+
         const chart = {
           type: 'line',
           data: {
             labels: new Array(query.combatRatingHistory),
             datasets: [{
-              data: query.combatRating,
+              data: query.combatRatingHistory,
               label: 'Combat Rating Over Time',
             }],
           },
