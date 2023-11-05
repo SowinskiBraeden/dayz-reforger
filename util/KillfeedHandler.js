@@ -191,6 +191,10 @@ module.exports = {
     let victimOldRating = victimStat.combatRating;
     killerStat.combatRating = calculateNewCombatRating(killerStat.combatRating, victimStat.combatRating, 1);
     victimStat.combatRating = calculateNewCombatRating(victimStat.combatRating, killerStat.combatRating, 0);
+    if (killerStat.combatRatingHistory.length == 8) killerStat.combatRatingHistory = killerStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 8)
+    if (victimStat.combatRatingHistory.length == 8) victimStat.combatRatingHistory = victimStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 8)
+    killerStat.combatRatingHistory.push(killerStat.combatRating);
+    victimStat.combatRatingHistory.push(victimStat.combatRating);
     let kdiff = killerStat.combatRating - killerOldRating;
     let vdiff = victimStat.combatRating - victimOldRating;
 

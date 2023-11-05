@@ -170,7 +170,7 @@ module.exports = {
         };
         
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartURL = `https://quickchart.io/chart?c=${encodedChart}`;
+        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}}`;
         
         statsEmbed.setImage(chartURL);
 
@@ -199,31 +199,45 @@ module.exports = {
         };
         
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartURL = `https://quickchart.io/chart?c=${encodedChart}`;
+        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}}`;
         
         statsEmbed.setImage(chartURL);
     
       } else if (category == 'combatRating') {
 
+        let data = query.combatRatingHistory;
+
         statsEmbed.addFields({ name: 'Combat Rating', value: `${query.combatRating}`, inline: true });
 
-        if (query.combatRatingHistory.length == 1) query.combatRatingHistory.push(query.combatRating) // Make array 2 long for a straight line in the graph
+        if (data.length == 1) data.push(query.combatRating) // Make array 2 long for a straight line in the graph
 
         const chart = {
           type: 'line',
           data: {
-            labels: new Array(query.combatRatingHistory.length).fill(' ', 0, query.combatRating.length),
+            labels: new Array(data.length).fill(' ', 0, data.length),
             datasets: [{
-              data: query.combatRatingHistory,
+              data: data,
               label: 'Combat Rating Over Time',
             }],
           },
           options: {
+            scales: {
+              // Gives comfortable margin to the top of the y-axis
+              yAxes: [{
+                ticks: {
+                  min: 0,
+                  max: Math.round(Math.max(...data)/100)*100 + (Math.round(Math.max(...data)/100)*100 % 200 == 0 ? 400 : 500), // Keeps the max y-axis as a step of 200
+                  step: 200,
+                },
+              }]
+            },
+            // Gives a margin to the right of the whole graph
             layout: {
               padding: {
                 right: 40,
               },
             },
+            // Labels points on the graph to show evolution of combat rating
             plugins: {
               datalabels: {
                 display: true,
@@ -247,10 +261,10 @@ module.exports = {
               },
             },
           },
-        }
+        };
 
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartURL = `https://quickchart.io/chart?c=${encodedChart}`;
+        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}}`;
         
         statsEmbed.setImage(chartURL);
 
