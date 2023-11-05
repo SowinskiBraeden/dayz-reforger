@@ -135,12 +135,12 @@ module.exports = {
       
       if ((category == 'shotsLanded' || category == 'timesShot') && !client.exists(query.shotsLanded)) query = insertPVPstats(query);
 
-      if (category == 'total_time_played') {
+      if (category == 'totalSessionTime') {
         statsEmbed.addFields(
           { name: 'Total Time Played', value: client.secondsToDhms(query.totalSessionTime), inline: true },
           { name: 'Last Session Time', value: client.secondsToDhms(query.lastSessionTime), inline: true }
         );
-      } else if (category == 'longest_time_played') {
+      } else if (category == 'longestSessionTime') {
         statsEmbed.addFields(
           { name: 'Longest Game Session', value: client.secondsToDhms(query.longestSessionTime), inline: true },
           { name: 'Last Session Time', value: client.secondsToDhms(query.lastSessionTime), inline: true }
