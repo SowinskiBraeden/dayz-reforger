@@ -164,7 +164,7 @@ module.exports = {
 
     KillInAlarm(client, guild.serverID, info); // check if kill happened in a no kill zone
 
-    if (!client.exists(info.victim) || !client.exists(info.victimID) || !client.exists(info.killer) || !client.exists(info.killerID)) return stats;
+    if (!client.exists(info.victim) || !client.exists(info.victimID) || !client.exists(info.killer) || !client.exists(info.killerID)) return;
 
     let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
     let killerStat = await client.dbo.collection("players").findOne({"playerID": info.killerID});
