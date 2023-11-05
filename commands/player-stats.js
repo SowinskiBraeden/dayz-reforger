@@ -208,22 +208,45 @@ module.exports = {
         statsEmbed.addFields({ name: 'Combat Rating', value: `${query.combatRating}`, inline: true });
 
         const chart = {
-          type: 'bar',
+          type: 'line',
           data: {
             labels: new Array(query.combatRatingHistory),
-            datasets: [
-              {
-                type: 'line',
-                label: 'Combat Rating over time',
-                borderColor: 'rgb(54, 162, 235)',
-                borderWidth: 2,
-                fill: false,
-                data: query.combatRatingHistory,
+            datasets: [{
+              data: query.combatRating,
+              label: 'Combat Rating Over Time',
+            }],
+          },
+          options: {
+            layout: {
+              padding: {
+                right: 40,
               },
-            ],
+            },
+            plugins: {
+              datalabels: {
+                display: true,
+                align: 'top',
+                color: '#000',
+                backgroundColor: '#ccc',
+                borderRadius: 4,
+                offset: 10,
+                display: (context) => {
+                  const index = context.dataIndex;
+                  const value = context.dataset.data[index];
+                  const min = Math.min.apply(null, context.dataset.data);
+                  const max = Math.max.apply(null, context.dataset.data);
+                  return (
+                    index == 0 ||
+                    index == context.dataset.data.length - 1 ||
+                    value == min ||
+                    value == max
+                  );
+                },
+              },
+            },
           },
         }
-      
+
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartURL = `https://quickchart.io/chart?c=${encodedChart}`;
         
