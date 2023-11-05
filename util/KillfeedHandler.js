@@ -235,11 +235,15 @@ module.exports = {
     await UpdatePlayer(client, victimStat);
     await UpdatePlayer(client, killerStat);
     
+    const header = `**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**`;
+    const killData = `\n> **__Kill Data__**\n> Weapon:    \` ${info.weapon} \`\n> Distance:  \` ${info.distance}m \`\n> Body Part: \` ${info.bodyPart != undefined ? info.bodyPart.split('(')[0] : 'N/A'} \`\n> Damage:    \` ${info.damage != undefined ? info.damage : 'N/A'} \``;
+    const killerStatsView = `\n**Killer Rating** (${kdiff >= 0 ? '+' : ''}${kdiff}) ${killerStat.combatRating}\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kill${(killerStat.kills == 0 || killerStat.kills > 1) ? 's':''} - Killstreak: ${killerStat.killStreak}`;
+    const victimStatsView = `\n**Victim Rating** (${vdiff >= 0 ? '+' : ''}${vdiff}) ${victimStat.combatRating}\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Death${victimStat.deaths == 0 || victimStat.deaths>1?'s':''} - Deathstreak: ${victimStat.deathStreak}`;
     const coord = showCoords ? `\n***Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})***\n${destination}` : '';
-    
+
     const killEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
-      .setDescription(`**Kill Event** - <t:${unixTime}>\n**${info.killer}** killed **${info.victim}**\n> **__Kill Data__**\n> Weapon:    \` ${info.weapon} \`\n> Distance:  \` ${info.distance}m \`\n> Body Part: \` ${info.bodyPart != undefined ? info.bodyPart.split('(')[0] : 'N/A'} \`\n> Damage:    \` ${info.damage != undefined ? info.damage : 'N/A'} \`\n **Killer**\n**${info.killer}'s New Combat Rating:** (${kdiff >= 0 ? '+' : ''}${kdiff}) ${killerStat.combatRating}\n${killerStat.KDR.toFixed(2)} K/D - ${killerStat.kills} Kill${(killerStat.kills == 0 || killerStat.kills > 1) ? 's':''} - Killstreak: ${killerStat.killStreak}\n**Victim**\n**${info.victim}'s New Combat Rating:** (${vdiff >= 0 ? '+' : ''}${vdiff}) ${victimStat.combatRating}\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Death${victimStat.deaths == 0 || victimStat.deaths>1?'s':''} - Deathstreak: ${victimStat.deathStreak}${coord}`);
+      .setDescription(`${header}${killData}${killerStatsView}${victimStatsView}${coord}`);
 
     if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
     if (client.exists(receivedBounty) && client.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
