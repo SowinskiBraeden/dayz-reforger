@@ -79,7 +79,7 @@ module.exports = {
         weaponSelect.addOptions({
           label: name,
           description: `View this weapon's stats.`,
-          value: name,
+          value: `${weaponClass}_${name}`,
         });
       }
 
@@ -95,7 +95,8 @@ module.exports = {
         if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
         
-        const weapon = interaction.values[0];
+        const weapon = interaction.values[0].split("_")[1];
+        const weaponClass = interaction.values[0].split("_")[0];
         const playerID = interaction.customId.split('-')[1];
         let player = await client.dbo.collection("players").findOne({"playerID": playerID});
         const tag = player.discordID != "" ? `<@${player.discordID}>'s` : `**${player.gamertag}'s**`;
@@ -105,7 +106,7 @@ module.exports = {
         let stats = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setDescription(`${tag} stats for the ${weapon}`)
-          .setThumbnail(weapons[weapon])
+          .setThumbnail(weapons[weaponClass][weapon])
           .addFields(
             { name: `Shots Landed`, value: `${player.weaponStats[weapon].shotsLanded}`, inline: true },
             { name: `Times Shot`, value: `${player.weaponStats[weapon].timesShot}`, inline: true },
