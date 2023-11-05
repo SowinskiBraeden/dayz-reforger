@@ -212,7 +212,7 @@ module.exports = {
         const chart = {
           type: 'line',
           data: {
-            labels: new Array(query.combatRatingHistory.length).fill(' ', 0, query.combatRating.length - 1),
+            labels: new Array(query.combatRatingHistory.length).fill(' ', 0, query.combatRating.length),
             datasets: [{
               data: query.combatRatingHistory,
               label: 'Combat Rating Over Time',
