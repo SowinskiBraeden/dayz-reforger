@@ -1,17 +1,28 @@
-const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, Embed } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const { createUser, addUser } = require('../database/user');
+const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 
 module.exports = {
   name: "purchase-emp",
   debug: false,
   global: false,
-  description: "EMP an Alarm to prevent any updates for 30 minutes",
+  description: "EMP an Alarm to prevent any updates for 30 or 60 minutes",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: ["MANAGE_GUILD"],
   },  
-  options: [],
+  options: [{
+    name: "duration",
+    description: "Select the duration of the emp (30 or 60 minutes)",
+    value: "duration",
+    type: CommandOptions.Integer,
+    required: true,
+    choices: [
+      { name: "30 Minutes", value: 30 },
+      { name: "60 Minutes", value: 60 }
+    ]
+  }],
   SlashCommand: {
     /**
      *
@@ -23,6 +34,7 @@ module.exports = {
     run: async (client, interaction, args, { GuildDB }) => {
       if (client.exists(GuildDB.purchaseEMP) && !GuildDB.purchaseEMP) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Notice:** The admins have disabled this feature')] });
 
+      const duration = args[0].options[0].value;
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
       
       if (!banking) {
@@ -44,7 +56,8 @@ module.exports = {
         return interaction.send({ embeds: [embed], flags: (1 << 6) });
       }
 
-      const newBalance = banking.guilds[GuildDB.serverID].balance - GuildDB.empPrice;
+      const price = duration == 30 ? GuildDB.empPrice : GuildDB.empPrice * 2;
+      const newBalance = banking.guilds[GuildDB.serverID].balance - price;
     
       if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to EMP.')], flags: (1 << 6) });
 
@@ -60,8 +73,8 @@ module.exports = {
         if (!GuildDB.alarms[i].empExempt) {
           alarms.addOptions({
             label: GuildDB.alarms[i].name,
-            description: `EMP this Alarm for $${GuildDB.empPrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}}`,
-            value: GuildDB.alarms[i].name
+            description: `EMP this Alarm for $${price.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}}`,
+            value: `${GuildDB.alarms[i].name}-${duration}`,
           });
         }
       }
@@ -75,12 +88,13 @@ module.exports = {
   Interactions: {
     EMPAlarmSelect: {
       run: async (client, interaction, GuildDB) => {
-        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
+        let duration = parseInt(interaction.values[0].split('-')[1]);
+        let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0].split('-')[0]);
         let alarms = GuildDB.alarms;
         let alarmIndex = alarms.indexOf(alarm);
         alarm.disabled = true;
         let d = new Date();
-        alarm.empExpire = new Date(d.getTime() += (30 * 60 * 1000));
+        alarm.empExpire = new Date(d.getTime() += (duration * 60 * 1000));
         alarms[alarmIndex] = alarm;
 
         client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
