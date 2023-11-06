@@ -187,12 +187,16 @@ module.exports = {
     if (!client.exists(victimStat.combatRating)) victimStat.combatRating = 800;
     if (!client.exists(killerStat.combatRatingHistory)) killerStat.combatRatingHistory = [800];
     if (!client.exists(victimStat.combatRatingHistory)) victimStat.combatRatingHistory = [800];
+    if (!client.exists(killerStat.highestCombatRating)) killerStat.highestCombatRating = killerStat.combatRating;
+    if (!client.exists(victimStat.lowestCombatRating)) victimStat.lowestCombatRating = victimStat.lowestCombatRating;
     let killerOldRating = killerStat.combatRating;
     let victimOldRating = victimStat.combatRating;
     killerStat.combatRating = calculateNewCombatRating(killerStat.combatRating, victimStat.combatRating, client.exists(info.bodyPart) && info.bodyPart.includes('Head') ? 1.25 : 1);
     victimStat.combatRating = calculateNewCombatRating(victimStat.combatRating, killerStat.combatRating, 0);
-    if (killerStat.combatRatingHistory.length == 8) killerStat.combatRatingHistory = killerStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 8)
-    if (victimStat.combatRatingHistory.length == 8) victimStat.combatRatingHistory = victimStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 8)
+    if (killerStat.combatRating > killerStat.highestCombatRating) killerStat.highestCombatRating = killerStat.combatRating;
+    if (victimStat.combatRating < victimStat.lowestCombatRating) killerStat.lowestCombatRating = victimStat.combatRating;
+    if (killerStat.combatRatingHistory.length == 20) killerStat.combatRatingHistory = killerStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 20)
+    if (victimStat.combatRatingHistory.length == 20) victimStat.combatRatingHistory = victimStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 20)
     killerStat.combatRatingHistory.push(killerStat.combatRating);
     victimStat.combatRatingHistory.push(victimStat.combatRating);
     let kdiff = killerStat.combatRating - killerOldRating;

@@ -67,6 +67,8 @@ module.exports = {
         timesShotPerBodyPart:   copy(BodyParts),
       }),
       combatRating:           800,
+      highestCombatRating:    800,
+      lowestCombatRating:     800,
       combatRatingHistory:    [800],
       
       // General Session Data
