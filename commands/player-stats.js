@@ -170,7 +170,7 @@ module.exports = {
         };
         
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}}`;
+        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}`;
         
         statsEmbed.setImage(chartURL);
 
@@ -199,7 +199,7 @@ module.exports = {
         };
         
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}}`;
+        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}`;
         
         statsEmbed.setImage(chartURL);
     
@@ -263,8 +263,8 @@ module.exports = {
         };
 
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}}`;
-        
+        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}`;
+
         statsEmbed.setImage(chartURL);
 
       } else statsEmbed.addFields({ name: title, value: stats, inline: true });

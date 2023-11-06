@@ -141,7 +141,7 @@ module.exports = {
         };
         
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}}`;
+        const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}`;
         
         stats.setImage(chartURL);
       
