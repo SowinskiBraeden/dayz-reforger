@@ -231,7 +231,14 @@ module.exports = {
 
         let data = query.combatRatingHistory;
 
-        statsEmbed.addFields({ name: 'Combat Rating', value: `${query.combatRating}`, inline: true });
+        if (!client.exists(query.highestCombatRating)) query.highestCombatRating = query.combatRating;
+        if (!client.exists(query.lowestCombatRating)) query.lowestCombatRating = query.combatRating;
+
+        statsEmbed.addFields(
+          { name: 'Combat Rating', value: `${query.combatRating}`, inline: true },
+          { name: 'Highest Rating', value: `${query.highestCombatRating}`, inline: true },
+          { name: 'Lowest Rating', value: `${query.lowestCombatRating}`, inline: true },
+        );
 
         if (data.length == 1) data.push(query.combatRating) // Make array 2 long for a straight line in the graph
 
@@ -241,7 +248,7 @@ module.exports = {
             labels: new Array(data.length).fill(' ', 0, data.length),
             datasets: [{
               data: data,
-              label: 'Combat Rating Over Time',
+              label: `Last ${data.length} Combat Ratings`,
             }],
           },
           options: {
