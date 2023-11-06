@@ -225,9 +225,8 @@ module.exports = {
               // Gives comfortable margin to the top of the y-axis
               yAxes: [{
                 ticks: {
-                  min: 0,
-                  max: Math.round(Math.max(...data)/100)*100 + (Math.round(Math.max(...data)/100)*100 % 200 == 0 ? 400 : 500), // Keeps the max y-axis as a step of 200
-                  step: 200,
+                  min: Math.round(Math.min(...data)/10)*10 - 10,
+                  max: Math.round(Math.max(...data)/10)*10 + 10,
                 },
               }]
             },
