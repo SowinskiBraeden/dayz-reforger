@@ -34,7 +34,7 @@ module.exports = {
     run: async (client, interaction, args, { GuildDB }) => {
       if (client.exists(GuildDB.purchaseEMP) && !GuildDB.purchaseEMP) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Notice:** The admins have disabled this feature')] });
 
-      const duration = args[0].options[0].value;
+      const duration = args[0].value;
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
       
       if (!banking) {
