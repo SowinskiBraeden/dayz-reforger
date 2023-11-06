@@ -105,7 +105,7 @@ module.exports = {
 
         let stats = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`${tag} stats for the ${weapon}`)
+          .setDescription(`${tag} stats for the **${weapon}**`)
           .setThumbnail(weapons[weaponClass][weapon])
           .addFields(
             { name: `Shots Landed`, value: `${player.weaponStats[weapon].shotsLanded}`, inline: true },
@@ -137,6 +137,18 @@ module.exports = {
                 player.weaponStats[weapon].timesShotPerBodyPart.RightLeg,
               ],
             }],
+          },
+          options: {
+            legend: {
+              labels: {
+                fontSize: 14,
+                fontStyle: 'bold',
+              }
+            },
+            scales: {
+              yAxes: [{ ticks: { fontStyle: 'bold' } }],
+              xAxes: [{ ticks: { fontStyle: 'bold' } }],
+            },
           },
         };
         

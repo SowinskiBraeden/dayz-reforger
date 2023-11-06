@@ -167,6 +167,18 @@ module.exports = {
               ],
             }],
           },
+          options: {
+            legend: {
+              labels: {
+                fontSize: 14,
+                fontStyle: 'bold',
+              }
+            },
+            scales: {
+              yAxes: [{ ticks: { fontStyle: 'bold' } }],
+              xAxes: [{ ticks: { fontStyle: 'bold' } }],
+            },
+          },
         };
         
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
@@ -196,6 +208,18 @@ module.exports = {
               ],
             }],
           },
+          options: {
+            legend: {
+              labels: {
+                fontSize: 14,
+                fontStyle: 'bold',
+              }
+            },
+            scales: {
+              yAxes: [{ ticks: { fontStyle: 'bold' } }],
+              xAxes: [{ ticks: { fontStyle: 'bold' } }],
+            },
+          },
         };
         
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
@@ -221,14 +245,22 @@ module.exports = {
             }],
           },
           options: {
+            legend: {
+              labels: {
+                fontSize: 14,
+                fontStyle: 'bold',
+              }
+            },
             scales: {
               // Gives comfortable margin to the top of the y-axis
               yAxes: [{
                 ticks: {
+                  fontStyle: 'bold',
                   min: Math.round(Math.min(...data)/10)*10 - 10,
                   max: Math.round(Math.max(...data)/10)*10 + 10,
                 },
-              }]
+              }],
+              xAxes: [{ ticks: { fontStyle: 'bold' } }],
             },
             // Gives a margin to the right of the whole graph
             layout: {
