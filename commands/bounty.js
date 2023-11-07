@@ -104,7 +104,7 @@ module.exports = {
           setBy: (anonymous && !anonymous.value) ? interaction.member.user.id : null,
           value: args[0].options[1].value,
         });
-        playerStat.bountiesLength++;
+        playerStat.bountiesLength = playerStat.bounties.length; // Will ensure bounties length = # of bounties, even if bountiesLength does not exists in player stat.
 
         await UpdatePlayer(client, playerStat, interaction);
         
@@ -160,10 +160,9 @@ module.exports = {
 
       } else if (args[0].name == 'view') {
 
-        // TODO: only get players with boutnies.length greater than 0
         const activeBounties = await client.dbo.collection("players").find({
           "bountiesLength": { $gt: 0 }
-        });
+        }).toArray();
         
         let bountiesEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)

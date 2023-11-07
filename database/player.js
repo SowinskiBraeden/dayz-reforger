@@ -91,6 +91,7 @@ module.exports = {
  
       // Other
       bounties:               [],
+      bountiesLength:         0,
     }
   },
 
