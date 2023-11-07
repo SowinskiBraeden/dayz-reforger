@@ -59,6 +59,7 @@ module.exports = {
     marksmanRifles: {
       "VSD": "https://static.wikia.nocookie.net/dayz_gamepedia/images/a/a2/SVD_w._PSO-1.png/revision/latest/scale-to-width-down/256?cb=20220220235826",
       "VSS": "https://static.wikia.nocookie.net/dayz_gamepedia/images/8/83/VSSVintorez.png/revision/latest/scale-to-width-down/256?cb=20210208202042",
+      "DMR": "https://static.wikia.nocookie.net/dayz_gamepedia/images/b/b4/M14.png/revision/latest/scale-to-width-down/350?cb=20231005142636",
     },
     semiAutomaticRifles: {
       "SK 59/66": "https://static.wikia.nocookie.net/dayz_gamepedia/images/f/fe/SKS.png/revision/latest/scale-to-width-down/256?cb=20220517154633",
