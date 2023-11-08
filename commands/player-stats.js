@@ -231,8 +231,8 @@ module.exports = {
 
         let data = query.combatRatingHistory;
 
-        if (!client.exists(query.highestCombatRating)) query.highestCombatRating = query.combatRating;
-        if (!client.exists(query.lowestCombatRating)) query.lowestCombatRating = query.combatRating;
+        if (!client.exists(query.highestCombatRating)) query.highestCombatRating = Math.max(...query.combatRatingHistory);
+        if (!client.exists(query.lowestCombatRating)) query.lowestCombatRating = Math.min(...query.combatRatingHistory);
 
         statsEmbed.addFields(
           { name: 'Combat Rating', value: `${query.combatRating}`, inline: true },
