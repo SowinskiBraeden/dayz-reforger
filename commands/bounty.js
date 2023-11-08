@@ -117,7 +117,7 @@ module.exports = {
 
       } else if (args[0].name == 'pay') {
 
-        let playerStat = await client.dbo.collection("players").findOne({"gamertag": interaction.member.user.id});
+        let playerStat = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
         if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** Your user ID could not be found, contact an Admin.')] });
         
         if (playerStat.bounties.length == 0) {
