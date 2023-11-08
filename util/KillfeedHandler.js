@@ -195,8 +195,8 @@ module.exports = {
     victimStat.combatRating = calculateNewCombatRating(victimStat.combatRating, killerStat.combatRating, 0);
     if (killerStat.combatRating > killerStat.highestCombatRating) killerStat.highestCombatRating = killerStat.combatRating;
     if (victimStat.combatRating < victimStat.lowestCombatRating) killerStat.lowestCombatRating = victimStat.combatRating;
-    if (killerStat.combatRatingHistory.length > 12) killerStat.combatRatingHistory = killerStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 12)
-    if (victimStat.combatRatingHistory.length > 12) victimStat.combatRatingHistory = victimStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 12)
+    if (killerStat.combatRatingHistory.length >= 12) killerStat.combatRatingHistory = killerStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 12)
+    if (victimStat.combatRatingHistory.length >= 12) victimStat.combatRatingHistory = victimStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 12)
     killerStat.combatRatingHistory.push(killerStat.combatRating);
     victimStat.combatRatingHistory.push(victimStat.combatRating);
     let kdiff = killerStat.combatRating - killerOldRating;
