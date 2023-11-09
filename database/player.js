@@ -107,5 +107,16 @@ module.exports = {
       timesShotPerBodyPart:   copy(BodyParts),
     });
     return player;
+  },
+
+  // If a new weapon is not in the existing weaponStats, this will add it.
+  createWeaponStats(player, weapon) {
+    player.weaponStats[weapon] = {
+      shotsLanded: 0,
+      timesShot:   0,
+      shotsLandedPerBodyPart: copy(BodyParts),
+      timesShotPerBodyPart:   copy(BodyParts),
+    }
+    return player;
   }
 }

@@ -3,7 +3,7 @@ const { HandleAlarmsAndUAVs } = require('./AlarmsHandler');
 const { SendConnectionLogs, DetectCombatLog } = require('./AdminLogsHandler');
 const { getDefaultPlayer } = require('../database/player');
 const { FetchServerSettings } = require('../util/NitradoAPI');
-const { UpdatePlayer, insertPVPstats } = require('../database/player')
+const { UpdatePlayer, insertPVPstats, createWeaponStats } = require('../database/player')
 
 let lastSendMessage;
 
@@ -184,11 +184,13 @@ module.exports = {
       if (info.weapon in playerStat.weaponStats) {
         playerStat.timesShot++;
         playerStat.timesShotPerBodyPart[info.bodyPart]++;
+        if (!client.exists(playerStat.weaponStats[info.weapon])) playerStat = createWeaponStats(playerStat, info.weapon);
         playerStat.weaponStats[info.weapon].timesShot++;
         playerStat.weaponStats[info.weapon].timesShotPerBodyPart[info.bodyPart]++;
 
         attackerStat.shotsLanded++;
         attackerStat.shotsLandedPerBodyPart[info.bodyPart]++;
+        if (!client.exists(attackerStat.weaponStats[info.weapon])) attackerStat = createWeaponStats(attackerStat, info.weapon);
         attackerStat.weaponStats[info.weapon].shotsLanded++;
         attackerStat.weaponStats[info.weapon].shotsLandedPerBodyPart[info.bodyPart]++;
       }
