@@ -194,7 +194,7 @@ module.exports = {
     killerStat.combatRating = calculateNewCombatRating(killerStat.combatRating, victimStat.combatRating, client.exists(info.bodyPart) && info.bodyPart.includes('Head') ? 1.25 : 1);
     victimStat.combatRating = calculateNewCombatRating(victimStat.combatRating, killerStat.combatRating, 0);
     if (killerStat.combatRating > killerStat.highestCombatRating) killerStat.highestCombatRating = killerStat.combatRating;
-    if (victimStat.combatRating < victimStat.lowestCombatRating) killerStat.lowestCombatRating = victimStat.combatRating;
+    if (victimStat.combatRating < victimStat.lowestCombatRating) victimStat.lowestCombatRating = victimStat.combatRating;
     if (killerStat.combatRatingHistory.length >= 12) killerStat.combatRatingHistory = killerStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 12)
     if (victimStat.combatRatingHistory.length >= 12) victimStat.combatRatingHistory = victimStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 12)
     killerStat.combatRatingHistory.push(killerStat.combatRating);
