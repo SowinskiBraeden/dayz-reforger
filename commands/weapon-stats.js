@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const { weapons } = require('../database/weapons');
-const { insertPVPstats } = require('../database/player');
+const { insertPVPstats, createWeaponStats } = require('../database/player');
 
 module.exports = {
   name: "weapon-stats",
@@ -102,6 +102,7 @@ module.exports = {
         const tag = player.discordID != "" ? `<@${player.discordID}>'s` : `**${player.gamertag}'s**`;
 
         if (!client.exists(player.shotsLanded)) player = insertPVPstats(player);
+        if (!client.exists(player.weaponStats[weapon])) player = createWeaponStats(player, weapon);
 
         let stats = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
