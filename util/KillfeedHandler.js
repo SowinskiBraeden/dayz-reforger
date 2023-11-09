@@ -174,7 +174,7 @@ module.exports = {
     killerStat.kills++;
     killerStat.killStreak++;
     killerStat.bestKillStreak = killerStat.killStreak > killerStat.bestKillStreak ? killerStat.killStreak : killerStat.bestKillStreak;
-    killerStat.longestKill = parseFloat(info.distance) > killerStat.longestKill ? parseFloat(info.distance).toFixed(1) : killerStat.longestKill;
+    killerStat.longestKill = info.distance > killerStat.longestKill ? info.distance : killerStat.longestKill;
     victimStat.deaths++;
     victimStat.deathStreak++;
     victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.worstDeathStreak;
