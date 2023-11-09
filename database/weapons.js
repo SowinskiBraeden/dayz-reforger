@@ -7,7 +7,6 @@ module.exports = {
       "FX-45": "https://static.wikia.nocookie.net/dayz_gamepedia/images/f/fd/FNX45.png/revision/latest/scale-to-width-down/104?cb=20210505025055",
       "IJ-70": "https://static.wikia.nocookie.net/dayz_gamepedia/images/2/26/MakarovIJ70.png/revision/latest/scale-to-width-down/92?cb=20210209000551",
       "Kolt 1911": "https://static.wikia.nocookie.net/dayz_gamepedia/images/f/f9/Colt1911.png/revision/latest/scale-to-width-down/112?cb=20210505030200",
-      "Engraved Kolt 1911": "https://static.wikia.nocookie.net/dayz_gamepedia/images/2/2a/Engraved1911.png/revision/latest/scale-to-width-down/112?cb=20210505030259",
       "Longhorn": "https://static.wikia.nocookie.net/dayz_gamepedia/images/7/79/Longhorn.png/revision/latest/scale-to-width-down/222?cb=20220324214533",
       "MK II": "https://static.wikia.nocookie.net/dayz_gamepedia/images/0/0d/MKII.png/revision/latest/scale-to-width-down/171?cb=20210210153348",
       "Mlock-91": "https://static.wikia.nocookie.net/dayz_gamepedia/images/9/9b/Glock19.png/revision/latest/scale-to-width-down/121?cb=20210505024259",

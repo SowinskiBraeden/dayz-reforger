@@ -179,6 +179,7 @@ module.exports = {
       if (!client.exists(attackerStat.shotsLanded)) attackerStat = insertPVPstats(attackerStat);
 
       // Update in depth PVP stats if non Melee weapon
+      if (info.weapon.includes("Engraved")) info.weapon = info.weapon.split("Engraved ")[1];
       if (info.weapon.includes("Sawed-off")) info.weapon = info.weapon.split("Sawed-off ")[1];
       if (info.weapon in playerStat.weaponStats) {
         playerStat.timesShot++;
