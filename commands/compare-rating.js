@@ -53,9 +53,6 @@ module.exports = {
       let lbPosSelf = leaderboard.indexOf(self);
       let lbPosComp = leaderboard.indexOf(comp);
 
-      let tag = !gamertag && discord ? `<@${discord}>` :
-                !discord && gamertag ? `**${gamertag}**` : `N/A Error`;
-
       let selfData = self.combatRatingHistory;
       let compData = comp.combatRatingHistory;
       if (selfData.length == 1) selfData.push(self.combatRating) // Make array 2 long for a straight line in the graph
@@ -70,9 +67,9 @@ module.exports = {
         .setColor(client.config.Colors.Default)
         .setDescription(`<@${interaction.member.user.id}> vs ${tag} Combat Rating`)
         .addFields(
-          { name: `<@${interaction.member.user.id}> Combat Rating Stats`, value: `Leaderboard Pos: # ${lbPosSelf}\nRating: ${self.combatRating}`, inline: true },
-          { name: `${tag} Combat Rating Stats`, value: `Leaderboard Pos: # ${lbPosComp}\nRating: ${self.combatRating}`, inline: true },
-          { name: 'Rating Difference', value: `${Math.abs(self.combatRating - comp.combatRating)}`, inline: true },
+          { name: `${self.gamertag}'s Combat Rating Stats`, value: `> Leaderboard Pos: # ${lbPosSelf}\n> Rating: ${self.combatRating}`, inline: false },
+          { name: `${comp.gamertag}'s Combat Rating Stats`, value: `> Leaderboard Pos: # ${lbPosComp}\n> Rating: ${self.combatRating}`, inline: false },
+          { name: 'Rating Difference', value: `${Math.abs(self.combatRating - comp.combatRating)}`, inline: false },
         );
 
       const dataMax = Math.max(selfDataMax, compDataMax);
