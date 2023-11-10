@@ -109,8 +109,8 @@ module.exports = {
             yAxes: [{
               ticks: {
                 fontStyle: 'bold',
-                max: Math.round(dataMax / 10) * 10 + 10,
-                min: Math.round(dataMin / 10) * 10,
+                // max: Math.round(dataMax / 10) * 10 + 10,
+                // min: Math.round(dataMin / 10) * 10,
               },
             }],
           },
