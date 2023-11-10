@@ -32,10 +32,10 @@ module.exports = {
      * @param {string[]} args
      * @param {*} param3
     */
-    run: async (client, interaction, args, { GuildDB }, start) => {
-      let discord  = args[1] && args[1].name == 'discord'  ? args[1].value : undefined;
-      let gamertag = args[1] && args[1].name == 'gamertag' ? args[1].value : undefined;
-      
+    run: async (client, interaction, args, { GuildDB }) => {
+      let discord  = args[0] && args[0].name == 'discord'  ? args[0].value : undefined;
+      let gamertag = args[0] && args[0].name == 'gamertag' ? args[0].value : undefined;
+
       if (!discord && !gamertag) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`Please provide a Discord User or Gamertag`)] });
 
       let leaderboard = await client.dbo.collection("players").aggregate([
