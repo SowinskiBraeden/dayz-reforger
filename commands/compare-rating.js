@@ -70,7 +70,7 @@ module.exports = {
         .setDescription(`<@${interaction.member.user.id}> vs ${tag} Combat Rating`)
         .addFields(
           { name: `${self.gamertag}'s Combat Rating Stats`, value: `> Leaderboard Pos: # ${lbPosSelf}\n> Rating: ${self.combatRating}`, inline: false },
-          { name: `${comp.gamertag}'s Combat Rating Stats`, value: `> Leaderboard Pos: # ${lbPosComp}\n> Rating: ${self.combatRating}`, inline: false },
+          { name: `${comp.gamertag}'s Combat Rating Stats`, value: `> Leaderboard Pos: # ${lbPosComp}\n> Rating: ${comp.combatRating}`, inline: false },
           { name: 'Rating Difference', value: `${Math.abs(self.combatRating - comp.combatRating)}`, inline: false },
         );
 
