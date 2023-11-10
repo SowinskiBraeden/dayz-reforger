@@ -63,6 +63,8 @@ module.exports = {
       if (!client.exists(self.highestCombatRating) || self.highestCombatRating < selfDataMax) self.highestCombatRating = selfDataMax;
       if (!client.exists(comp.highestCombatRating) || comp.highestCombatRating < compDataMax) comp.highestCombatRating = compDataMax;
 
+      let tag = comp.discordID != "" ? `<@${comp.discordID}>` : comp.gamertag;
+
       let statsEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
         .setDescription(`<@${interaction.member.user.id}> vs ${tag} Combat Rating`)
