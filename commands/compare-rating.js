@@ -43,15 +43,15 @@ module.exports = {
       ]).toArray();
 
       let comp;
-      if (discord) comp = leaderboard.find(s => s.discordID =  discord);
+      if (discord) comp = leaderboard.find(s => s.discordID == discord);
       if (gamertag) comp = leaderboard.find(s => s.gamertag == gamertag); 
       let self = leaderboard.find(s => s.discordID == interaction.member.user.id);
 
       if (!client.exists(comp)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
       if (!client.exists(self)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** You haven't linked your gamertag and your stats cannot be found.`)] });
 
-      let lbPosSelf = leaderboard.indexOf(self);
-      let lbPosComp = leaderboard.indexOf(comp);
+      let lbPosSelf = leaderboard.indexOf(self) + 1;
+      let lbPosComp = leaderboard.indexOf(comp) + 1;
 
       let selfData = self.combatRatingHistory;
       let compData = comp.combatRatingHistory;
