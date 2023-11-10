@@ -265,8 +265,8 @@ module.exports = {
               yAxes: [{
                 ticks: {
                   fontStyle: 'bold',
-                  // min: Math.round(Math.min(...data)/10)*10 - 10,
-                  // max: Math.round(Math.max(...data)/10)*10 + 10,
+                  min: Math.round(Math.min(...data)/10)*10 - 10,
+                  max: Math.round(Math.max(...data)/10)*10 + 10,
                 },
               }],
               xAxes: [{ ticks: { fontStyle: 'bold' } }],
