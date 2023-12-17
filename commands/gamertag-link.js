@@ -87,7 +87,7 @@ module.exports = {
 
           playerStat.discordID = interaction.member.user.id;
           
-          await UpdatePlayer(client, player, interaction);
+          await UpdatePlayer(client, playerStat, interaction);
 
           let member = interaction.guild.members.cache.get(interaction.member.user.id);
           if (client.exists(GuildDB.linkedGamertagRole)) {
