@@ -184,22 +184,17 @@ class DayzRBot extends Client {
 
     // Handle alarm pings
     const maxEmbed = 10;
-    for (const [channel_id, data] of Object.entries(this.alarmPingQueue)) {
+    for (const [channel_id, data] of Object.entrries(this.alarmPingQueue)) {
       const channel = this.GetChannel(channel_id);
       if (!channel) continue;
       for (const [role, embeds] of Object.entries(data)) {
-        if (embeds.length > maxEmbed) {
-          let embedArrays = [];
-          while (embeds.length > maxEmbed)
-            embedArrays.push(embeds.splice(0, maxEmbed));
+        let embedArrays = [];
+        while (embeds.length > 0) 
+          embedArrays.push(embeds.splice(0, maxEmbed))
 
-          for (let i = 0; i < embedArrays.length; i++) {
-            if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
-            else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
-          }
-        } else {
-          if (role == '-no-role-ping-') channel.send({ embeds: embeds });
-          else channel.send({ content: `<@&${role}>`, embeds: embeds });
+        for (let i = 0; i < embedArrays.length; i++) {
+          if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
+          else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
         }
       }
     }
