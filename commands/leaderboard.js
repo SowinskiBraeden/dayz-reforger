@@ -107,7 +107,9 @@ module.exports = {
                     category == 'longestSessionTime' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 
                     category == 'KDR' ? `**KDR: ${leaderboard[i].KDR.toFixed(2)}**` : 
                     category == 'connection' ? `**Connections: ${leaderboard[i].connections}**` : 
-                    category == 'combatRating' ? `**Combat Rating:** ${leaderboard[i].combatRating}` : 'N/A Error';
+                    category == 'combatRating' ? `**Combat Rating:** ${leaderboard[i].combatRating}` : 
+                    category == 'shotsLanded' ? `**Shots Landed:** ${leaderboard[i].shotsLanded}` : 
+                    category == 'timesShot' ? `**Times Shot:** ${leaderboard[i].timesShot}` : 'N/A Error';
 
         if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
         else if (category == 'totalSessionTime' || category == 'longestSessionTime' || category == 'combatRating') {
