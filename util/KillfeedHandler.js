@@ -184,6 +184,8 @@ module.exports = {
     killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
     killerStat.longestKill = info.distance > killerStat.longestKill ? info.distance : killerStat.longestKill;
     killerStat.deathStreak = 0;
+    if (!client.exists(killerStat.weaponStats[weapon].kills)) killerStat.weaponStats[weapon].kills = 0;
+    killerStat.weaponStats[weapon].kills++;
     
     // Update victim stats
     victimStat.deaths++;
@@ -192,6 +194,8 @@ module.exports = {
     victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
     victimStat.killStreak = 0;
     victimStat.lastDeathDate = newDt;
+    if (!client.exists(victimStat.weaponStats[weapon].deaths)) victimStat.weaponStats[weapon].death = 0;
+    victimStat.weaponStats[weapon].deaths++;
     
     // Create defaults for non-existing ratings
     if (!client.exists(killerStat.combatRating)) killerStat.combatRating = 800;
@@ -233,7 +237,7 @@ module.exports = {
       }
       banking = banking.user;
 
-      if (!client.exists(banking.guilds[ guild.serverID])) {
+      if (!client.exists(banking.guilds[guild.serverID])) {
         const success = addUser(banking.guilds,  guild.serverID, interaction.member.user.id, client, guild.startingBalance);
         if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
       }

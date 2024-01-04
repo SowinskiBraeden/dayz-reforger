@@ -109,6 +109,8 @@ module.exports = {
           .setDescription(`${tag} stats for the **${weapon}**`)
           .setThumbnail(weapons[weaponClass][weapon])
           .addFields(
+            { name: `Kills`, value: `${player.weaponStats[weapon].kills}`, inline: true },
+            { name: `Deaths`, value: `${player.weaponStats[weapon].deaths}`, inline: true },
             { name: `Shots Landed`, value: `${player.weaponStats[weapon].shotsLanded}`, inline: true },
             { name: `Times Shot`, value: `${player.weaponStats[weapon].timesShot}`, inline: true },
           );

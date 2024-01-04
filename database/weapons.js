@@ -70,5 +70,5 @@ module.exports = {
     },
   },
 
-  weaponClassOf: (weapon) => Object.keys(module.exports.weapons).filter(v => module.exports.weapons[v].hasOwnProperty(weapon))[0],
+  weaponClassOf: (weapon) => Object.keys(module.exports.weapons).filter(c => weapon in module.exports.weapons[c])[0],
 }

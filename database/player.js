@@ -61,6 +61,8 @@ module.exports = {
       shotsLandedPerBodyPart: copy(BodyParts),
       timesShotPerBodyPart:   copy(BodyParts),
       weaponStats:            createWeaponsObject({
+        kills: 0,
+        deaths: 0,
         shotsLanded: 0,
         timesShot:   0,
         shotsLandedPerBodyPart: copy(BodyParts),
@@ -101,6 +103,8 @@ module.exports = {
     player.shotsLandedPerBodyPart = copy(BodyParts);
     player.timesShotPerBodyPart = copy(BodyParts);
     player.weaponStats = createWeaponsObject({
+      kills: 0,
+      deaths: 0,
       shotsLanded: 0,
       timesShot:   0,
       shotsLandedPerBodyPart: copy(BodyParts),
@@ -112,6 +116,8 @@ module.exports = {
   // If a new weapon is not in the existing weaponStats, this will add it.
   createWeaponStats(player, weapon) {
     player.weaponStats[weapon] = {
+      kills: 0,
+      deaths: 0,
       shotsLanded: 0,
       timesShot:   0,
       shotsLandedPerBodyPart: copy(BodyParts),
