@@ -5,6 +5,7 @@ const { destinations } = require('../database/destinations');
 const { calculateVector } = require('./vector');
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
 const { calculateNewCombatRating } = require('./combatRatingHandler');
+const { weapons, weaponClassOf } = require('../database/weapons');
 
 const Templates = {
   Killed:       1,
@@ -129,6 +130,7 @@ module.exports = {
     const unixTime = Math.floor(newDt.getTime()/1000);
 
     const showCoords = client.exists(guild.showKillfeedCoords) ? guild.showKillfeedCoords : false; // default to false if no record of configuration.
+    const showWeapon = client.exists(guild.showKillfeedWeapon) ? guild.showKillfeedWeapon : false; // default to false if no record of configuration.
     let tempDest;
     let lastDist = 1000000;
     let destination_dir;
@@ -171,34 +173,44 @@ module.exports = {
     if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
     if (!client.exists(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, client.config.Nitrado.ServerID);
     
+    // Update killer stats
     killerStat.kills++;
     killerStat.killStreak++;
     killerStat.bestKillStreak = killerStat.killStreak > killerStat.bestKillStreak ? killerStat.killStreak : killerStat.bestKillStreak;
+    killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
     killerStat.longestKill = info.distance > killerStat.longestKill ? info.distance : killerStat.longestKill;
+    killerStat.deathStreak = 0;
+    
+    // Update victim stats
     victimStat.deaths++;
     victimStat.deathStreak++;
     victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.worstDeathStreak;
-    killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
     victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
     victimStat.killStreak = 0;
     victimStat.lastDeathDate = newDt;
-    killerStat.deathStreak = 0;
+    
+    // Create defaults for non-existing ratings
     if (!client.exists(killerStat.combatRating)) killerStat.combatRating = 800;
     if (!client.exists(victimStat.combatRating)) victimStat.combatRating = 800;
     if (!client.exists(killerStat.combatRatingHistory)) killerStat.combatRatingHistory = [800];
     if (!client.exists(victimStat.combatRatingHistory)) victimStat.combatRatingHistory = [800];
     if (!client.exists(killerStat.highestCombatRating)) killerStat.highestCombatRating = Math.max(...killerStat.combatRatingHistory);
     if (!client.exists(victimStat.lowestCombatRating)) victimStat.lowestCombatRating = Math.min(...victimStat.combatRatingHistory);
+    
+    // Calculate new ratings
     let killerOldRating = killerStat.combatRating;
     let victimOldRating = victimStat.combatRating;
     killerStat.combatRating = calculateNewCombatRating(killerStat.combatRating, victimStat.combatRating, client.exists(info.bodyPart) && info.bodyPart.includes('Head') ? 1.25 : 1);
     victimStat.combatRating = calculateNewCombatRating(victimStat.combatRating, killerStat.combatRating, 0);
+    
+    // Update combat rating records
     if (killerStat.combatRating > killerStat.highestCombatRating) killerStat.highestCombatRating = killerStat.combatRating;
     if (victimStat.combatRating < victimStat.lowestCombatRating) victimStat.lowestCombatRating = victimStat.combatRating;
     if (killerStat.combatRatingHistory.length >= 12) killerStat.combatRatingHistory = killerStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 12)
     if (victimStat.combatRatingHistory.length >= 12) victimStat.combatRatingHistory = victimStat.combatRatingHistory.slice(1); // Remove first element (limits history to length 12)
     killerStat.combatRatingHistory.push(killerStat.combatRating);
     victimStat.combatRatingHistory.push(victimStat.combatRating);
+    
     let kdiff = killerStat.combatRating - killerOldRating;
     let vdiff = victimStat.combatRating - victimOldRating;
 
@@ -249,9 +261,14 @@ module.exports = {
     const victimStatsView = `\n**Victim Rating** (${vdiff >= 0 ? '+' : ''}${vdiff}) ${victimStat.combatRating}\n${victimStat.KDR.toFixed(2)} K/D - ${victimStat.deaths} Death${victimStat.deaths == 0 || victimStat.deaths>1?'s':''} - Deathstreak: ${victimStat.deathStreak}`;
     const coord = showCoords ? `\n***Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})***\n${destination}` : '';
 
-    const killEvent = new EmbedBuilder()
+    let killEvent = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
       .setDescription(`${header}${killData}${killerStatsView}${victimStatsView}${coord}`);
+
+    if (showWeapon) {
+      let weaponClass = weaponClassOf(weapon);
+      killEvent.setThumbnail(weapons[weaponClass][weapon])
+    }
 
     if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
     if (client.exists(receivedBounty) && client.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });

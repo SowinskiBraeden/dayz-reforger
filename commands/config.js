@@ -15,6 +15,53 @@ module.exports = {
   },  
   options: [
     {
+      name: "killfeed",
+      descripion: "Configure the killfeed",
+      value: "killfeed",
+      type: CommandOptions.SubCommandGroup,
+      options: [
+        {
+          name: "channel",
+          description: "Configure the killfeed channel",
+          value: "channel",
+          type: CommandOptions.SubCommand,
+          options: [{
+            name: "channel",
+            description: "The channel to configure",
+            value: "channel",
+            type: CommandOptions.Channel,
+            required: true
+          }]
+        },
+        {
+          name: "show_coords",
+          description: "Show the coordinates of the victim in the killfeed channel.",
+          value: "show_coords",
+          type: CommandOptions.SubCommand,
+          options: [{
+            name: "configuration",
+            description: "True or False",
+            value: false,
+            type: CommandOptions.Boolean,
+            required: true,
+          }]
+        },
+        {
+          name: "show_weapon",
+          description: "Show the image of the weapon in the killfeed",
+          value: "show_weapon",
+          type: CommandOptions.SubCommand,
+          options: [{
+            name: "configuration",
+            description: "True or False",
+            value: false,
+            type: CommandOptions.Boolean,
+            required: true,
+          }]
+        }
+      ]
+    },
+    {
       name: "allowed_channels",
       description: "Set channels you're allowed to use the bot in",
       value: "allowed_channels",
@@ -278,18 +325,6 @@ module.exports = {
       }]
     },
     {
-      name: "show_killfeed_coords",
-      description: "Show the coordinates of the killer or victim in the killfeed channel.",
-      value: "show_killfeed_coords",
-      type: CommandOptions.SubCommand,
-      options: [{
-        name: "configuration",
-        description: "True or False",
-        value: false,
-        type: CommandOptions.Boolean,
-        required: true,
-      }]
-    }, {
       name: "combat-log-timer",
       description: "Adjust log timeout for combat prevention. (0 disables combat log)",
       value: "combat-log-timer",
@@ -532,19 +567,6 @@ module.exports = {
     
           return interaction.send({ embeds: [successSetChannelEmbed] });
       
-        case 'show_killfeed_coords':
-          const showKillfeedCoordsConfiguration = args[0].options[0].value ? 1 : 0;
-
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.showKillfeedCoords": showKillfeedCoordsConfiguration}}, (err, res) => {
-            if (err) return client.sendInternalError(interaction, err);
-          });
-
-          const successConfigureShowKillfeedCoords = new EmbedBuilder()
-            .setDescription(`Successfully configured the killfeed to ${showKillfeedCoordsConfiguration ? 'show' : 'not show'} coordinates.`)
-            .setColor(client.config.Colors.Green);
-
-          return interaction.send({ embeds: [successConfigureShowKillfeedCoords] });
-      
         case 'linked_gt_role':
           const linked_gt_role = args[0].options[0].value;
   
@@ -723,6 +745,46 @@ module.exports = {
             .setDescription(`Users can ${togggleUAVpurchase ? 'now' : 'no longer'} purchase EMPs.`);
 
           return interaction.send({ embeds: [successToggleEMPpurchaseEmbed] });
+
+        case 'killfeed':
+          const killfeed_configuration = args[0].options[0].name;
+
+          if (killfeed_configuration == 'channel') {
+
+            const channel = args[0].options[0].options[0].value;
+
+            client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID},{$set: {'server.killfeedChannel': channel}}, (err, res) => {
+              if (err) return client.sendInternalError(interaction, err);
+            });
+
+          } else if ('show_coords') {
+            const showKillfeedCoordsConfiguration = args[0].options[0].options[0].value ? 1 : 0;
+
+            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.showKillfeedCoords": showKillfeedCoordsConfiguration}}, (err, res) => {
+              if (err) return client.sendInternalError(interaction, err);
+            });
+
+            const successConfigureShowKillfeedCoords = new EmbedBuilder()
+              .setDescription(`Successfully configured the killfeed to ${showKillfeedCoordsConfiguration ? 'show' : 'not show'} coordinates.`)
+              .setColor(client.config.Colors.Green);
+
+            return interaction.send({ embeds: [successConfigureShowKillfeedCoords] });
+
+          } else if ('show_weapon') {
+
+            const showKillfeedWeaponConfiguration = args[0].options[0].options[0].value ? 1 : 0;
+
+            client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.showKillfeedWeapon": showKillfeedWeaponConfiguration}}, (err, res) => {
+              if (err) return client.sendInternalError(interaction, err);
+            });
+
+            const successConfigureShowKillfeedCoords = new EmbedBuilder()
+              .setDescription(`Successfully configured the killfeed to ${showKillfeedWeaponConfiguration ? 'show' : 'not show'} weapon icons.`)
+              .setColor(client.config.Colors.Green);
+
+            return interaction.send({ embeds: [successConfigureShowKillfeedCoords] });
+
+          }
 
         default:
           return client.sendInternalError(interaction, 'There was an error parsing the config command');

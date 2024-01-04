@@ -69,4 +69,6 @@ module.exports = {
       "M79": "https://static.wikia.nocookie.net/dayz_gamepedia/images/b/b7/M79.png/revision/latest/scale-to-width-down/256?cb=20220521184052",
     },
   },
+
+  weaponClassOf: (weapon) => Object.keys(module.exports.weapons).filter(v => module.exports.weapons[v].hasOwnProperty(weapon))[0],
 }
