@@ -172,7 +172,11 @@ module.exports = {
     let killerStat = await client.dbo.collection("players").findOne({"playerID": info.killerID});
     if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
     if (!client.exists(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, client.config.Nitrado.ServerID);
-    
+
+    let weapon = info.weapon.includes("Engraved") ? info.weapon.split("Engraved ")[1] :
+                 info.weapon.includes("Sawed-off") ? info.weapon.split("Sawed-off ")[1] :
+                 info.weapon;
+
     // Update killer stats
     killerStat.kills++;
     killerStat.killStreak++;
