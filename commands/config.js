@@ -16,7 +16,7 @@ module.exports = {
   options: [
     {
       name: "killfeed",
-      descripion: "Configure the killfeed",
+      description: "Configure the killfeed",
       value: "killfeed",
       type: CommandOptions.SubCommandGroup,
       options: [
