@@ -5,7 +5,7 @@ const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
 
 // custom util imports
-const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings } = require('../util/NitradoAPI');
+const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, PostServerSettings } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
@@ -270,9 +270,19 @@ class DayzRBot extends Client {
     c.activePlayersTick++;
 
     const settings = await FetchServerSettings(c, "logsUpdateTimer").then(res => res.data.gameserver);
+
+    if (settings == 1) {
+      c.error('...Failed to Fetch Server Settings to download Nitrado Logs...');
+      return;
+    }
+
     const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
     const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
-    
+
+    // Ensure Player List is logged for next update
+    const playerListEnabled = parseInt(settings.settings.config.adminLogPlayerList)
+    if (!playerListEnabled) PostServerSettings(this, "config", "adminLogPlayerList", '1')
+
     let guild = await GetGuild(c, c.config.GuildID);
 
     await DownloadNitradoFile(c, path, './logs/server-logs.ADM').then(async (status) => {
