@@ -2,9 +2,9 @@ const { EmbedBuilder } = require('discord.js');
 const { createUser, addUser } = require('../database/user');
 const { KillInAlarm } = require('./AlarmsHandler');
 const { destinations } = require('../database/destinations');
-const { calculateVector } = require('./vector');
+const { calculateVector } = require('./Vector');
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
-const { calculateNewCombatRating } = require('./combatRatingHandler');
+const { calculateNewCombatRating } = require('./CombatRatingHandler');
 const { weapons, weaponClassOf } = require('../database/weapons');
 
 const Templates = {

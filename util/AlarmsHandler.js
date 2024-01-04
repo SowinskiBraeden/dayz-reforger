@@ -1,6 +1,6 @@
 const { BanPlayer, UnbanPlayer } = require('./NitradoAPI');
 const { EmbedBuilder } = require('discord.js');
-const { calculateVector } = require('./vector');
+const { calculateVector } = require('./Vector');
 const { destinations } = require('../database/destinations');
 const { GetGuild } = require('../database/guild');
 
