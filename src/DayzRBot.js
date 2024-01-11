@@ -184,7 +184,7 @@ class DayzRBot extends Client {
 
     // Handle alarm pings
     const maxEmbed = 10;
-    for (const [channel_id, data] of Object.entrries(this.alarmPingQueue)) {
+    for (const [channel_id, data] of Object.entries(this.alarmPingQueue)) {
       const channel = this.GetChannel(channel_id);
       if (!channel) continue;
       for (const [role, embeds] of Object.entries(data)) {
