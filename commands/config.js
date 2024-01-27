@@ -364,6 +364,19 @@ module.exports = {
         required: true,
       }]
     },
+    {
+      name: "welcome_message_server_name",
+      description: "Configure the server name in the welcome message",
+      value: "welcome_message_server_name",
+      type: CommandOptions.SubCommand,
+      options: [{
+        name: "name",
+        desciption: "Server name to include in welcome message",
+        value: "name",
+        type: CommandOptions.String,
+        required: true,
+      }]
+    }
   ],  
   SlashCommand: {
     /**
@@ -786,6 +799,19 @@ module.exports = {
             return interaction.send({ embeds: [successConfigureShowKillfeedCoords] });
 
           }
+
+        case 'welcome_message_server_name':
+          const server_name = args[0].options[0].value;
+
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.serverName":server_name}}, (err, res) => {
+            if (err) return client.sendInternalError(interacion, err);
+          });
+
+          const succcessUpdateServerName = new EmbedBuilder()
+            .setDescription(`Successfully configured the server name to **${server_name}** in the welcome message.`)
+            .setColor(client.config.Colors.Green);
+
+          return interaction.send({ embeds: [succcessUpdateServerName] });
 
         default:
           return client.sendInternalError(interaction, 'There was an error parsing the config command');

@@ -16,6 +16,7 @@ module.exports = {
 
     return {
       serverID:              GuildId,
+      serverName:            guild.server.serverName,
       autoRestart:           guild.server.autoRestart,
       showKillfeedCoords:    guild.server.showKillfeedCoords,
       showKillfeedWeapon:    guild.server.showKillfeedWeapon,
@@ -57,6 +58,7 @@ module.exports = {
   getDefaultSettings(GuildId) {
     return {
       serverID:              GuildId,
+      serverName:            "our server!",
       autoRestart:           0,
       showKillfeedCoords:    0,
       showKillfeedWeapon:    0,
