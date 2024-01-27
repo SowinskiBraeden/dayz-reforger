@@ -1,4 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
+const { destinations } = require('../database/destinations');
+const { calculateVector } = require('../util/Vector');
 
 module.exports = {
   name: "location",
@@ -25,9 +27,25 @@ module.exports = {
       let newDt = await client.getDateEST(playerStat.time);
       let unixTime = Math.floor(newDt.getTime()/1000);
 
+      let tempDest;
+      let lastDist = 1000000;
+      let destination_dir;
+      if (showCoords) { // Only calculate if showing coords, very tiny minor optimization... probably amounts to nothing.
+        for (let i = 0; i < destinations.length; i++) {
+          let { distance, theta, dir } = calculateVector(info.victimPOS, destinations[i].coord);
+          if (distance < lastDist) {
+            tempDest = destinations[i].name;
+            lastDist = distance;
+            destination_dir = dir;
+          }
+        }
+      }
+  
+      const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
+  
       let lastLocation = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setDescription(`**Location - <t:${unixTime}>**\nYour last location was detected at **[${playerStat.pos[0]}, ${playerStat.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${playerStat.pos[0]};${playerStat.pos[1]})**`)
+        .setDescription(`**Location - <t:${unixTime}>**\nYour last location was detected at **[${playerStat.pos[0]}, ${playerStat.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${playerStat.pos[0]};${playerStat.pos[1]})**\n${destination}`)
     
       return interaction.send({ embeds: [lastLocation], flags: (1 << 6) });
     },
