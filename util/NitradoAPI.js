@@ -48,44 +48,6 @@ const UploadNitradoFile = async (client, remoteDir, remoteFilename, localFileDir
   }
 }
 
-const PostServerSettings = async (client, category, key, value) => {
-  for (let retries = 0; retries <= maxRetries; retries++) {
-    try {
-      const formData = new FormData();
-      formData.append("category", category);
-      formData.append("key", key);
-      formData.append("value", value);
-      formData.pipe(concat(data => {
-        async function postData() {
-          const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/settings`, {
-            method: "POST",
-            credentials: 'include',
-            headers: {
-              ...formData.getHeaders(),
-              "Authorization": client.config.Nitrado.Auth
-            },
-            body: data,
-          });
-          if (!res.ok) {
-            const errorText = await res.text();
-            client.error(`Failed to get post Nitrado server settings (${client.config.Nitrado.ServerID}): status: ${res.status}, message: ${errorText}: PostServerSettings`);
-            if (retries === 2) return 1; // Return error status on the second failed status code.
-          } else {
-            const data = await res.json();
-            return data;
-          }
-        }
-        postData();
-      }));
-      return 0;
-    } catch (error) {
-      client.error(`PostServerSettings: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
-      if (retries === maxRetries) throw new Error(`PostServerSettings: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`);
-    }
-    await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
-  }
-}
-
 const HandlePlayerBan = async (client, gamertag, ban) => {
   const data = await module.exports.FetchServerSettings(client, 'HandlePlayerBan');  // Fetch server status
 
@@ -97,7 +59,7 @@ const HandlePlayerBan = async (client, gamertag, ban) => {
 
     let category = 'general';
     let key = 'bans';
-    return await PostServerSettings(client, category, key, bans);  // returns 1 (failed) or 0 (not failed)
+    return await module.exports.PostServerSettings(client, category, key, bans);  // returns 1 (failed) or 0 (not failed)
   }
 }
 
@@ -220,6 +182,44 @@ module.exports = {
     }
   },
 
+  PostServerSettings: async (client, category, key, value) => {
+    for (let retries = 0; retries <= maxRetries; retries++) {
+      try {
+        const formData = new FormData();
+        formData.append("category", category);
+        formData.append("key", key);
+        formData.append("value", value);
+        formData.pipe(concat(data => {
+          async function postData() {
+            const res = await fetch(`https://api.nitrado.net/services/${client.config.Nitrado.ServerID}/gameservers/settings`, {
+              method: "POST",
+              credentials: 'include',
+              headers: {
+                ...formData.getHeaders(),
+                "Authorization": client.config.Nitrado.Auth
+              },
+              body: data,
+            });
+            if (!res.ok) {
+              const errorText = await res.text();
+              client.error(`Failed to get post Nitrado server settings (${client.config.Nitrado.ServerID}): status: ${res.status}, message: ${errorText}: PostServerSettings`);
+              if (retries === 2) return 1; // Return error status on the second failed status code.
+            } else {
+              const data = await res.json();
+              return data;
+            }
+          }
+          postData();
+        }));
+        return 0;
+      } catch (error) {
+        client.error(`PostServerSettings: Error connecting to server (${client.config.Nitrado.ServerID}): ${error.message}`);
+        if (retries === maxRetries) throw new Error(`PostServerSettings: Error connecting to server (${client.config.Nitrado.ServerID}) after ${maxRetries} retries`);
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
+    }
+  },
+
   CheckServerStatus: async (client) => {
     const data = await module.exports.FetchServerSettings(client, 'CheckServerStatus');  // Fetch server status
 
@@ -237,7 +237,7 @@ module.exports = {
 
   DisableBaseDamage: async (client, preference) => {
     const pref = preference ? '1' : '0';
-    const posted = await PostServerSettings(client, "config", "disableBaseDamage", pref);
+    const posted = await module.exports.PostServerSettings(client, "config", "disableBaseDamage", pref);
     if (posted == 1) return 1;
 
     const basePath = await GetRemoteDir(client).then(dirs => dirs.filter(dir => dir.type == 'dir')[0].path)
@@ -261,7 +261,7 @@ module.exports = {
 
   DisableContainerDamage: async (client, preference) => {
     const pref = preference ? '1' : '0';
-    const posted = await PostServerSettings(client, "config", "disableContainerDamage", pref);
+    const posted = await module.exports.PostServerSettings(client, "config", "disableContainerDamage", pref);
     if (posted == 1) return 1;
 
     const basePath = await GetRemoteDir(client).then(dirs => dirs.filter(dir => dir.type == 'dir')[0].path)
