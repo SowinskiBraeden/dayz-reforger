@@ -16,11 +16,6 @@ module.exports = {
     description: 'download the Nitrado logs and run checks now',
     value: 'sync-logs',
     type: CommandOptions.SubCommand,
-  }, {
-    name: 'server-connection-stats',
-    description: 'view player connection stats',
-    value: 'server-connection-stats',
-    type: CommandOptions.SubCommand,
   }],
   SlashCommand: {
     /**
@@ -37,32 +32,6 @@ module.exports = {
         if (client.processingLogs) return interaction.send({ content: 'The Nitrado logs are already being processed at the moment...', flags: (1 << 6) });
         interaction.send({ content: 'Downloading and processing Nitrado logs now...', flags: (1 << 6) });
         return client.logsUpdateTimer(client);
-      }
-
-      if (args[0].name == 'server-connection-stats') {
-        let statsEmbed = new EmbedBuilder()
-          .setColor(client.config.Colors.Default)
-          .setTitle(`Server connection stats`);
-
-        statsEmbed.addFields({ name: 'All time Unique connections', value: `> ${stats.length}`,  inline: false });
-
-        let month3 = new Date().setMonth(new Date().getMonth() - 3);
-        let month3Players = await client.dbo.collection("players").find({"lastConnectDate": {$gt: month3}});
-        statsEmbed.addFields({ name: 'Unique connections in the last 3 months', value: `> ${month3Players.length}`, inline: false });
-
-        let month = new Date().setMonth(new Date().getMonth() - 1);
-        let monthlyPlayers = await client.dbo.collection("players").find({"lastConnectDate": {$gt: month}});
-        statsEmbed.addFields({ name: 'Unique connections in the last month', value: `> ${monthlyPlayers.length}`, inline: false });
-
-        let week = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
-        let weeklyPlayers = await client.dbo.collection("players").find({"lastConnectDate": {$gt: week}});
-        statsEmbed.addFields({ name: 'Unique connections in the last week', value: `> ${weeklyPlayers.length}`, inline: false });
-
-        let today = new Date(new Date().getTime() - 1 * 24 * 60 * 60 * 1000)
-        let dailyPlayers = await client.dbo.collection("players").find({"lastConnectDate": {$gt: today}});
-        statsEmbed.addFields({ name: 'Unique connections in the last 24 hours', value: `> ${dailyPlayers.length}`, inline: false });
-
-        return interaction.send({ embeds: [statsEmbed] });
       }
     },
   },

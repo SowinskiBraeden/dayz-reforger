@@ -6,7 +6,7 @@ module.exports = {
   name: "compare-rating",
   debug: false,
   global: false,
-  description: "Compare combat ratings",
+  description: "Compare combat ratings between yourself and another player",
   usage: "[user or gamertag]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
@@ -14,13 +14,13 @@ module.exports = {
   },
   options: [{
     name: "discord",
-    description: "discord user to lookup stats",
+    description: "Discord user to lookup stats",
     value: "discord",
     type: CommandOptions.User,
     required: false,
   }, {
     name: "gamertag",
-    description: "gamertag to lookup stats",
+    description: "Gamertag to lookup stats",
     type: CommandOptions.String,
     required: false,
   }],

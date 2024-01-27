@@ -5,7 +5,7 @@ module.exports = {
   name: "leaderboard",
   debug: false,
   global: false,
-  description: "View server statistics leaderboard",
+  description: "View server stats leaderboard",
   usage: "[category] [limit]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
@@ -36,7 +36,7 @@ module.exports = {
     ]
   }, {
     name: "limit",
-    description: "leaderboard limit",
+    description: "Leaderboard limit",
     value: "limit",
     type: CommandOptions.Integer,
     min_value: 1,

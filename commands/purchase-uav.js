@@ -6,7 +6,7 @@ module.exports = {
   name: "purchase-uav",
   debug: false,
   global: false,
-  description: "Send a UAV to scout for 30 minutes. (500m range)",
+  description: "Send a UAV to scout for 30 minutes (500m range)",
   usage: "[x-coord] [y-coord]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

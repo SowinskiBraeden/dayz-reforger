@@ -7,7 +7,7 @@ module.exports = {
   name: "weapon-stats",
   debug: false,
   global: false,
-  description: "Check player statistics",
+  description: "Check player weapon statistics",
   usage: "[category] [user or gamertag]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
@@ -15,7 +15,7 @@ module.exports = {
   },
   options: [{
     name: "category",
-    description: "Weapon Category",
+    description: "Weapon category",
     value: "category",
     type: CommandOptions.String,
     required: true,
@@ -34,13 +34,13 @@ module.exports = {
     ]
   }, {
     name: "discord",
-    description: "discord user to lookup stats",
+    description: "Discord user to lookup stats",
     value: "discord",
     type: CommandOptions.User,
     required: false,
   }, {
     name: "gamertag",
-    description: "gamertag to lookup stats",
+    description: "Gamertag to lookup stats",
     type: CommandOptions.String,
     required: false,
   }],

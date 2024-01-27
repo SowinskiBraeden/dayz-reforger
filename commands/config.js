@@ -99,7 +99,7 @@ module.exports = {
     },
     {
       name: "set_channel",
-      description: "Set one of the desired channels",
+      description: "Configure a channel",
       value: "set_channel",
       type: CommandOptions.SubCommand,
       options:[
@@ -126,7 +126,7 @@ module.exports = {
     },
     {
       name: "linked_gt_role",
-      description: "Access Role to give to users",
+      description: "Role for users with linked gamertags",
       value: "linked_gt_role",
       type: CommandOptions.SubCommand,
       options: [{
@@ -139,7 +139,7 @@ module.exports = {
     },
     {
       name: "member_role",
-      description: "Role to give users when they join.",
+      description: "Role for users who join the server",
       value: "member_role",
       type: CommandOptions.SubCommand,
       options: [{
@@ -158,7 +158,7 @@ module.exports = {
       options: [
         {
           name: "action",
-          description: "Add or remove a role from the exclude list.",
+          description: "Set or remove a role to be a bot administrator",
           value: "action",
           type: CommandOptions.String,
           choices: [
@@ -177,7 +177,7 @@ module.exports = {
     },
     {
       name: "admin_role",
-      description: "Discord Server's dedicated admin role",
+      description: "Admin role to ping in admin logs channel",
       value: "admin_role",
       type: CommandOptions.SubCommand,
       options: [{
@@ -190,7 +190,7 @@ module.exports = {
     },
     {
       name: "exclude",
-      description: "Exclude roles from users to use to claim a flag.",
+      description: "Exclude roles that users can use to claim an armband",
       value: "exclude",
       type: CommandOptions.SubCommand,
       options: [
@@ -227,7 +227,7 @@ module.exports = {
     },
     {
       name: "starting_balance",
-      description: "Set the starting balance",
+      description: "Set the starting balance of a new user",
       value: "starting_balance",
       type: CommandOptions.SubCommand,
       options: [{
@@ -235,7 +235,7 @@ module.exports = {
         description: "The amount to set the starting balance",
         value: "amount",
         type: CommandOptions.Float,
-        min_value: 0.01,
+        min_value: 1.00,
         required: true,
       }]
     },
@@ -269,7 +269,7 @@ module.exports = {
     },
     {
       name: "income_role",
-      description: "Add/update a role to earn income on /collect-income command",
+      description: "Set/remove roles to recieve income",
       value: "set_income_role",
       type: CommandOptions.SubCommandGroup,
       options: [
@@ -313,7 +313,7 @@ module.exports = {
     },
     {
       name: "income_limiter",
-      description: "Change the number of hours to wait before collecting income",
+      description: "Change the number of hours to wait before collecting next income",
       value: "income_limiter",
       type: CommandOptions.SubCommand,
       options: [{
@@ -321,12 +321,13 @@ module.exports = {
         description: "Number of hours till income can be collected",
         value: 168.00, // 1 week
         type: CommandOptions.Float,
+        min_value: 1.00,
         required: true,
       }]
     },
     {
       name: "combat-log-timer",
-      description: "Adjust log timeout for combat prevention. (0 disables combat log)",
+      description: "Adjust number of minutes to detect combat logs (0 disables combat log)",
       value: "combat-log-timer",
       type: CommandOptions.SubCommand,
       options: [{

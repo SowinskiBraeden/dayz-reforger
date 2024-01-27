@@ -6,7 +6,7 @@ module.exports = {
   name: "alarm",
   debug: false,
   global: false,
-  description: "Create a Zone Ping Alarm",
+  description: "Manage an Alarm",
   usage: "[command] [options]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
@@ -37,7 +37,7 @@ module.exports = {
         },
         {
           name: "radius",
-          description: "Radius of Zone Alarm",
+          description: "Radius of Alarm",
           value: "radius",
           type: CommandOptions.Float,
           min_value: 25.00,
@@ -45,14 +45,14 @@ module.exports = {
         },
         {
           name: "name",
-          description: "Zone Alarm Name",
+          description: "Alarm Name",
           value: "name",
           type: CommandOptions.String,
           required: true,
         },
         {
           name: "channel",
-          description: "The channel to configure",
+          description: "Alarm Channel",
           value: "channel",
           type: CommandOptions.Channel,
           channel_types: [0], // Restrict to text channel
@@ -60,7 +60,7 @@ module.exports = {
         },
         {
           name: "role",
-          description: "Role to Ping on Zone Alarm",
+          description: "Role to Ping on Alarm",
           value: "role",
           type: CommandOptions.Role,
           required: true,
@@ -74,7 +74,7 @@ module.exports = {
         },
         {
           name: "show-player-coords",
-          description: "Show a players coords when in the zone",
+          description: "Show a players coords when in the radius of the Alarm?",
           value: true,
           type: CommandOptions.Boolean,
           required: false,
@@ -83,18 +83,18 @@ module.exports = {
     },
     {
       name: "delete",
-      description: "Delete a Zone Alarm",
+      description: "Delete an Alarm",
       value: "delete",
       type: CommandOptions.SubCommand,
     },
     {
       name: "add-player",
-      description: "Add Player to be Ignored in a Zone Alarm Pings",
+      description: "Add player to be ignored list of an Alarm",
       value: "add-player",
       type: CommandOptions.SubCommand,
       options: [{
         name: "gamertag",
-        description: "Gamertag of Player to Ignore",
+        description: "Gamertag of player to ignore",
         value: "gamertag",
         type: CommandOptions.String,
         required: true,
@@ -102,12 +102,12 @@ module.exports = {
     },
     {
       name: "remove-player",
-      description: "Remove a Player from being Ignored in a Zone Alarm Pings",
+      description: "Remove a player from the ignored list of an Alarm",
       value: "remove-player",
       type: CommandOptions.SubCommand,
       options: [{
         name: "gamertag",
-        description: "Gamertag of Player to Ignore",
+        description: "Gamertag of player to ignore",
         value: "gamertag",
         type: CommandOptions.String,
         required: true,
@@ -115,24 +115,24 @@ module.exports = {
     },
     {
       name: "disable",
-      description: "Disable an Zone Alarm",
+      description: "Disable an Alarm",
       value: "disable",
       type: CommandOptions.SubCommand,
     },
     {
       name: "enable",
-      description: "Enable an Zone Alarm",
+      description: "Enable an Alarm",
       value: "enable",
       type: CommandOptions.SubCommand,
     },
     {
       name: "mute",
-      description: "Toggle mute on this alarm",
+      description: "Mute the role ping of an Alarm",
       value: "mute",
       type: CommandOptions.SubCommand,
       options: [{
         name: "toggle",
-        description: "Turn on or off role pings for this alarm",
+        description: "Turn on/off role pings for this alarm",
         value: false,
         type: CommandOptions.Boolean,
         required: true,
@@ -145,7 +145,7 @@ module.exports = {
       type: CommandOptions.SubCommand,
       options: [{
         name: "rule",
-        description: "Rule to Add to an Alarm",
+        description: "Select a rule to add to an Alarm",
         value: "rule",
         type: CommandOptions.String,
         required: true,
@@ -158,7 +158,7 @@ module.exports = {
     },
     {
       name: "remove-rule",
-      description: "Remove a Rule from an Alarm",
+      description: "Remove a rule from an Alarm",
       value: "remove-rule",
       type: CommandOptions.SubCommand,
     },
@@ -177,12 +177,12 @@ module.exports = {
     },
     {
       name: "move-origin",
-      description: "Move an alarms origin to new coordinates",
+      description: "Move the origin of an Alarm",
       value: "move-origin",
       type: CommandOptions.SubCommand,
       options: [{
         name: "x-coord",
-        description: "X Coordinate of the origin",
+        description: "X Coordinate of the new origin",
         value: "x-coord",
         type: CommandOptions.Float,
         min_value: 0.01,
@@ -190,7 +190,7 @@ module.exports = {
       },
       {
         name: "y-coord",
-        description: "Y Coordinate of the origin",
+        description: "Y Coordinate of the new origin",
         value: "y-coord",
         type: CommandOptions.Float,
         min_value: 0.01,

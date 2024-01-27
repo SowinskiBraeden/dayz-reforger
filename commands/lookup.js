@@ -5,7 +5,7 @@ module.exports = {
   name: "lookup",
   debug: false,
   global: false,
-  description: "Search for a users discord or gamertag",
+  description: "Search for a user's Discord or Gamertag",
   usage: "[option] [parameter]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

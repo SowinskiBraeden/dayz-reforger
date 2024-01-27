@@ -7,7 +7,7 @@ module.exports = {
   name: "server",
   debug: false,
   global: false,
-  description: "DayZ Server Administrative Commands",
+  description: "Nitrado DayZ Server Administrative Commands",
   usage: "[command] [options]",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
@@ -46,7 +46,7 @@ module.exports = {
     type: CommandOptions.SubCommand,
   }, {
     name: "auto-restart",
-    description: "Enable/Disable periodic server checks and restart if stopped.",
+    description: "Enable/Disable periodic server checks and restart if stopped",
     value: "auto-restart",
     type: CommandOptions.SubCommand,
   }, {

@@ -5,7 +5,7 @@ module.exports = {
   name: "armbands",
   debug: false,
   global: false,
-  description: "View a list of armbads",
+  description: "View a list of armbads and what their image",
   usage: "",
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],

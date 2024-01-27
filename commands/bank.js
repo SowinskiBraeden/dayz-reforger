@@ -15,7 +15,7 @@ module.exports = {
   options: [
     {
       name: "balance",
-      description: "View your bank balance and count your cash",
+      description: "View your bank balance",
       value: "balance",
       type: CommandOptions.SubCommand,
       options: [{
@@ -28,7 +28,7 @@ module.exports = {
     },
     {
       name: "transfer",
-      description: "Transfer directly to users bank",
+      description: "Transfer money to another user",
       value: "transfer",
       type: CommandOptions.SubCommand,
       options: [

@@ -33,14 +33,14 @@ module.exports = {
       required: true
     }, {
       name: "anonymous",
-      description: "Make this bounty anonymous",
+      description: "Make this bounty anonymous (does not show your name)",
       value: false,
       type: CommandOptions.Boolean,
       required: false
     }]
   }, {
     name: "pay",
-    description: "Pay off your bounty (double price)",
+    description: "Pay off your bounty",
     value: "pay",
     type: CommandOptions.SubCommand,
   }, {

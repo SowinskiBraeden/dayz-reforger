@@ -14,7 +14,7 @@ module.exports = {
   },
   options: [{
     name: "faction_role",
-    description: "Claim an armband for this faction role.",
+    description: "Claim an armband for this faction role",
     value: "faction_role",
     type: CommandOptions.Role,
     required: true,

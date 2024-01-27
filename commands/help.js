@@ -27,13 +27,13 @@ module.exports = {
     },
     {
       name: "support",
-      description: "Get support for Applicatz",
+      description: "Get support for Application",
       value: "support",
       type: CommandOptions.SubCommand,
     },
     { 
       name: "credits",
-      description: "DayZR Bot Credits",
+      description: "DayZ.R Bot Credits",
       value: "credits",
       type: CommandOptions.SubCommand,
     },
@@ -111,9 +111,9 @@ module.exports = {
       } else if (args[0].name == 'support') {
         const supportEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setDescription(`**__DayZR Bot Support__**
+          .setDescription(`**__DayZ.R Bot Support__**
           
-            Are you experiencing troubles with the DayZR Bot?
+            Are you experiencing troubles with the DayZ.R Bot?
             Do you have questions or concerns?
             Do you require help to use the bot?
             Do you have a feature you'd like to see?
@@ -129,7 +129,8 @@ module.exports = {
           .setColor(client.config.Colors.Default)
           .setTitle('DayzRBot Credits')
           .setDescription(`
-            **Bot Author:** McDazzzled#5307
+            **Bot Author:** mcdazzzled
+            **Github:** https://github.com/SowinskiBraeden/dayz-reforger
             
             ${client.config.SupportServer}
           `);
@@ -139,16 +140,17 @@ module.exports = {
         const end = new Date().getTime();
         const stats = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
-          .setTitle('DayzRBot Statistics')
+          .setTitle('DayZ Reforger Bot Statistics')
           .addFields(
             { name: 'Guilds', value: `${client.guilds.cache.size}`, inline: true },
             { name: 'Users', value: `${client.users.cache.size}`, inline: true },
             { name: 'Latency', value: `${end - start}ms`, inline: true },
             { name: 'Uptime', value: `${client.secondsToDhms(process.uptime().toFixed(2))}`, inline: true },
             { name: 'Bot Version', value: `${client.config.Dev} v${client.config.Version}`, inline: true },
-            { name: 'Discord Version', value: 'Discord.js v^14.8.0', inline: true },
-          )
-        
+            { name: 'Discord Version', value: `Discord.js ${package.dependencies["discord.js"]}`, inline: true },
+            { name: 'MongoDB Version', value: `MongoDB    ${package.dependencies.mongodb}`, inline: true},
+          );
+
         return interaction.send({ embeds: [stats] })
       }
     },

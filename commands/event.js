@@ -14,7 +14,7 @@ module.exports = {
   },
   options: [{
     name: "player-track",
-    description: "track a player and announce location",
+    description: "Track a player and announce location",
     value: "player-track",
     type: CommandOptions.SubCommand,
     options: [{
@@ -26,7 +26,7 @@ module.exports = {
     },
     {
       name: "time",
-      description: "duration of tracking",
+      description: "Duration of tracking",
       value: "time",
       type: CommandOptions.Integer,
       required: true,
@@ -37,14 +37,14 @@ module.exports = {
     },
     {
       name: "event-name",
-      description: "name of the event",
+      description: "Name of the event",
       value: "event-name",
       type: CommandOptions.String,
       required: true,
     },
     {
       name: "channel",
-      description: "channel to host event",
+      description: "Channel to post tracking data",
       value: "channel",
       type: CommandOptions.Channel,
       channel_types: [0], // Restrict to text channel
@@ -58,7 +58,7 @@ module.exports = {
     }]
   }, {
     name: "delete",
-    description: "delete an active event",
+    description: "Delete an active event",
     value: "delete",
     type: CommandOptions.SubCommand
   }],
