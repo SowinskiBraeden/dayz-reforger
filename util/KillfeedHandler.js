@@ -17,6 +17,16 @@ const Templates = {
   Vehicle:      7,
 };
 
+const TemplateExpressions = {
+  1: /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) with (.*) from (.*) meters /g,
+  2: /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g,
+  3: /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g,
+  4: /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by  with (.*)/g,
+  5: /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by LandMineTrap/g,
+  6: /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*)/g,
+  7: /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by (.*) with TransportHit/g,
+};
+
 const Vehicles = {
   CivilianSedan:           'White Olga',
   CivilianSedan_Black:     'Black Olga',
@@ -73,28 +83,14 @@ module.exports = {
     
     const channel = client.GetChannel(guild.killfeedChannel);
 
-    let templateKilled     = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) with (.*) from (.*) meters /g;
-    let template           = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
-    let templateDEAD       = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*) from (.*) meters /g;
-    let explosionTemplate  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by  with (.*)/g;
-    let landMineTemplate   = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by LandMineTrap/g;
-    let meleeTemplate      = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by Player \"(.*)\" \(id=(.*) pos=<(.*)>\) into (.*) for (.*) damage \((.*)\) with (.*)/g;
-    let vehicleTemplate    = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\)\[HP\: (.*)\] hit by (.*) with TransportHit/g;
+    const killedBy = line.includes('hit by Player') && line.includes('(DEAD)') && line.includes('meters') ? Templates.HitByAndDead :
+                     line.includes('hit by Player') && !line.includes('meters')                           ? Templates.Melee : // Missing meters indicates it was a melee attack.
+                     line.includes('hit by Player')                                                       ? Templates.HitBy :
+                     line.includes('killed by Player')                                                    ? Templates.Killed : 
+                     line.includes('TransportHit')                                                        ? Templates.Vehicle : 
+                     line.includes('killed by LandMineTrap')                                              ? Templates.LandMine : Templates.Explosion;
 
-    let killedBy = line.includes('hit by Player') && line.includes('(DEAD)') && line.includes('meters') ? Templates.HitByAndDead :
-                   line.includes('hit by Player') && !line.includes('meters') ? Templates.Melee : // Missing meters indicates it was a melee attack.
-                   line.includes('hit by Player') ? Templates.HitBy :
-                   line.includes('killed by Player') ? Templates.Killed : 
-                   line.includes('TransportHit') ? Templates.Vehicle : 
-                   line.includes('killed by LandMineTrap') ? Templates.LandMine : Templates.Explosion;
-
-    let data = killedBy == Templates.HitByAndDead ? [...line.matchAll(templateDEAD)][0] : 
-               killedBy == Templates.HitBy ? [...line.matchAll(template)][0] :
-               killedBy == Templates.Killed ? [...line.matchAll(templateKilled)][0] :
-               killedBy == Templates.LandMine ? [...line.matchAll(landMineTemplate)][0] :
-               killedBy == Templates.Melee ? [...line.matchAll(meleeTemplate)][0] :
-               killedBy == Templates.Vehicle ? [...line.matchAll(vehicleTemplate)][0] :
-               [...line.matchAll(explosionTemplate)][0];
+    let data = [...line.matchAll(TemplateExpressions[killedBy])][0];
 
     if (!data) return;
     
@@ -107,7 +103,7 @@ module.exports = {
     };
 
     // Add additional data
-    if (killedBy == Templates.HitBy || killedBy == Templates.HitByAndDead || killedBy == Templates.Melee) {
+    if ([Templates.HitBy, Templates.HitByAndDead, Templates.Melee].includes(killedBy)) {
       info.killer    = data[6];
       info.killerID  = data[7];
       info.killerPOS = data[8].split(', ').map(v => parseFloat(v));
@@ -134,17 +130,20 @@ module.exports = {
     let tempDest;
     let lastDist = 1000000;
     let destination_dir;
-    for (let i = 0; i < destinations.length; i++) {
-      let { distance, theta, dir } = calculateVector(info.victimPOS, destinations[i].coord);
-      if (distance < lastDist) {
-        tempDest = destinations[i].name;
-        lastDist = distance;
-        destination_dir = dir;
+    if (showCoords) { // Only calculate if showing coords, very tiny minor optimization... probably amounts to nothing.
+      for (let i = 0; i < destinations.length; i++) {
+        let { distance, theta, dir } = calculateVector(info.victimPOS, destinations[i].coord);
+        if (distance < lastDist) {
+          tempDest = destinations[i].name;
+          lastDist = distance;
+          destination_dir = dir;
+        }
       }
     }
 
     const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
 
+    if ([Templates.LandMine, Templates.Explosion, Templates.Vehicle].includes(killedBy))
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
       let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
       if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
