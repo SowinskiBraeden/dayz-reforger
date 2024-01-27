@@ -17,7 +17,7 @@ module.exports = {
   },
   options: [{
     name: "gamertag-link",
-    description: "link a gamertag for a user",
+    description: "Link a gamertag for a user",
     value: "gamertag-link",
     type: CommandOptions.SubCommand,
     options: [{
@@ -36,7 +36,7 @@ module.exports = {
     }]
   }, {
     name: "gamertag-unlink",
-    description: "unlink a gamertag for a user",
+    description: "Unlink a gamertag for a user",
     value: "gamertag-unlink",
     type: CommandOptions.SubCommand,
     options: [{
@@ -60,7 +60,7 @@ module.exports = {
     }]
   }, {
     name: "bounty-clear",
-    description: "clear a bounty off a player",
+    description: "Clear a bounty off a player",
     value: "bounty-clear",
     type: CommandOptions.SubCommand,
     options: [{
@@ -72,50 +72,49 @@ module.exports = {
     }]
   },
   {
-    name: "add-money",
-    description: "Add money to user",
-    value: "add",
-    type: CommandOptions.SubCommand,
-    options: [
-      {
+    name: "money",
+    description: "Add/Remove money to a user",
+    value: "money",
+    type: CommandOptions.SubCommandGroup,
+    options: [{
+      name: "add",
+      description: "Add money to user",
+      value: "add",
+      type: CommandOptions.SubCommand,
+      options: [{
         name: "amount",
         description: "The amount to add to balance",
         value: "amount",
         type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
-      },
-      {
+      }, {
         name: "to",
         description: "User to alter balance",
         value: "to",
         type: CommandOptions.User,
         required: true,
-      },
-    ]
-  },
-  {
-    name: "remove-money",
-    description: "Remove or remove money from a user",
-    value: "remove",
-    type: CommandOptions.SubCommand,
-    options: [
-      {
+      }],
+    }, {
+      name: "remove",
+      description: "Remove money from a user",
+      value: "remove",
+      type: CommandOptions.SubCommand,
+      options: [{
         name: "amount",
-        description: "The amount to add to balance",
+        description: "The amount to remove from balance",
         value: "amount",
         type: CommandOptions.Float,
         min_value: 0.01,
         required: true,
-      },
-      {
+      }, {
         name: "from",
         description: "User to alter balance",
         value: "from",
         type: CommandOptions.User,
         required: true,
-      },
-    ]
+      }]
+    }]
   }],
   SlashCommand: {
     /**
@@ -279,9 +278,9 @@ module.exports = {
 
         return interaction.send({ embeds: [clearedBounty] });
 
-      } else if (args[0].name == 'add-money' || args[0].name == 'remove-money') {
+      } else if (args[0].name == 'money') {
 
-        const targetUserID = args[0].options[1].value;
+        const targetUserID = args[0].options[0].options[1].value;
         let banking = await client.dbo.collection("users").findOne({"user.userID": targetUserID}).then(banking => banking);
 
         if (!banking) {
@@ -295,7 +294,7 @@ module.exports = {
           if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
         }
 
-        let newBalance = args[0].name == 'add-money'
+        let newBalance = args[0].options[0].name == 'add'
                           ? banking.guilds[GuildDB.serverID].balance + args[0].options[0].value
                           : banking.guilds[GuildDB.serverID].balance - args[0].options[0].value;
 
@@ -304,7 +303,7 @@ module.exports = {
         });
 
         const successEmbed = new EmbedBuilder()
-          .setDescription(`Successfully ${args[0].name == 'add-money' ? 'added' : 'removed'} **$${args[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** ${args[0].name == 'add-money' ? 'to' : 'from'} <@${targetUserID}>'s balance`)
+          .setDescription(`Successfully ${args[0].options[0].name == 'add' ? 'added' : 'removed'} **$${args[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** ${args[0].name == 'add-money' ? 'to' : 'from'} <@${targetUserID}>'s balance`)
           .setColor(client.config.Colors.Green);
 
         return interaction.send({ embeds: [successEmbed] });
