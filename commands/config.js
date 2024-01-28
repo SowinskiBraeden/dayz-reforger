@@ -371,7 +371,7 @@ module.exports = {
       type: CommandOptions.SubCommand,
       options: [{
         name: "name",
-        desciption: "Server name to include in welcome message",
+        description: "Server name to include in welcome message",
         value: "name",
         type: CommandOptions.String,
         required: true,
