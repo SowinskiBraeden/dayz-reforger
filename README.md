@@ -62,13 +62,19 @@ The bot requires minimal setup to get started.
 2. Rename `.env.example` to `.env`
 3. Enter desired values into `.env`
 ```
-    token='Your Discord Bot token'
-    mongoURI='Your mongodb URI'
-    dbo='Your mongodb database'
-    SERVER_ID='Your Nitrado server ID'
-    USER_ID='Your Nitrado user ID'
-    AUTH_KEY='Your Nitrado Auth Token'
-    GuildID='Your Discord Guild ID'
+   # Discord Bot Token
+   token='Your Discord Bot token'
+   
+   # MongoDB Information
+   mongoURI='Your mongodb URI'
+   dbo='Your mongodb database'
+   
+   # Encryption
+   key='Secret Encryption Key',
+   iv='Secret Initialization Vector',
+   
+   # Other Bot Configuration
+   Dev=PROD. # or DEV.
 ```
 
 ## Contact
