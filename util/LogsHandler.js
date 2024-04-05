@@ -5,7 +5,6 @@ const { getDefaultPlayer } = require('../database/player');
 const { FetchServerSettings } = require('../util/NitradoAPI');
 const { UpdatePlayer, insertPVPstats, createWeaponStats } = require('../database/player')
 
-// TODO: Remove lastSendMessage
 let lastSendMessage;
 
 module.exports = {

@@ -4,7 +4,6 @@ const bitfieldCalculator = require('discord-bitfield-calculator');
 const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage } = require('../util/NitradoAPI');
 const { encrypt, decrypt } = require('../util/Cryptic');
 
-// TODO: deactivate nitrado server from guild
 module.exports = {
   name: "server",
   debug: false,

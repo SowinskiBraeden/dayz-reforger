@@ -3,7 +3,6 @@ const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const { addUser } = require('../database/user');
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
-// TODO: Reset User Banking, Reset User Game Stats, Reset All Users Banking, Reset All User Game stats
 module.exports = {
   name: "reset",
   debug: false,

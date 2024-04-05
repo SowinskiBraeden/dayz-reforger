@@ -28,7 +28,6 @@ const Missions = {
   "dayzOffline.enoch": "Livonia",
 };
 
-// TODO: probably just rewrite this thing in a non garbage language
 class DayzRBot extends Client {
 
   constructor(options, config) {

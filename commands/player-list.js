@@ -36,7 +36,6 @@ module.exports = {
         des += `**- ${activePlayers[i].gamertag}**\n`;
       }
 
-      // TODO: handle activePlayers.length being undefined
       const activePlayersEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
         .setTitle(`Online List - ${activePlayers.length} Player${(activePlayers.length>1||activePlayers.length==0)?'s':''} Online`)
