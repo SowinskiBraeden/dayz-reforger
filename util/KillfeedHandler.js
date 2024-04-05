@@ -1,8 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { createUser, addUser } = require('../database/user');
 const { KillInAlarm } = require('./AlarmsHandler');
-const { destinations } = require('../database/destinations');
-const { calculateVector } = require('./Vector');
+const { nearest } = require('../database/destinations');
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
 const { calculateNewCombatRating } = require('./CombatRatingHandler');
 const { weapons, weaponClassOf } = require('../database/weapons');
@@ -54,7 +53,7 @@ const Vehicles = {
 module.exports = {
   
   // Update last death date for non PVP deaths
-  UpdateLastDeathDate: async (client, line) => {
+  UpdateLastDeathDate: async (NitradoServerID, client, line) => {
     let killedByZmb  = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) killed by (.*)/g;
     let diedTemplate = /(.*) \| Player \"(.*)\" \(DEAD\) \(id=(.*) pos=<(.*)>\) died\. Stats> Water: (.*) Energy: (.*) Bleed sources: (.*)/g;
   
@@ -71,7 +70,7 @@ module.exports = {
     const newDt = await client.getDateEST(info.time);
 
     let victimStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-    if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
+    if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
 
     victimStat.lastDeathDate = newDt;
 
@@ -79,7 +78,7 @@ module.exports = {
     return
   },
 
-  HandleKillfeed: async (client, guild, line) => {
+  HandleKillfeed: async (NitradoServerID, client, guild, line) => {
     
     const channel = client.GetChannel(guild.killfeedChannel);
 
@@ -127,26 +126,13 @@ module.exports = {
 
     const showCoords = client.exists(guild.showKillfeedCoords) ? guild.showKillfeedCoords : false; // default to false if no record of configuration.
     const showWeapon = client.exists(guild.showKillfeedWeapon) ? guild.showKillfeedWeapon : false; // default to false if no record of configuration.
-    let tempDest;
-    let lastDist = 1000000;
-    let destination_dir;
-    if (showCoords) { // Only calculate if showing coords, very tiny minor optimization... probably amounts to nothing.
-      for (let i = 0; i < destinations.length; i++) {
-        let { distance, theta, dir } = calculateVector(info.victimPOS, destinations[i].coord);
-        if (distance < lastDist) {
-          tempDest = destinations[i].name;
-          lastDist = distance;
-          destination_dir = dir;
-        }
-      }
-    }
 
-    const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
+    const destination = nearest(info.victimPOS, guild.Nitrado.Mission);
 
     if ([Templates.LandMine, Templates.Explosion, Templates.Vehicle].includes(killedBy))
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
       let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
-      if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
+      if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, NitradoServerID);
       victimStat.lastDeathDate = newDt;
 
       const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : 
@@ -169,8 +155,8 @@ module.exports = {
 
     let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
     let killerStat = await client.dbo.collection("players").findOne({"playerID": info.killerID});
-    if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, client.config.Nitrado.ServerID);
-    if (!client.exists(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, client.config.Nitrado.ServerID);
+    if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, NitradoServerID);
+    if (!client.exists(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, NitradoServerID);
 
     let weapon = info.weapon.includes("Engraved") ? info.weapon.split("Engraved ")[1] :
                  info.weapon.includes("Sawed-off") ? info.weapon.split("Sawed-off ")[1] :

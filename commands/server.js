@@ -1,8 +1,10 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
 const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage } = require('../util/NitradoAPI');
+const { encrypt, decrypt } = require('../util/Cryptic');
 
+// TODO: deactivate nitrado server from guild
 module.exports = {
   name: "server",
   debug: false,
@@ -13,8 +15,13 @@ module.exports = {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],
   },
-  options: [
-    {
+  options: [{
+    name: "initialize",
+    description: "Connect your Nitrado server to the bot",
+    value: "initialize",
+    type: CommandOptions.SubCommand,
+  },
+  {
     name: "ban-player",
     description: "Ban a player from the DayZ server",
     value: "ban-player",
@@ -91,16 +98,88 @@ module.exports = {
       if (GuildDB.hasBotAdmin && interaction.member.roles.filter(e => GuildDB.botAdminRoles.indexOf(e) !== -1).length > 0) canUseCommand = true;
       if (!canUseCommand) return interaction.send({ content: 'You don\'t have the permissions to use this command.' });
 
+      const NitradoCred = client.exists(GuildDB.Nitrado) ? {
+        ServerID: GuildDB.Nitrado.ServerID,
+        UserID: GuildDB.Nitrado.UserID,
+        Auth: decrypt(
+          GuildDB.Nitrado.Auth,
+          client.config.EncryptionMethod,
+          client.key,
+          client.encryptionIV
+        )
+      } : {
+        ServerID: null,
+        UserID: null,
+        Auth: null
+      }
+
+      if (args[0].name == 'initialize') {
+
+        if (client.exists(GuildDB.Nitrado)) {
+          const prompt = new EmbedBuilder()
+            .setTitle(`Nitrado Server Information Already Configured!`)
+            .setDescription('**Notice:** This will overwrite your previously configured Nitrado Server Information')
+            .setColor(client.config.Colors.Yellow)
+
+          const opt = new ActionRowBuilder()
+            .addComponents(
+              new ButtonBuilder()
+              .setCustomId(`OverwriteNitrado-yes-${interaction.member.user.id}`)
+                .setLabel("Yes")
+                .setStyle(ButtonStyle.Danger),
+              new ButtonBuilder()
+                .setCustomId(`OverwriteNitrado-no-${interaction.member.user.id}`)
+                .setLabel("No")
+                .setStyle(ButtonStyle.Success)
+            )
+
+          return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
+        }
+
+        const NitradoCredentials = new ModalBuilder()
+          .setTitle('Connect your Nitrado Server')
+          .setCustomId(`NitradoCredentials-${interaction.member.user.id}`);
+
+        const ServerID = new ActionRowBuilder().addComponents(new TextInputBuilder()
+          .setCustomId('ServerIDInput')
+          .setLabel('Your Nitrado Server ID')
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+        );
+
+        const UserID = new ActionRowBuilder().addComponents(new TextInputBuilder()
+          .setCustomId('UserIDInput')
+          .setLabel('Your Nitrado User ID')
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+        );
+
+        const Auth = new ActionRowBuilder().addComponents(new TextInputBuilder()
+          .setCustomId('AuthInput')
+          .setLabel('Your Nitrado Authentication Token')
+          .setPlaceholder("This will be encrypted to protect your server!")
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+        );
+
+        NitradoCredentials.addComponents(ServerID, UserID, Auth);
+
+        return interaction.showModal(NitradoCredentials);
+
+      }
+      
+      if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Notice:**\nThis Discord guild has not been configured with a Nitrado DayZ server. To configure your guild, use </server initialize:1166877457559851011>`)] });
+
       if (args[0].name == 'ban-player') {
 
-        let data = await BanPlayer(client, args[0].options[0].value);
+        let data = await BanPlayer(NitradoCred, client, args[0].options[0].value);
 
         if (data == 1) {
           let failed = new EmbedBuilder()
             .setColor(client.config.Colors.Red)
-            .setDescription(`Failed to ban **${args[0].options[0].value}**. Check internal logs for an error.`);
+            .setDescription(`Failed to ban **${args[0].options[0].value}**. This can result from a variety of reasons:\nNitrado servers may be experiencing issues\nThe DayZ.R Bot may be experiencing issues\nYour Nitrado credentials were entered incorrectly`);
 
-          return interaciton.send({ embeds: [failed] });
+          return interaction.send({ embeds: [failed], flags: (1 << 6) });
         }
 
         let banned = new EmbedBuilder()
@@ -111,12 +190,12 @@ module.exports = {
 
       } else if (args[0].name == 'unban-player') {
 
-        let data = UnbanPlayer(client, args[0].options[0].value);
+        let data = UnbanPlayer(NitradoCred, client, args[0].options[0].value);
 
         if (data == 1) {
           let failed = new EmbedBuilder()
             .setColor(client.config.Colors.Red)
-            .setDescription(`Failed to ban **${args[0].options[0].value}**. Check internal logs for an error.`);
+            .setDescription(`Failed to unban **${args[0].options[0].value}**. This can result from a variety of reasons:\nNitrado servers may be experiencing issues\nThe DayZ.R Bot may be experiencing issues\nYour Nitrado credentials were entered incorrectly`);
 
           return interaction.send({ embeds: [failed] });
         }
@@ -132,29 +211,26 @@ module.exports = {
         restart_message = 'Server being restarted by an admin.';
         message = 'The server was restarted by an admin!';
 
-        RestartServer(client, restart_message, message);
+        RestartServer(NitradoCred, client, restart_message, message);
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('The server will restart shortly.')], flags: (1 << 6) });
 
       } else if (args[0].name == "auto-restart") {
-        msg = 'Auto server restart periodic check enabled.';
-        pref = 0;
-
+        let msg = 'Auto server restart periodic check enabled.';
+        let pref = 0;
+        
         // Enable/Disable a 10min periodic server status check.
-        if (!client.arIntervalId) {
-          client.arIntervalId = setInterval(CheckServerStatus, client.arInterval, client);
-          client.log('Enabled and starting periodic Nitrado server status check.');
+        if (!client.arIntervalIds.has(GuildDB.serverID)) {
+          client.arIntervalIds.set(GuildDB.serverID, setInterval(CheckServerStatus, client.arInterval, NitradoCred, client));
           pref = 1;
         } else {
           msg = 'Auto server restart periodic check disabled.'
-          clearInterval(client.arIntervalId);
-          client.arIntervalId = 0;
-          client.log('Disabled periodic Nitrado server status check.');
+          clearInterval(client.arIntervalIds.get(GuildDB.serverID));
         }
 
         // Update DB preference
         client.dbo.collection("guilds").updateOne({ "server.serverID": GuildDB.serverID }, {
           $set: {
-            "server.autoRestart": pref
+            "server.autoRestart": pref,
           }
         }, function (err, res) {
           if (err) return client.sendInternalError(interaction, err);
@@ -166,23 +242,91 @@ module.exports = {
         const preference = args[0].options[0].value;
         await interaction.deferReply({ flags: (1 << 6) });
 
-        const disableBaseDamageFailed = await DisableBaseDamage(client, preference);
+        const disableBaseDamageFailed = await DisableBaseDamage(NitradoCred, client, preference);
 
-        if (disableBaseDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableBaseDamage**, try again later.')], flags: (1 << 6) });
+        if (disableBaseDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableBaseDamage**. This can result from a variety of reasons:\nNitrado servers may be experiencing issues\nThe DayZ.R Bot may be experiencing issues\nYour Nitrado credentials were entered incorrectly')], flags: (1 << 6) });
         return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully set **disableBaseDamage** to ${preference}.\nRestart the DayZ server to apply these changes.`)], flags: (1 << 6) });
       
       } else if (args[0].name == 'disable-container-damage') {
         const preference = args[0].options[0].value;
         await interaction.deferReply({ flags: (1 << 6) });
 
-        const disableContainerDamageFailed = await DisableContainerDamage(client, preference);
+        const disableContainerDamageFailed = await DisableContainerDamage(NitradoCred, client, preference);
 
-        if (disableContainerDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableContainerDamage**, try again later.')], flags: (1 << 6) });
+        if (disableContainerDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableContainerDamage**. This can result from a variety of reasons:\nNitrado servers may be experiencing issues\nThe DayZ.R Bot may be experiencing issues\nYour Nitrado credentials were entered incorrectly')], flags: (1 << 6) });
         return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully set **disableContainerDamage** to ${preference}.\nRestart the DayZ server to apply these changes.`)], flags: (1 << 6) });
       
       }
     }
   },
 
-  Interactions: {}
+  Interactions: {
+    
+    NitradoCredentials: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+          return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
+
+        const Nitrado = {
+          ServerID: interaction.fields.fields.get('ServerIDInput').value,
+          UserID:   interaction.fields.fields.get('UserIDInput').value,
+          Auth:     encrypt(
+                      interaction.fields.fields.get('AuthInput').value,
+                      client.config.EncryptionMethod,
+                      client.key,
+                      client.encryptionIV
+                    ), // Encrypt the Authentication Token
+        };
+
+        await client.dbo.collection('guilds').updateOne({ "server.serverID": GuildDB.serverID }, { $set: { "Nitrado": Nitrado } }, (err, res) => {
+          if (err) client.sendInternalError(interaction, err);
+        });
+
+        client.initNewNitradoServer(GuildDB.serverID, Nitrado);
+
+        return interaction.reply({ content: 'Successfully configured your Nitrado Server Information', flags: (1 << 6) });
+      }
+    },
+
+    OverwriteNitrado: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id))
+          return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
+
+        if (interaction.customId.split('-')[1] == 'yes') {
+          const NitradoCredentials = new ModalBuilder()
+            .setTitle('Connect your Nitrado Server')
+            .setCustomId(`NitradoCredentials-${interaction.member.user.id}`);
+  
+          const ServerID = new ActionRowBuilder().addComponents(new TextInputBuilder()
+            .setCustomId('ServerIDInput')
+            .setLabel('Your Nitrado Server ID')
+            .setStyle(TextInputStyle.Short)
+            .setRequired(true)
+          );
+  
+          const UserID = new ActionRowBuilder().addComponents(new TextInputBuilder()
+            .setCustomId('UserIDInput')
+            .setLabel('Your Nitrado User ID')
+            .setStyle(TextInputStyle.Short)
+            .setRequired(true)
+          );
+  
+          const Auth = new ActionRowBuilder().addComponents(new TextInputBuilder()
+            .setCustomId('AuthInput')
+            .setLabel('Your Nitrado Authentication Token')
+            .setStyle(TextInputStyle.Short)
+            .setRequired(true)
+          );
+  
+          NitradoCredentials.addComponents(ServerID, UserID, Auth);
+  
+          return interaction.update(NitradoCredentials);
+        } else {
+          return interaction.reply({ content: 'Cancelled Overwriting Nitrado Server Information' });
+        }
+      }
+    }
+
+  }
 }

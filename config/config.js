@@ -21,16 +21,12 @@ module.exports = {
 	Dev: process.env.Dev || "DEV.",                     
 	Version: package.version, // (major).(minor).(patch)
   Admins: ["362791661274660874", "329371697570381824"], // Admins of the bot
-  ServerID: "1050215624053374976",
-  GuildID: process.env.GuildID || "",
-	SupportServer: "https://discord.gg/KVFJCvvFtK", // Support Server Link
+  SupportServer: "https://discord.gg/KVFJCvvFtK", // Support Server Link
 	Token: process.env.token || "", //Discord Bot Token
+  SecretKey: process.env.key || "01234567891",
+  SecretIv: process.env.iv || "9876543210",
+  EncryptionMethod: process.env.encryptionMethod || "aes-256-cbc",
   Scopes: ["identify", "guilds", "applications.commands"], //Discord OAuth2 Scopes
-  Nitrado: {
-    ServerID: process.env.SERVER_ID,
-    UserID: process.env.USER_ID,
-    Auth: process.env.AUTH_KEY
-  },
   IconURL: "",
   Colors: {
     Default: "#8a7c72",

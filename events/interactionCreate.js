@@ -1,9 +1,11 @@
+const { InteractionType } = require('discord.js');
 const { GetGuild } = require('../database/guild');
 
+
 module.exports = async (client, interaction) => {
-  if (interaction.isCommand()) return;
+  if (interaction.type == InteractionType.ApplicationCommand) return;
   /*
-    This file handles all menu and button interactions
+    This file routes any menu, modal & button interactions
     from any command
   */
  

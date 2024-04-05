@@ -39,6 +39,15 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
+      
+      if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+        const warnNitradoNotInitialized = new EmbedBuilder()
+          .setColor(client.config.Colors.Yellow)
+          .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
+
+        return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
+      }
+
       if (client.exists(GuildDB.purchaseUAV) && !GuildDB.purchaseUAV) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Notice:** The admins have disabled this feature')] });
 
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);

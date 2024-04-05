@@ -5,11 +5,12 @@ const { getDefaultPlayer } = require('../database/player');
 const { FetchServerSettings } = require('../util/NitradoAPI');
 const { UpdatePlayer, insertPVPstats, createWeaponStats } = require('../database/player')
 
+// TODO: Remove lastSendMessage
 let lastSendMessage;
 
 module.exports = {
 
-  HandlePlayerLogs: async (client, GuildDB, line, combatLogTimer = 5) => {
+  HandlePlayerLogs: async (NitradoServerID, client, GuildDB, line, combatLogTimer = 5) => {
 
     const connectTemplate    = /(.*) \| Player \"(.*)\" is connected \(id=(.*)\)/g;
     const disconnectTemplate = /(.*) \| Player \"(.*)\"\(id=(.*)\) has been disconnected/g;
@@ -30,7 +31,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
+      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
       const newDt = await client.getDateEST(info.time);
 
       playerStat.lastConnectionDate = newDt;
@@ -39,9 +40,9 @@ module.exports = {
       playerStat.connections++;
       
       // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
-      if (client.playerSessions.has(info.playerID)) {
+      if (client.playerSessions.get(NitradoServerID).has(info.playerID)) {
         // Player is already in a session, update the session's end time.
-        const session = client.playerSessions.get(info.playerID);
+        const session = client.playerSessions.get(NitradoServerID).get(info.playerID);
         session.endTime = newDt; // Update end time.
       } else {
         // Player is not in a session, create a new session.
@@ -49,7 +50,7 @@ module.exports = {
           startTime: newDt,
           endTime: null, // Initialize end time as null.
         };
-        client.playerSessions.set(info.playerID, newSession);
+        client.playerSessions.get(NitradoServerID).set(info.playerID, newSession);
       }
 
       await SendConnectionLogs(client, GuildDB, {
@@ -75,8 +76,8 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
-     
+      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
+      
       let oldUnixTime;
       let sessionTimeSeconds;
       const newDt = await client.getDateEST(info.time);
@@ -129,7 +130,7 @@ module.exports = {
       if (!client.exists(info.player) || !client.exists(info.playerID)) return;
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
-      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
+      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
       if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
 
       playerStat.lastPos = playerStat.pos;
@@ -169,8 +170,8 @@ module.exports = {
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
       let attackerStat = await client.dbo.collection("players").findOne({"playerID": info.attackerID});
-      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, client.config.Nitrado.ServerID);
-      if (!client.exists(attackerStat)) attackerStat = getDefaultPlayer(info.attacker, info.attackerID, client.config.Nitrado.ServerID);
+      if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
+      if (!client.exists(attackerStat)) attackerStat = getDefaultPlayer(info.attacker, info.attackerID, NitradoServerID);
 
       playerStat.lastDamageDate = await client.getDateEST(info.time);
       playerStat.lastHitBy = info.attacker;
@@ -202,10 +203,10 @@ module.exports = {
     return;
   },
 
-  HandleActivePlayersList: async (client, guild) => {
+  HandleActivePlayersList: async (nitrado_cred, client, guild) => {
     client.activePlayersTick = 0; // reset hour tick
 
-    const data = await FetchServerSettings(client, 'HandleActivePlayersList');  // Fetch server status
+    const data = await FetchServerSettings(nitrado_cred, client, 'HandleActivePlayersList');  // Fetch server status
 
     if (data && data !== 1) {
       let hostname = data.data.gameserver.settings.config.hostname;

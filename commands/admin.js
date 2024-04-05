@@ -134,6 +134,14 @@ module.exports = {
 
       if (args[0].name == 'gamertag-link') {
 
+        if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+          const warnNitradoNotInitialized = new EmbedBuilder()
+            .setColor(client.config.Colors.Yellow)
+            .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
+
+          return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
+        }
+
         let playerStat = await client.dbo.collection("players").findOne({"gamertag": args[0].options[1].value});
         if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].options[1].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
@@ -179,6 +187,14 @@ module.exports = {
         return interaction.send({ embeds: [connectedEmbed] })
 
       } else if (args[0].name == 'gamertag-unlink') {
+
+        if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+          const warnNitradoNotInitialized = new EmbedBuilder()
+            .setColor(client.config.Colors.Yellow)
+            .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
+
+          return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
+        }
 
         let playerStat = await client.dbo.collection("players").findOne({"discordID": args[0].options[0].value});
         if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** <@${args[0].options[0].value}> has no gamertag linked.`)] });
@@ -264,6 +280,14 @@ module.exports = {
         return interaction.send({ components: compList });
 
       } else if (args[0].name == 'bounty-clear') {
+
+        if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+          const warnNitradoNotInitialized = new EmbedBuilder()
+            .setColor(client.config.Colors.Yellow)
+            .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
+
+          return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
+        }
 
         let playerStat = await client.dbo.collection("players").findOne({"gamertag": args[0].options[0].value});
         if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.')] });

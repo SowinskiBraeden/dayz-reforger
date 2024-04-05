@@ -1,6 +1,6 @@
 {
   "name": "dayzr-bot",
-  "version": "12.7.1",
+  "version": "13.0.0",
   "description": "A General Purpose Discord Bot for DayZ Nitrado Servers.",
   "main": "index.js",
   "nodemonConfig": {
@@ -20,14 +20,12 @@
     "@discordjs/rest": "^1.1.0",
     "colors": "^1.4.0",
     "concat-stream": "^2.0.0",
+    "crypto": "^1.0.1",
     "discord-bitfield-calculator": "^1.0.0",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.3",
     "form-data": "^4.0.0",
     "mongodb": "^4.12.1",
     "winston": "^3.8.1"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.20"
   }
 }

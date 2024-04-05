@@ -1,14 +1,16 @@
 const { RegisterGlobalCommands, RegisterGuildCommands } = require("../util/RegisterSlashCommands");
-const { Collection, Client, EmbedBuilder, Routes } = require('discord.js');
+const { Collection, Client, EmbedBuilder, Routes, InteractionResponseType, InteractionType, GatewayDispatchEvents } = require('discord.js');
 const MongoClient = require('mongodb').MongoClient;
 const { REST } = require('@discordjs/rest');
 const Logger = require("../util/Logger");
+const crypto = require('crypto');
 
 // custom util imports
 const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, PostServerSettings } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
+const { decrypt } = require('../util/Cryptic');
 
 // Data structures imports
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
@@ -21,6 +23,12 @@ const readline = require('readline');
 const minute = 60000; // 1 minute in milliseconds
 const arInterval = 600000; // Set auto-restart interval 10 minutes (600,000ms)
 
+const Missions = {
+  "dayzOffline.chernarusplus": "Chernarus",
+  "dayzOffline.enoch": "Livonia",
+};
+
+// TODO: probably just rewrite this thing in a non garbage language
 class DayzRBot extends Client {
 
   constructor(options, config) {
@@ -32,30 +40,53 @@ class DayzRBot extends Client {
     this.logger = new Logger(path.join(__dirname, "..", "logs/Logs.log"));
     this.timer = this.config.Dev == 'PROD.' ? minute * 5 : minute / 4;
 
-    if (this.config.Token === "" || this.config.GuildID === "") {
+    if (
+      this.config.Token     === "" ||
+      this.config.SecretKey === "" ||
+      this.config.SecretIv  === ""
+    ) {
       throw new TypeError(
         "The config.js is not filled out. Please make sure nothing is blank, otherwise the bot will not work properly."
       );
     }
 
+    if (!["DEV.", "PROD."].includes(this.config.Dev)) {
+      throw new TypeError(
+        "The Dev version in the config.js does not match the allowed cases of 'DEV.' or 'PROD.'"
+      );
+    }
+
+    // Generate secret hash with crypto to use for encryption
+    this.key = crypto
+      .createHash('sha512')
+      .update(this.config.SecretKey)
+      .digest('hex')
+      .substring(0, 32);
+
+    this.encryptionIV = crypto
+      .createHash('sha512')
+      .update(this.config.SecretIv)
+      .digest('hex')
+      .substring(0, 16);
+
     this.db;
     this.dbo;
     this.databaseConnected = false;
     this.arInterval = arInterval;
-    this.arIntervalId; // Interval for auto-restart functions
+    this.arIntervalIds = new Map();
     this.playerSessions = new Map();
-    this.alarmPingQueue = {};
-    this.processingLogs = false;
-    this.autoRestartInit();
+    this.logHistory = new Map();
+    this.alarmPingQueue = new Map();
+    this.initialize();
     this.LoadCommandsAndInteractionHandlers();
     this.LoadEvents();
 
     this.Ready = false;
     this.activePlayersTick = 11;
 
-    this.ws.on("INTERACTION_CREATE", async (interaction) => {
+    this.ws.on(GatewayDispatchEvents.InteractionCreate, async (interaction) => {
       const start = new Date().getTime();
-      if (interaction.type != 3) {
+      if (interaction.type == InteractionType.ApplicationCommand) {
         let GuildDB = await GetGuild(this, interaction.guild_id);
 
         for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
@@ -66,7 +97,7 @@ class DayzRBot extends Client {
               $pull: { 'server.usedArmbands': data.armband },
               $unset: { [`server.factionArmbands.${factionID}`]: "" },
             };
-            await this.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
+            this.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
               if (err) return this.sendInternalError(interaction, err);
             });
           }
@@ -75,32 +106,28 @@ class DayzRBot extends Client {
         const command = interaction.data.name.toLowerCase();
         const args = interaction.data.options;
 
-        this.log(`Interaction - ${command}`);
+        this.log(`Interaction [${interaction.guild_id}] - ${command}`);
 
-        this.rest = new REST({ version: '10' }).setToken(this.config.Token);
-
+        const rest = new REST({ version: '10' }).setToken(this.config.Token);
+        
         // Easy to send response so ;)
         interaction.guild = await this.guilds.fetch(interaction.guild_id);
-        interaction.send = async (message) => {
-          return await this.rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
+        const handleCallback = async (interactionType, message) => {
+          return await rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
             body: {
-              type: 4,
+              type: interactionType,
               data: message,
             }
           });
-        };
+        }
 
-        interaction.deferReply = async (message) => {
-          return await this.rest.post(Routes.interactionCallback(interaction.id, interaction.token), {
-            body: {
-              type: 5,
-              data: message,
-            }
-          });
-        };
-
+        // Nicely name our custom callback functions and pass correct type because discord is picky with numbers...
+        interaction.send       = async (message) => handleCallback(InteractionResponseType.ChannelMessageWithSource,         message);
+        interaction.deferReply = async (message) => handleCallback(InteractionResponseType.DeferredChannelMessageWithSource, message);
+        interaction.showModal  = async (message) => handleCallback(InteractionResponseType.Modal,                            message);
+        
         interaction.editReply = async (message) => {
-          return await this.rest.patch(Routes.webhookMessage(this.application.id, interaction.token), {
+          return await rest.patch(Routes.webhookMessage(this.application.id, interaction.token), {
             body: message,
           });
         };
@@ -135,17 +162,7 @@ class DayzRBot extends Client {
   }
 
   async readLogs(guild) {
-    const fileStream = fs.createReadStream('./logs/server-logs.ADM');
-
-    let logHistoryDir = path.join(__dirname, '..', 'logs', 'history-logs.ADM.json');
-    let history;
-    try {
-      history = JSON.parse(fs.readFileSync(logHistoryDir));
-    } catch (err) {
-      history = {
-        lastLog: null
-      };
-    }
+    const fileStream = fs.createReadStream(`./logs/${guild.Nitrado.ServerID}-logs.ADM`);
 
     const rl = readline.createInterface({
       input: fileStream,
@@ -154,13 +171,14 @@ class DayzRBot extends Client {
     let lines = [];
     for await (const line of rl) { lines.push(line); }
 
-    let logIndex = lines.indexOf(history.lastLog);
+    let logIndex = lines.indexOf(this.logHistory.get(guild.Nitrado.ServerID));
 
-    if (this.playerSessions.size === 0) {
-      let players = await this.dbo.collection('players').find({"connected": true}).toArray();
-      players.map(p => p.connected = false); // assume all players not connected on init only.
+    if (this.playerSessions.get(guild.Nitrado.ServerID).size === 0) {
+      let players = await this.dbo.collection('players').find({"nitradoServerID": guild.Nitrado.ServerID}) // Get all players of this server
+        .toArray().then(all => all.filter(p => p.connected).map(p => p.connected = false)); // assume all players who were previously connected are not connected on init only.
+      
       for (let i = 0; i < players.length; i++) {
-        UpdatePlayer(this, players[i])
+        await UpdatePlayer(this, players[i])
       }
     }
 
@@ -171,38 +189,44 @@ class DayzRBot extends Client {
       if ((i - 1) >= 0 && lines[i] == lines[i - 1]) continue; // continue if this line is a duplicate of the last line
 
       // Handle general logs
-      if (lines[i].includes('connected') || lines[i].includes('pos=<')) await HandlePlayerLogs(this, guild, lines[i], guild.combatLogTimer);
-      if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) await UpdateLastDeathDate(this, lines[i]); // Updates users last death date for non PVP deaths.
+      if (lines[i].includes('connected') || lines[i].includes('pos=<')) await HandlePlayerLogs(guild.Nitrado.ServerID, this, guild, lines[i], guild.combatLogTimer);
+      if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) await UpdateLastDeathDate(guild.Nitrado.ServerID, this, lines[i]); // Updates users last death date for non PVP deaths.
       if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(this, guild, lines[i]);
       
       // Handle killfeed logs
-      if (lines[i].includes('killed by  with') || lines[i].includes('killed by LandMineTrap')) await HandleKillfeed(this, guild, lines[i]); // Handles explosive deaths
-      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by') && lines[i].includes('TransportHit')) await HandleKillfeed(this, guild, lines[i]); // Handles vehicle deaths
-      if (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) await HandleKillfeed(this, guild, lines[i]); // Handles regular deaths
-      if (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player')) await HandleKillfeed(this, guild, lines[i]); // Handles deaths missing hit by log
+      if (
+        (lines[i].includes('killed by  with') || lines[i].includes('killed by LandMineTrap'))                         || // Handle explosive deaths
+        (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by') && lines[i].includes('TransportHit'))         || // Handle vehicle deaths
+        (!(i + 1 >= lines.length) && lines[i + 1].includes('killed by Player') && lines[i].includes('hit by Player')) || // Handle PVP deaths
+        (lines[i].includes('killed by Player') && !lines[i - 1].includes('hit by Player'))                               // Handle deaths missing hit by log
+      ) await HandleKillfeed(guild.Nitrado.ServerID, this, guild, lines[i]);
     }
 
     // Handle alarm pings
     const maxEmbed = 10;
-    for (const [channel_id, data] of Object.entries(this.alarmPingQueue)) {
-      const channel = this.GetChannel(channel_id);
-      if (!channel) continue;
-      for (const [role, embeds] of Object.entries(data)) {
-        let embedArrays = [];
-        while (embeds.length > 0) 
-          embedArrays.push(embeds.splice(0, maxEmbed))
 
-        for (let i = 0; i < embedArrays.length; i++) {
-          if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
-          else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
-        }
-      }
-    }
+    this.alarmPingQueue.forEach(queue => {
+      queue.forEach((data, channel_id) => {
+        const channel = this.GetChannel(channel_id);
+        if (!channel) return;
+        data.forEach((embeds, role) => {
+          let embedArrays = [];
+          while (embeds.length > 0);
+            embedArrays.push(embeds.splice(0, maxEmbed));
 
-    this.alarmPingQueue = {};
+          for (let i = 0; i < embedArrays.length; i++) {
+            if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
+            else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
+          }
+        });
+      });
+    });
+
+    this.alarmPingQueue.set(guild.serverID, new Map()); // Clear alarm queue for this guild
 
     const playerTemplate = /(.*) \| Player \"(.*)\" \(id=(.*) pos=<(.*)>\)/g;
-    let previouslyConnected = await this.dbo.collection('players').find({"connected": true}).toArray(); // All players with connection log captured above and no disconnect log
+    let previouslyConnected = await this.dbo.collection('players').find({"nitradoServerID": guild.Nitrado.ServerID})
+      .toArray().then(players => players.filter(p => p.connected)); // All players with connection log captured above and no disconnect log
     let lastDetectedTime;
 
     for (let i = lines.length - 1; i > 0; i--) {
@@ -225,14 +249,14 @@ class DayzRBot extends Client {
           lastDetectedTime = await this.getDateEST(info.time);
           
           let playerStat = await this.dbo.collection("players").findOne({"playerID": info.playerID});
-          if (!this.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, this.config.Nitrado.ServerID);
+          if (!this.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, guild.Nitrado.ServerID);
 
           if (!previouslyConnected.includes(playerStat) && this.exists(playerStat.lastDisconnectionDate) && playerStat.lastDisconnectionDate !== null && playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()) continue;  // Skip this player if the lastDisconnectionDate time is later than the player log entry.
 
           // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
-          if (this.playerSessions.has(info.playerID)) {
+          if (this.playerSessions.get(guild.Nitrado.ServerID).has(info.playerID)) {
             // Player is already in a session, update the session's end time.
-            const session = this.playerSessions.get(info.playerID);
+            const session = this.playerSessions.get(guild.Nitrado.ServerID).get(info.playerID);
             session.endTime = lastDetectedTime; // Update end time.
           } else {
             // Player is not in a session, create a new session.
@@ -240,7 +264,7 @@ class DayzRBot extends Client {
               startTime: lastDetectedTime,
               endTime: null, // Initialize end time as null.
             };
-            this.playerSessions.set(info.playerID, newSession);
+            this.playerSessions.get(guild.Nitrado.ServerID).set(info.playerID, newSession);
 
             // Check if the player has been marked as connected before, but only if a session doesn't exist
             // in the map, indicating the connection was discovered in the logs during this session.
@@ -256,46 +280,59 @@ class DayzRBot extends Client {
       }
     }
 
-    history.lastLog = lines[lines.length - 1];
-
-    // write JSON string to a file
-    fs.writeFileSync(logHistoryDir, JSON.stringify(history));
+    const lastLine = lines[lines.length - 1]
+    this.logHistory.set(guild.Nitrado.ServerID, lastLine);
+    this.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {$set: { "server.lastLog": lastLine }}, (err, res) => {
+      if (err) this.error(`Failed to save last log to guild config [${guild.serverID}] for nitrado server [${guild.Nitrado.ServerID}]`);
+    });
   }
 
   async logsUpdateTimer(c) {
-    if (c.processingLogs) return; // Process is already running, wait till next scheduled time.
-    c.processingLogs = true;
-    let t = new Date();
-    // c.log(`...Logs Tick - ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}...`);
     c.activePlayersTick++;
 
-    const settings = await FetchServerSettings(c, "logsUpdateTimer").then(res => res.data.gameserver);
+    c.guilds.cache.forEach(async (guild) => {
+      let GuildDB = await GetGuild(c, guild.id);
+      
+      /*
+        Note to self:
+        return statements do not prematurely exit out of a forEach loop like it does in a for loop.
+      */
 
-    if (settings == 1) {
-      c.error('...Failed to Fetch Server Settings to download Nitrado Logs...');
-      return;
-    }
+      if (!c.exists(GuildDB.Nitrado)) return; // Continue if no nitrado credentials
 
-    const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
-    const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
+      const NitradoCred = {
+        ServerID: GuildDB.Nitrado.ServerID, 
+        UserID: GuildDB.Nitrado.UserID,
+        Auth: decrypt(
+          GuildDB.Nitrado.Auth,
+          c.config.EncryptionMethod,
+          c.key,
+          c.encryptionIV
+        )
+      };
 
-    // Ensure Player List is logged for next update
-    const playerListEnabled = parseInt(settings.settings.config.adminLogPlayerList)
-    if (!playerListEnabled) PostServerSettings(this, "config", "adminLogPlayerList", '1')
+      const response = await FetchServerSettings(NitradoCred, c, "logsUpdateTimer").then(res => res);
+      if (response == 1) return;
+      const settings = response.data.gameserver;
 
-    let guild = await GetGuild(c, c.config.GuildID);
+      GuildDB.Nitrado.Mission = Missions[settings.settings.config.mission];
 
-    await DownloadNitradoFile(c, path, './logs/server-logs.ADM').then(async (status) => {
-      if (status == 1) return c.error('...Failed to Download logs...');
-      // c.log('...Downloaded logs...');
-      await c.readLogs(guild).then(async () => {
-        // c.log('...Analyzed logs...');
-        HandleExpiredUAVs(c, guild);
-        HandleEvents(c, guild)
-        if (c.activePlayersTick == 12) await HandleActivePlayersList(c, guild);
-      })
+      const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
+      const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
+
+      // Ensure Player List is logged for next update
+      const playerListEnabled = parseInt(settings.settings.config.adminLogPlayerList)
+      if (!playerListEnabled) PostServerSettings(NitradoCred, c, "config", "adminLogPlayerList", '1')
+
+      await DownloadNitradoFile(NitradoCred, c, path, `./logs/${NitradoCred.ServerID}-logs.ADM`).then(async (status) => {
+        if (status == 1) return c.error(`Failed to Download Nitrado Log Files - [${NitradoCred.ServerID}]`);
+        await c.readLogs(GuildDB).then(async () => {
+          HandleExpiredUAVs(c, GuildDB);
+          HandleEvents(c, GuildDB)
+          if (c.activePlayersTick == 12) await HandleActivePlayersList(NitradoCred, c, GuildDB);
+        })
+      });
     });
-    c.processingLogs = false;
   }
 
   async connectMongo(mongoURI, dbo) {
@@ -338,17 +375,33 @@ class DayzRBot extends Client {
     if (failed) process.exit(-1);
   }
 
-  async autoRestartInit() {
+  async initialize() {
     // Wait for MongoDB to connect
     await this.connectMongo(this.config.mongoURI, this.config.dbo);
-
-    let is_enabled = undefined;
-    if (this.databaseConnected) is_enabled = await this.dbo.collection("guilds").findOne({ "server.autoRestart": 1 }).then(is_enabled => is_enabled);
-
-    if (is_enabled) {
-      this.log('Starting periodic Nitrado server status check.');
-      this.arIntervalId = setInterval(CheckServerStatus, this.arInterval, this);
+    
+    let guilds = await this.dbo.collection("guilds").find({}).toArray();
+   
+    /*
+      Initialize auto restart for enabled servers
+      Initialize last logs
+      Initialize Player Sessions
+    */
+    for (let i = 0; i < guilds.length; i++) {
+      if (!this.exists(guilds[i].Nitrado)) continue;
+      if (guilds[i].server.autoRestart) this.arIntervalIds.set(guilds[i].server.serverID, setInterval(CheckServerStatus, this.arInterval, guilds[i].nitrado, this))
+      this.logHistory.set(guilds[i].Nitrado.ServerID, guilds[i].server.lastLog); // Using Nitrado Server ID over guild ID in case of future support for multiple nitrado servers in a single guild
+      this.playerSessions.set(guilds[i].Nitrado.ServerID, new Map());            // Same reason here as named above.
+      this.log(`[${guilds[i].server.serverID}] Initialized existing Nitrado`);
     }
+  }
+
+  async initNewNitradoServer(guildId, Nitrado) {
+    let guild = await GetGuild(this, guildId)
+
+    if (guild.autoRestart) this.arIntervalIds.set(guildId, setInterval(CheckServerStatus, this.arInterval, Nitrado, this))
+    this.logHistory.set(Nitrado.ServerID, guild.lastLog);
+    this.playerSessions.set(Nitrado.ServerID, new Map());
+    this.log(`[${guild.serverID}] Initialized new Nitrado`);
   }
 
   exists(n) { return typeof(n) == 'number' ? !isNaN(n) : null != n && undefined != n && "" != n }
@@ -434,7 +487,15 @@ class DayzRBot extends Client {
   // Calls register for guild and global commands
   RegisterSlashCommands() {
     RegisterGlobalCommands(this);
-    this.guilds.cache.forEach((guild) => RegisterGuildCommands(this, guild.id));
+    let p = Promise.resolve()
+    this.guilds.cache.forEach((guild) => {
+      p = p.then(() => {
+        RegisterGuildCommands(this, guild.id);
+        return new Promise((resolve) => {
+          setTimeout(resolve, 500);
+        })
+      })
+    });
   }
 
   build() {

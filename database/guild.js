@@ -7,6 +7,7 @@ module.exports = {
     if (!guild) {
       guild = {}
       guild.server = module.exports.getDefaultSettings(GuildId);
+      guild.Nitrado = undefined;
       if (client.databaseConnected) {
         client.dbo.collection("guilds").insertOne(guild, (err, res) => {
           if (err) throw err;
@@ -16,6 +17,8 @@ module.exports = {
 
     return {
       serverID:              GuildId,
+      Nitrado:               guild.Nitrado,
+      lastLog:               guild.server.lastLog,
       serverName:            guild.server.serverName,
       autoRestart:           guild.server.autoRestart,
       showKillfeedCoords:    guild.server.showKillfeedCoords,
@@ -58,6 +61,7 @@ module.exports = {
   getDefaultSettings(GuildId) {
     return {
       serverID:              GuildId,
+      lastLog:               null,
       serverName:            "our server!",
       autoRestart:           0,
       showKillfeedCoords:    0,

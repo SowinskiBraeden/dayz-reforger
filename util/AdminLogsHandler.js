@@ -1,6 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { destinations } = require('../database/destinations');
-const { calculateVector } = require('./Vector');
+const { nearest } = require('../database/destinations');
 
 module.exports = {
 
@@ -16,7 +15,7 @@ module.exports = {
       .setDescription(`**${data.connected ? 'Connect' : 'Disconnect'} Event - <t:${unixTime}>\n${data.player} ${data.connected ? 'Connected' : 'Disconnected'}**`);
 
     if (!data.connected) {
-      if (!(data.lastConnectionDate == null)) {
+      if (data.lastConnectionDate != null) {
         let oldUnixTime = Math.floor(data.lastConnectionDate.getTime() / 1000);
         let sessionTime = client.secondsToDhms(unixTime - oldUnixTime);
         connectionLog.addFields({ name: '**Session Time**', value: `**${sessionTime}**`, inline: false });
@@ -47,19 +46,7 @@ module.exports = {
     if (!channel) return;
 
     let unixTime = Math.floor(newDt.getTime() / 1000);
-
-    let tempDest;
-    let lastDist = 1000000;
-    let destination_dir;
-    for (let i = 0; i < destinations.length; i++) {
-      let { distance, theta, dir } = calculateVector(data.pos, destinations[i].coord);
-      if (distance < lastDist) {
-        tempDest = destinations[i].name;
-        lastDist = distance;
-        destination_dir = dir;
-      }
-    }
-    const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
+    const destination = nearest(data.pos, guild.Nitrado.Mission);
 
     let combatLog = new EmbedBuilder()
       .setColor(client.config.Colors.Red)

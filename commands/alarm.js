@@ -214,6 +214,14 @@ module.exports = {
       if (GuildDB.hasBotAdmin && interaction.member.roles.filter(e => GuildDB.botAdminRoles.indexOf(e) !== -1).length > 0) canUseCommand = true;
       if (!canUseCommand) return interaction.send({ content: 'You don\'t have the permissions to use this command.' });
 
+      if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+        const warnNitradoNotInitialized = new EmbedBuilder()
+          .setColor(client.config.Colors.Yellow)
+          .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
+
+        return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
+      }
+
       if (args[0].name == 'create') {
         if (args[0].options[3].value.includes('-') || args[0].options[3].value.includes(' ')) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('**Invalid Name:** Alarm Names cannot include hyphens or spaces.')] })
 

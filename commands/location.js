@@ -1,6 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { destinations } = require('../database/destinations');
-const { calculateVector } = require('../util/Vector');
+const { nearest } = require('../database/destinations');
 
 module.exports = {
   name: "location",
@@ -21,27 +20,22 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
+      
+      if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+        const warnNitradoNotInitialized = new EmbedBuilder()
+          .setColor(client.config.Colors.Yellow)
+          .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
+
+        return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
+      }
+
       let playerStat = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
       if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** You haven't linked your gamertag and are unable to use this command.`)], flags: (1 << 6) });
 
       let newDt = await client.getDateEST(playerStat.time);
       let unixTime = Math.floor(newDt.getTime()/1000);
-
-      let tempDest;
-      let lastDist = 1000000;
-      let destination_dir;
-      if (showCoords) { // Only calculate if showing coords, very tiny minor optimization... probably amounts to nothing.
-        for (let i = 0; i < destinations.length; i++) {
-          let { distance, theta, dir } = calculateVector(info.victimPOS, destinations[i].coord);
-          if (distance < lastDist) {
-            tempDest = destinations[i].name;
-            lastDist = distance;
-            destination_dir = dir;
-          }
-        }
-      }
   
-      const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
+      const destination = nearest(playerStat.pos, GuildDB.Nitrado.Mission);
   
       let lastLocation = new EmbedBuilder()
         .setColor(client.config.Colors.Default)

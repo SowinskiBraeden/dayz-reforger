@@ -46,6 +46,14 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
 
+      if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+        const warnNitradoNotInitialized = new EmbedBuilder()
+          .setColor(client.config.Colors.Yellow)
+          .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
+
+        return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
+      }
+
       if (args[0].name == 'discord') {
 
         let playerStat = await client.dbo.collection("players").findOne({"gamertag": args[0].options[0].value});

@@ -24,17 +24,20 @@ const createWeaponsObject = (value) => {
 
 module.exports = {
   UpdatePlayer: async (client, player, interaction=null) => {
-    return await client.dbo.collection("players").updateOne(
-      { "playerID": player.playerID },
-      { $set: player },
-      { upsert: true }, // Create player stat document if it does not exist
-      (err, _) => {
-        if (err) {
-          if (interaction == null) return client.error(err);
-          else return client.sendInternalError(interaction, err);
+    /* Wrapping this function in a promise solves some bugs */
+    return new Promise(resolve => {
+      client.dbo.collection("players").updateOne(
+        { "playerID": player.playerID },
+        { $set: player },
+        { upsert: true }, // Create player stat document if it does not exist
+        (err, _) => {
+          if (err) {
+            if (interaction == null) return client.error(err);
+            else return client.sendInternalError(interaction, err);
+          } else resolve();
         }
-      }
-    );
+      );
+    });
   },
 
   getDefaultPlayer(gt, pID, NSID) {

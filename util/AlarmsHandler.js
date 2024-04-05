@@ -1,7 +1,6 @@
 const { BanPlayer, UnbanPlayer } = require('./NitradoAPI');
 const { EmbedBuilder } = require('discord.js');
-const { calculateVector } = require('./Vector');
-const { destinations } = require('../database/destinations');
+const { nearest } = require('../database/destinations');
 const { GetGuild } = require('../database/guild');
 
 // Private functions (only called locally)
@@ -26,18 +25,7 @@ const HandlePlayerTrackEvent = async (client, guild, e) => {
   let newDt = await client.getDateEST(player.time);
   let unixTime = Math.floor(newDt.getTime()/1000);
 
-  let tempDest;
-  let lastDist = 1000000;
-  let destination_dir;
-  for (let i = 0; i < destinations.length; i++) {
-    let { distance, theta, dir } = calculateVector(player.pos, destinations[i].coord);
-    if (distance < lastDist) {
-      tempDest = destinations[i].name;
-      lastDist = distance;
-      destination_dir = dir;
-    }
-  }
-  const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
+  const destination = nearest(player.pos, guild.Nitrado.Mission);
 
   const trackEvent = new EmbedBuilder()
     .setColor(client.config.Colors.Default)
@@ -76,12 +64,12 @@ module.exports = {
         let newDt = await client.getDateEST(data.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
 
-        if (!client.alarmPingQueue[alarm.channel]) client.alarmPingQueue[alarm.channel] = {};
-        let route = alarm.mute ? '-no-role-ping-' : alarm.role;
-        if (!client.alarmPingQueue[alarm.channel][route]) client.alarmPingQueue[alarm.channel][route] = [];
+        if (!client.alarmPingQueue.get(guild.serverID).has(alarm.channel)) client.alarmPingQueue.get(guild.serverID).set(alarm.channel, new Map());
+        let route = alarm.mute ? null : alarm.role;
+        if (!client.alarmPingQueue.get(guild.serverID).get(alarm.channel).has(route)) client.alarmPingQueue.get(guild.serverID).get(alarm.channel).set(route, []);
 
         if (alarm.rules.includes['ban_on_entry']) {
-          client.alarmPingQueue[alarm.channel][route].push(
+          client.alarmPingQueue.get(guild.serverID).get(alarm.channel).get(route).push(
             new EmbedBuilder()
               .setColor(client.config.Colors.Default)
               .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned.__`)
@@ -92,7 +80,7 @@ module.exports = {
           return;
         }
 
-        client.alarmPingQueue[alarm.channel][route].push(
+        client.alarmPingQueue.get(guild.serverID).get(alarm.channel).get(route).push(
           new EmbedBuilder()
             .setColor(client.config.Colors.Default)
             .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}**`)
@@ -113,18 +101,7 @@ module.exports = {
         let newDt = await client.getDateEST(data.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
 
-        let tempDest;
-        let lastDist = 1000000;
-        let destination_dir;
-        for (let i = 0; i < destinations.length; i++) {
-          let { distance, theta, dir } = calculateVector(data.pos, destinations[i].coord);
-          if (distance < lastDist) {
-            tempDest = destinations[i].name;
-            lastDist = distance;
-            destination_dir = dir;
-          }
-        }
-        const destination = lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
+        const destination = nearest(data.pos, guild.Nitrado.Mission);
 
         let uavEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
