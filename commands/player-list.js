@@ -1,3 +1,5 @@
+const { FetchServerSettings } = require('../util/NitradoAPI');
+const { Missions } = require('../database/destinations');
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
@@ -29,19 +31,50 @@ module.exports = {
         return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
       }
 
-      let activePlayers = await client.dbo.collection("players").find({"connected": true});
+      const data = await FetchServerSettings(GuildDB.Nitrado, client, 'commands/player-list.js');  // Fetch server status
+
+      const e = data && data !== 1; // Check if data exists
+      
+      const hostname      = e ? data.data.gameserver.settings.config.hostname : 'N/A';
+      const map           = Missions[data.data.gameserver.settings.config.mission];
+      const status        = e ? data.data.gameserver.status : 'N/A';
+      const slots         = e ? data.data.gameserver.slots : 'N/A';
+      const playersOnline = data.data.gameserver.query.player_current;
+
+      const Statuses = {
+        "started": {emoji: "🟢", text: "Active"},
+        "stopped": {emoji: "🔴", text: "Stopped"},
+        "restarting": {emoji: "↻", text: "Restarting"},
+      };
+
+      const emojiStatus = Statuses[status].emoji || "❓";
+      const textStatus = Statuses[status].text || "Unknown Status";
+
+      let activePlayers = await client.dbo.collection("players").find({"connected": true}).toArray();
 
       let des = activePlayers.length > 0 ? `` : `**No Players Online**`;
       for (let i = 0; i < activePlayers.length; i++) {
         des += `**- ${activePlayers[i].gamertag}**\n`;
       }
+      
+      const nodes = activePlayers.length === 0;
+      const serverEmbed = new EmbedBuilder()
+        .setColor(client.config.Colors.Default)
+        .setTitle(`Online List - \` ${playersOnline === undefined ? activePlayers.length : playersOnline} \`  Player${playersOnline !== 1 ? 's' : ''} Online`)
+        .addFields(
+          { name: 'Server:', value: `\` ${hostname} \``, inline: false },
+          { name: 'Map:', value: `\` ${map} \``, inline: true },
+          { name: 'Status:', value: `\` ${emojiStatus} ${textStatus} \``, inline: true },
+          { name: 'Slots:', value: `\` ${slots} \``, inline: true }
+        );
 
       const activePlayersEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
-        .setTitle(`Online List - ${activePlayers.length} Player${(activePlayers.length>1||activePlayers.length==0)?'s':''} Online`)
-        .setDescription(des);
+        .setTimestamp()
+        .setTitle(`Players Online:`)
+        .setDescription(des || (nodes ? "No Players Online :(" : ""));
 
-      return interaction.send({ embeds: [activePlayersEmbed] });
+      return interaction.send({ embeds: [serverEmbed, activePlayersEmbed] });
     },
   },
 }

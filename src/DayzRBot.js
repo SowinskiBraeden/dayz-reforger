@@ -14,6 +14,7 @@ const { decrypt } = require('../util/Cryptic');
 
 // Data structures imports
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
+const { Missions } = require('../database/destinations');
 const { GetGuild } = require('../database/guild');
 
 const path = require("path");
@@ -22,11 +23,6 @@ const readline = require('readline');
 
 const minute = 60000; // 1 minute in milliseconds
 const arInterval = 600000; // Set auto-restart interval 10 minutes (600,000ms)
-
-const Missions = {
-  "dayzOffline.chernarusplus": "Chernarus",
-  "dayzOffline.enoch": "Livonia",
-};
 
 class DayzRBot extends Client {
 
@@ -87,6 +83,15 @@ class DayzRBot extends Client {
       const start = new Date().getTime();
       if (interaction.type == InteractionType.ApplicationCommand) {
         let GuildDB = await GetGuild(this, interaction.guild_id);
+
+        if (this.exists(GuildDB.Nitrado) && this.exists(GuildDB.Nitrado.Auth)) {
+          GuildDB.Nitrado.Auth = decrypt(
+            GuildDB.Nitrado.Auth,
+            this.config.EncryptionMethod,
+            this.key,
+            this.encryptionIV
+          );
+        }
 
         for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
           const guild = this.guilds.cache.get(GuildDB.serverID);

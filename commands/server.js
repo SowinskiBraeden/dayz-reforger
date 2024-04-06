@@ -97,21 +97,6 @@ module.exports = {
       if (GuildDB.hasBotAdmin && interaction.member.roles.filter(e => GuildDB.botAdminRoles.indexOf(e) !== -1).length > 0) canUseCommand = true;
       if (!canUseCommand) return interaction.send({ content: 'You don\'t have the permissions to use this command.' });
 
-      const NitradoCred = client.exists(GuildDB.Nitrado) ? {
-        ServerID: GuildDB.Nitrado.ServerID,
-        UserID: GuildDB.Nitrado.UserID,
-        Auth: decrypt(
-          GuildDB.Nitrado.Auth,
-          client.config.EncryptionMethod,
-          client.key,
-          client.encryptionIV
-        )
-      } : {
-        ServerID: null,
-        UserID: null,
-        Auth: null
-      }
-
       if (args[0].name == 'initialize') {
 
         if (client.exists(GuildDB.Nitrado)) {
@@ -171,7 +156,7 @@ module.exports = {
 
       if (args[0].name == 'ban-player') {
 
-        let data = await BanPlayer(NitradoCred, client, args[0].options[0].value);
+        let data = await BanPlayer(GuildDB.Nitrado, client, args[0].options[0].value);
 
         if (data == 1) {
           let failed = new EmbedBuilder()
@@ -189,7 +174,7 @@ module.exports = {
 
       } else if (args[0].name == 'unban-player') {
 
-        let data = UnbanPlayer(NitradoCred, client, args[0].options[0].value);
+        let data = UnbanPlayer(GuildDB.Nitrado, client, args[0].options[0].value);
 
         if (data == 1) {
           let failed = new EmbedBuilder()
@@ -210,7 +195,7 @@ module.exports = {
         restart_message = 'Server being restarted by an admin.';
         message = 'The server was restarted by an admin!';
 
-        RestartServer(NitradoCred, client, restart_message, message);
+        RestartServer(GuildDB.Nitrado, client, restart_message, message);
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('The server will restart shortly.')], flags: (1 << 6) });
 
       } else if (args[0].name == "auto-restart") {
@@ -219,7 +204,7 @@ module.exports = {
         
         // Enable/Disable a 10min periodic server status check.
         if (!client.arIntervalIds.has(GuildDB.serverID)) {
-          client.arIntervalIds.set(GuildDB.serverID, setInterval(CheckServerStatus, client.arInterval, NitradoCred, client));
+          client.arIntervalIds.set(GuildDB.serverID, setInterval(CheckServerStatus, client.arInterval, GuildDB.Nitrado, client));
           pref = 1;
         } else {
           msg = 'Auto server restart periodic check disabled.'
@@ -241,7 +226,7 @@ module.exports = {
         const preference = args[0].options[0].value;
         await interaction.deferReply({ flags: (1 << 6) });
 
-        const disableBaseDamageFailed = await DisableBaseDamage(NitradoCred, client, preference);
+        const disableBaseDamageFailed = await DisableBaseDamage(GuildDB.Nitrado, client, preference);
 
         if (disableBaseDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableBaseDamage**. This can result from a variety of reasons:\nNitrado servers may be experiencing issues\nThe DayZ.R Bot may be experiencing issues\nYour Nitrado credentials were entered incorrectly')], flags: (1 << 6) });
         return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully set **disableBaseDamage** to ${preference}.\nRestart the DayZ server to apply these changes.`)], flags: (1 << 6) });
@@ -250,7 +235,7 @@ module.exports = {
         const preference = args[0].options[0].value;
         await interaction.deferReply({ flags: (1 << 6) });
 
-        const disableContainerDamageFailed = await DisableContainerDamage(NitradoCred, client, preference);
+        const disableContainerDamageFailed = await DisableContainerDamage(GuildDB.Nitrado, client, preference);
 
         if (disableContainerDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableContainerDamage**. This can result from a variety of reasons:\nNitrado servers may be experiencing issues\nThe DayZ.R Bot may be experiencing issues\nYour Nitrado credentials were entered incorrectly')], flags: (1 << 6) });
         return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully set **disableContainerDamage** to ${preference}.\nRestart the DayZ server to apply these changes.`)], flags: (1 << 6) });

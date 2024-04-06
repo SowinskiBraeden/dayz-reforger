@@ -4,6 +4,7 @@ const { SendConnectionLogs, DetectCombatLog } = require('./AdminLogsHandler');
 const { getDefaultPlayer } = require('../database/player');
 const { FetchServerSettings } = require('../util/NitradoAPI');
 const { UpdatePlayer, insertPVPstats, createWeaponStats } = require('../database/player')
+const { Missions } = require('../database/destinations');
 
 let lastSendMessage;
 
@@ -205,62 +206,55 @@ module.exports = {
   HandleActivePlayersList: async (nitrado_cred, client, guild) => {
     client.activePlayersTick = 0; // reset hour tick
 
-    const data = await FetchServerSettings(nitrado_cred, client, 'HandleActivePlayersList');  // Fetch server status
+    if (!client.exists(guild.activePlayersChannel)) return;
+    const channel = client.GetChannel(guild.activePlayersChannel);
 
-    if (data && data !== 1) {
-      let hostname = data.data.gameserver.settings.config.hostname;
-      let map = data.data.gameserver.settings.config.mission.slice(12);
-      let status = data.data.gameserver.status;
-      let slots = data.data.gameserver.slots;
-      let playersOnline = data.data.gameserver.query.player_current;
+    const data = await FetchServerSettings(GuildDB.Nitrado, client, 'HandleActivePlayersList');  // Fetch server status
+    const e = data && data !== 1; // Check if data exists
+    
+    const hostname      = e ? data.data.gameserver.settings.config.hostname : 'N/A';
+    const map           = Missions[data.data.gameserver.settings.config.mission];
+    const status        = e ? data.data.gameserver.status : 'N/A';
+    const slots         = e ? data.data.gameserver.slots : 'N/A';
+    const playersOnline = e ? data.data.gameserver.query.player_current : undefined;
 
-      let statusEmoji;
-      let statusText;
-      if (status === "started") {
-        statusEmoji = "🟢";
-        statusText = "Active";
-      } else if (status === "stopped") {
-        statusEmoji = "🔴";
-        statusText = "Stopped";
-      } else if (status === "restarting") {
-        statusEmoji = "↻";
-        statusText = "Restarting";
-      } else {
-        statusEmoji = "❓"; // Unknown status
-        statusText = "Unknown Status";
-      }
+    const Statuses = {
+      "started": {emoji: "🟢", text: "Active"},
+      "stopped": {emoji: "🔴", text: "Stopped"},
+      "restarting": {emoji: "↻", text: "Restarting"},
+    };
 
-      if (!client.exists(guild.activePlayersChannel)) return;
+    const emojiStatus = Statuses[status].emoji || "❓";
+    const textStatus  = Statuses[status].text || "Unknown Status";
 
-      const channel = client.GetChannel(guild.activePlayersChannel);
-      let activePlayers = await client.dbo.collection("players").find({"connected": true}).toArray();
+    let activePlayers = await client.dbo.collection("players").find({"connected": true}).toArray();
 
-      let des = ``;
-      for (let i = 0; i < activePlayers.length; i++) {
-        des += `**- ${activePlayers[i].gamertag}**\n`;
-      }
-      const nodes = activePlayers.length === 0;
-      const PlayersEmbed = new EmbedBuilder()
-        .setColor(client.config.Colors.Default)
-        .setTitle(`Online List  \` ${playersOnline === undefined ? activePlayers.length : playersOnline} \`  Player${playersOnline !== 1 ? 's' : ''} Online`)
-        .addFields(
-          { name: 'Server:', value: `\` ${hostname} \``, inline: false },
-          { name: 'Map:', value: `\` ${map} \``, inline: true },
-          { name: 'Status:', value: `\` ${statusEmoji} ${statusText} \``, inline: true },
-          { name: 'Slots:', value: `\` ${slots} \``, inline: true }
-        );
-
-      const activePlayersEmbed = new EmbedBuilder()
-        .setColor(client.config.Colors.Default)
-        .setTimestamp()
-        .setTitle(`Players Online:`)
-        .setDescription(des || (nodes ? "No Players Online :(" : ""));
-
-      if (lastSendMessage) lastSendMessage.delete().catch(error => client.sendError(channel, `HandleActivePlayersList Error: \n${error}`));  // Remove previous message before reprinting
-
-      return channel.send({ embeds: [PlayersEmbed, activePlayersEmbed] }).then(sentMessage =>
-        lastSendMessage = sentMessage
-      );
+    let des = activePlayers.length > 0 ? `` : `**No Players Online**`;
+    for (let i = 0; i < activePlayers.length; i++) {
+      des += `**- ${activePlayers[i].gamertag}**\n`;
     }
+    
+    const nodes = activePlayers.length === 0;
+    const serverEmbed = new EmbedBuilder()
+      .setColor(client.config.Colors.Default)
+      .setTitle(`Online List - \` ${playersOnline === undefined ? activePlayers.length : playersOnline} \`  Player${playersOnline !== 1 ? 's' : ''} Online`)
+      .addFields(
+        { name: 'Server:', value: `\` ${hostname} \``, inline: false },
+        { name: 'Map:', value: `\` ${map} \``, inline: true },
+        { name: 'Status:', value: `\` ${emojiStatus} ${textStatus} \``, inline: true },
+        { name: 'Slots:', value: `\` ${slots} \``, inline: true }
+      );
+
+    const activePlayersEmbed = new EmbedBuilder()
+      .setColor(client.config.Colors.Default)
+      .setTimestamp()
+      .setTitle(`Players Online:`)
+      .setDescription(des || (nodes ? "No Players Online :(" : ""));
+
+    if (lastSendMessage) lastSendMessage.delete().catch(error => client.sendError(channel, `HandleActivePlayersList Error: \n${error}`));  // Remove previous message before reprinting
+
+    return channel.send({ embeds: [serverEmbed, activePlayersEmbed] }).then(sentMessage =>
+      lastSendMessage = sentMessage
+    );
   }
 };

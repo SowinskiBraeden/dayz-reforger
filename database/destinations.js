@@ -1,6 +1,11 @@
 const { calculateVector } = require('../util/Vector');
 
 module.exports = {
+	Missions: {
+  	"dayzOffline.chernarusplus": "Chernarus",
+  	"dayzOffline.enoch": "Livonia",
+	},
+
 	// Calculates the nearest location to a given coordinate
 	nearest: (pos, mission) => {
 		let tempDest;
