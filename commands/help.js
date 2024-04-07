@@ -54,13 +54,7 @@ module.exports = {
      */
 
     run: async (client, interaction, args, start) => {
-      if (args[0].name == 'version') {
-        const versionEmbed = new EmbedBuilder()
-          .setTitle(`Current DayZR Bot Version`)
-          .setDescription(client.config.Version);
-
-        return interaction.send({ embeds: [versionEmbed] });
-      } else if (args[0].name == 'commands') {
+      if (args[0].name == 'commands') {
         let Commands = client.commands.filter((cmd) => {
           return !cmd.debug
         }).map((cmd) => 
