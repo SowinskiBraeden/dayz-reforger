@@ -36,6 +36,7 @@ module.exports = {
       "M16-A2": "https://static.wikia.nocookie.net/dayz_gamepedia/images/b/b3/M16-A2.png/revision/latest/scale-to-width-down/256?cb=20220221002601",
       "M4-A1": "https://static.wikia.nocookie.net/dayz_gamepedia/images/a/a1/M4A1.png/revision/latest/scale-to-width-down/223?cb=20220330014851",
       "SVAL": "https://static.wikia.nocookie.net/dayz_gamepedia/images/3/39/ASVAL.png/revision/latest/scale-to-width-down/256?cb=20210208015731",
+      "Vikhr": "https://static.wikia.nocookie.net/dayz_gamepedia/images/0/0d/Vikhr.png/revision/latest/scale-to-width-down/173?cb=20240116163108"
     },
     battleRifles: {
       "LAR": "https://static.wikia.nocookie.net/dayz_gamepedia/images/e/e9/FAL.png/revision/latest/scale-to-width-down/256?cb=20220221001123",
