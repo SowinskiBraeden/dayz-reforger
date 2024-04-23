@@ -318,16 +318,19 @@ module.exports = {
           if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
         }
 
-        let newBalance = args[0].options[0].name == 'add'
-                          ? banking.guilds[GuildDB.serverID].balance + args[0].options[0].value
-                          : banking.guilds[GuildDB.serverID].balance - args[0].options[0].value;
+        if (!client.exists(banking.guilds[GuildDB.serverID].balance)) banking.guilds[GuildDB.serverID].balance = GuildDB.startingBalance;
+
+        const add = args[0].options[0].name == 'add';
+        let newBalance = add
+                          ? banking.guilds[GuildDB.serverID].balance + args[0].options[0].options[0].value
+                          : banking.guilds[GuildDB.serverID].balance - args[0].options[0].options[0].value;
 
           client.dbo.collection("users").updateOne({"user.userID":targetUserID},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
         const successEmbed = new EmbedBuilder()
-          .setDescription(`Successfully ${args[0].options[0].name == 'add' ? 'added' : 'removed'} **$${args[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** ${args[0].name == 'add-money' ? 'to' : 'from'} <@${targetUserID}>'s balance`)
+          .setDescription(`Successfully ${add ? 'added' : 'removed'} **$${args[0].options[0].options[0].value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** ${add ? 'to' : 'from'} <@${targetUserID}>'s balance`)
           .setColor(client.config.Colors.Green);
 
         return interaction.send({ embeds: [successEmbed] });
