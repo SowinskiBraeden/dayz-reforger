@@ -32,6 +32,12 @@ module.exports = {
       let playerStat = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
       if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** You haven't linked your gamertag and are unable to use this command.`)], flags: (1 << 6) });
 
+      if (!client.exists(playerStat.time)) return interaction.send({ emeds: [
+        new EmbedBuilder()
+          .setColor(client.config.Colors.Yellow)
+          .setDescription(`**Not Found** There is no location saved to your gamertag yet. Make sure you've logged into the server for more than **5 minutes.**`)
+      ] });
+
       let newDt = await client.getDateEST(playerStat.time);
       let unixTime = Math.floor(newDt.getTime()/1000);
   
