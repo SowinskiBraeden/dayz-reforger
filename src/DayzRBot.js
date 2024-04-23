@@ -93,6 +93,8 @@ class DayzRBot extends Client {
           );
         }
 
+        console.log(GuildDB.Nitrado);
+
         for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
           const guild = this.guilds.cache.get(GuildDB.serverID);
           const role = guild.roles.cache.find(role => role.id == factionID);
@@ -318,6 +320,13 @@ class DayzRBot extends Client {
       const response = await FetchServerSettings(NitradoCred, c, "logsUpdateTimer").then(res => res);
       if (response == 1) return;
       const settings = response.data.gameserver;
+
+      // Update Nitrado DayZ Mission if change is detected
+      if (GuildDB.Nitrado.Mission !== Missions[settings.settings.config.mission]) {
+        c.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: { "Nitrado.Mission": Missions[settings.settings.config.mission] }}, (err, res) => {
+          if (err) this.error(`Failed to save mission to guild config [${guild.serverID}] for nitrado server [${guild.Nitrado.ServerID}]`);
+        });
+      }
 
       GuildDB.Nitrado.Mission = Missions[settings.settings.config.mission];
 
