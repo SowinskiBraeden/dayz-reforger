@@ -299,13 +299,15 @@ module.exports = {
           const Auth = new ActionRowBuilder().addComponents(new TextInputBuilder()
             .setCustomId('AuthInput')
             .setLabel('Your Nitrado Authentication Token')
+            .setPlaceholder("This will be encrypted to protect your server!")
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
           );
   
           NitradoCredentials.addComponents(ServerID, UserID, Auth);
-  
-          return interaction.update(NitradoCredentials);
+          
+          // TODO: Figure out how to remove the prompt buttons and the embed.
+          return interaction.showModal(NitradoCredentials);
         } else {
           return interaction.update({ embeds: [], components: [], content: 'Cancelled Overwriting Nitrado Server Information', flags: (1 << 6) });
         }
