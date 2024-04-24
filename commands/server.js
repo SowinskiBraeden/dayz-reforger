@@ -307,7 +307,7 @@ module.exports = {
   
           return interaction.update(NitradoCredentials);
         } else {
-          return interaction.reply({ content: 'Cancelled Overwriting Nitrado Server Information' });
+          return interaction.update({ embeds: [], components: [], content: 'Cancelled Overwriting Nitrado Server Information', flags: (1 << 6) });
         }
       }
     }
