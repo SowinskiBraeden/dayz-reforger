@@ -771,7 +771,13 @@ module.exports = {
               if (err) return client.sendInternalError(interaction, err);
             });
 
-          } else if ('show_coords') {
+            const successConfigureKillfeedChannel = new EmbedBuilder()
+              .setColor(client.config.Colors.Green)
+              .setDescription(`Successfully configured the killfeed channel to <#${channel}>`);
+
+            return interaction.send({ embeds: [successConfigureKillfeedChannel] });
+
+          } else if (killfeed_configuration == 'show_coords') {
             const showKillfeedCoordsConfiguration = args[0].options[0].options[0].value ? 1 : 0;
 
             client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.showKillfeedCoords": showKillfeedCoordsConfiguration}}, (err, res) => {
@@ -784,7 +790,7 @@ module.exports = {
 
             return interaction.send({ embeds: [successConfigureShowKillfeedCoords] });
 
-          } else if ('show_weapon') {
+          } else if (killfeed_configuration == 'show_weapon') {
 
             const showKillfeedWeaponConfiguration = args[0].options[0].options[0].value ? 1 : 0;
 
