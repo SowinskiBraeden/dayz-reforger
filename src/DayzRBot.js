@@ -93,8 +93,6 @@ class DayzRBot extends Client {
           );
         }
 
-        console.log(GuildDB.Nitrado);
-
         for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
           const guild = this.guilds.cache.get(GuildDB.serverID);
           const role = guild.roles.cache.find(role => role.id == factionID);
