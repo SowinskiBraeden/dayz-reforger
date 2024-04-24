@@ -95,6 +95,12 @@ module.exports = {
             required: true,
           }]
         },
+        {
+          name: "clear",
+          description: "Clears all configured channels",
+          value: "clear",
+          type: CommandOptions.SubCommand,   
+        }
       ]
     },
     {
@@ -397,9 +403,10 @@ module.exports = {
       switch(args[0].name) {
 
         case 'allowed_channels':
-          const channelid = args[0].options[0].options[0].value;
+          const channels_config = args[0].options[0].name;
+          const channelid = ['add', 'remove'].includes(channels_config) ? args[0].options[0].options[0].value : null;
 
-          if (args[0].options[0].name == 'add') {
+          if (channels_config == 'add') {
             const channelAdd = client.GetChannel(channelid);
 
             const newChannelErrorEmbed = new EmbedBuilder().setColor(client.config.Colors.Red)
@@ -418,7 +425,7 @@ module.exports = {
               .setDescription(`**Success:** Set <#${channelid}> as an allowed channel.`);
 
             return interaction.send({ embeds: [successAddChannelEmbed] });
-          } else if (args[0].options[0].name=='remove') {
+          } else if (channels_config == 'remove') {
 
             const errorChannelNotAvailable = new EmbedBuilder()
               .setDescription(`**Error Notice:** <#${channelid}> is not in allowed channels.`)
@@ -444,6 +451,33 @@ module.exports = {
 
             return interaction.send({ embeds: [promptRemoveChannel], components: [optRemoveChannel], flags: (1 << 6) });
             
+          } else if (channels_config == 'clear') {
+
+            const errorNoAllowedChannels = new EmbedBuilder()
+              .setDescription(`**Error Notice:**\n> No allowed channels configured to clear`)
+              .setColor(client.config.Colors.Red)
+
+            if (GuildDB.allowedChannels.length == 0) return interaction.send({ embeds: [errorNoAllowedChannels] });
+
+            const promptClearChannels = new EmbedBuilder()
+              .setTitle(`Are you sure you want to clear all configured channels from allowed channels?`)
+              .setColor(client.config.Colors.Default)
+
+            const optClearChannels = new ActionRowBuilder()
+              .addComponents(
+                new ButtonBuilder()
+                  .setCustomId(`ClearAllowedChannels-yes-${interaction.member.user.id}`)
+                  .setLabel("Yes")
+                  .setStyle(ButtonStyle.Danger),
+                new ButtonBuilder()
+                  .setCustomId(`ClearAllowedChannels-no-${interaction.member.user.id}`)
+                  .setLabel("No")
+                  .setStyle(ButtonStyle.Success)
+              )
+
+            return interaction.send({ embeds: [promptClearChannels], components: [optClearChannels], flags: (1 << 6) });
+            
+
           }
 
         case 'bot_admin_role':
@@ -830,7 +864,7 @@ module.exports = {
     RemoveAllowedChannels: {
       run: async (client, interaction, GuildDB) => {
         if (!interaction.customId.endsWith(interaction.member.user.id)) {
-          return ButtonInteraction.reply({
+          return interaction.reply({
             content: "This button is not for you",
             flags: (1 << 6)
           })
@@ -845,8 +879,32 @@ module.exports = {
     
         const successEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
-          .setTitle(`Success: You ${action} the channel.`)
+          .setTitle(`**Success**\n> Successfullly ${action} the channel.`)
     
+        return interaction.update({ embeds: [successEmbed], components: [] });
+      }
+    },
+
+    ClearAllowedChannels: {
+      run: async (client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
+          return interaction.reply({
+            content: "This buttpm is not for you",
+            flags: (1 << 6) 
+          });
+        }
+        let action;
+        if (interaction.customId.split('-')[1] == 'yes') {
+          action = 'cleared'; 
+          client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set:{"server.allowedChannels":[]}}, (err, res) => {
+            if (err) return client.sendInternalError(interaction, err);
+          })
+        } else if (interaction.customId.split('-')[1] == 'no') action = 'kept';
+
+        const successEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setTitle(`**Success**\n> Successfully ${action} all configured channels.`);
+
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     },
