@@ -433,11 +433,11 @@ module.exports = {
             const optRemoveChannel = new ActionRowBuilder()
               .addComponents(
                 new ButtonBuilder()
-                  .setCustomId(`RemoveAllowedChannels-yes-${interaction.member.user.id}`)
+                  .setCustomId(`RemoveAllowedChannels-yes-${channelid}-${interaction.member.user.id}`)
                   .setLabel("Yes")
                   .setStyle(ButtonStyle.Danger),
                 new ButtonBuilder()
-                  .setCustomId(`RemoveAllowedChannels-no-${interaction.member.user.id}`)
+                  .setCustomId(`RemoveAllowedChannels-no-${channelid}-${interaction.member.user.id}`)
                   .setLabel("No")
                   .setStyle(ButtonStyle.Success)
               )
@@ -829,7 +829,7 @@ module.exports = {
     
     RemoveAllowedChannels: {
       run: async (client, interaction, GuildDB) => {
-        if (!queryString.endsWith(interaction.member.user.id)) {
+        if (!interaction.customId.endsWith(interaction.member.user.id)) {
           return ButtonInteraction.reply({
             content: "This button is not for you",
             flags: (1 << 6)
@@ -838,7 +838,7 @@ module.exports = {
         let action = ''
         if (interaction.customId.split('-')[1]=='yes') {
           action = 'removed';
-          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull:{"server.allowedChannels": channelid}}, (err, res) => {
+          client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$pull:{"server.allowedChannels": interaction.customId.split('-')[2]}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
