@@ -225,10 +225,7 @@ module.exports = {
       if (args[0].name == 'create') {
         if (args[0].options[3].value.includes('-') || args[0].options[3].value.includes(' ')) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('**Invalid Name:** Alarm Names cannot include hyphens or spaces.')] })
 
-        console.log(args[0].options);
-        console.log(GuildDB.alarms);
-
-        let exists = GuildDB.alarms.find(alarm => alarm.name = args[0].options[3].value);
+        let exists = GuildDB.alarms.find(alarm => alarm.name == args[0].options[3].value);
         if (exists) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Invalid Name**\nAn alarm already exists with this name.')]});
 
         let alarm = {
