@@ -32,8 +32,8 @@ module.exports = {
         { upsert: true }, // Create player stat document if it does not exist
         (err, _) => {
           if (err) {
-            if (interaction == null) return client.error(err);
-            else return client.sendInternalError(interaction, err);
+            if (interaction == null) return client.error(`UpdatePlayer Error: ${err}`);
+            else return client.sendInternalError(interaction, `UpdatePlayer Error: ${err}`);
           } else resolve();
         }
       );

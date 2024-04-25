@@ -10,7 +10,7 @@ module.exports = {
       guild.Nitrado = undefined;
       if (client.databaseConnected) {
         client.dbo.collection("guilds").insertOne(guild, (err, res) => {
-          if (err) throw err;
+          if (err) client.error(`GetGuild Insert Error: ${err}`);
         });
       }
     }
