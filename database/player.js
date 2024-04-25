@@ -28,7 +28,7 @@ module.exports = {
     return new Promise(resolve => {
       client.dbo.collection("players").updateOne(
         { "playerID": player.playerID },
-        { $set: player },
+        { $set: {...player} },
         { upsert: true }, // Create player stat document if it does not exist
         (err, _) => {
           if (err) {
