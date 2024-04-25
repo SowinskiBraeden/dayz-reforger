@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
+const package = require("../package");
 
 module.exports = {
   name: "help",
@@ -53,7 +54,7 @@ module.exports = {
      * @param {*} param3
      */
 
-    run: async (client, interaction, args, start) => {
+    run: async (client, interaction, args, {GuildDB}, start) => {
       if (args[0].name == 'commands') {
         let Commands = client.commands.filter((cmd) => {
           return !cmd.debug
