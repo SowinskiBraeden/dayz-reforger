@@ -209,7 +209,7 @@ module.exports = {
     if (!client.exists(guild.activePlayersChannel)) return;
     const channel = client.GetChannel(guild.activePlayersChannel);
 
-    const data = await FetchServerSettings(GuildDB.Nitrado, client, 'HandleActivePlayersList');  // Fetch server status
+    const data = await FetchServerSettings(nitrado_cred, client, 'HandleActivePlayersList');  // Fetch server status
     const e = data && data !== 1; // Check if data exists
     
     const hostname      = e ? data.data.gameserver.settings.config.hostname : 'N/A';
