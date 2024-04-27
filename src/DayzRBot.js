@@ -399,7 +399,19 @@ class DayzRBot extends Client {
     */
     for (let i = 0; i < guilds.length; i++) {
       if (!this.exists(guilds[i].Nitrado)) continue;
-      if (guilds[i].server.autoRestart) this.arIntervalIds.set(guilds[i].server.serverID, setInterval(CheckServerStatus, this.arInterval, guilds[i].nitrado, this))
+      if (guilds[i].server.autoRestart) {
+        const NitradoCred = {
+          ServerID: guilds[i].Nitrado.ServerID, 
+          UserID: guilds[i].Nitrado.UserID,
+          Auth: decrypt(
+            guilds[i].Nitrado.Auth,
+            this.config.EncryptionMethod,
+            this.key,
+            this.encryptionIV
+          )
+        };
+        this.arIntervalIds.set(guilds[i].server.serverID, setInterval(CheckServerStatus, this.arInterval, NitradoCred, this))
+      }
       this.logHistory.set(guilds[i].Nitrado.ServerID, guilds[i].server.lastLog); // Using Nitrado Server ID over guild ID in case of future support for multiple nitrado servers in a single guild
       this.playerSessions.set(guilds[i].Nitrado.ServerID, new Map());            // Same reason here as named above.
       this.log(`[${guilds[i].server.serverID}] Initialized existing Nitrado`);
