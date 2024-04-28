@@ -103,7 +103,7 @@ module.exports = {
         let alarmIndex = alarms.indexOf(alarm);
         alarm.disabled = true;
         let d = new Date();
-        alarm.empExpire = new Date(d.getTime() += (duration * 60 * 1000));
+        alarm.empExpire = new Date(d.getTime() + (duration * 60 * 1000));
         alarms[alarmIndex] = alarm;
 
         client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
