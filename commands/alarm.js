@@ -2,6 +2,29 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelect
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
 
+const generateAlarmMenus = (alarms, customId, placeholder, description) => {
+  let alarmComponents = [];
+  const max = 25;
+  let id = 1;
+
+  for (let i = 0; i < alarms.length; i += max) {
+    let currentAlarmComponents = new StringSelectMenuBuilder()
+      .setCustomId(`${customId}-${id}`)
+      .setPlaceholder(placeholder);
+    alarms.slice(i, i + max).forEach(alarm => {
+      currentAlarmComponents.addOptions({
+        label: alarm.name,
+        description: description,
+        value: alarm.name,  
+      });
+    });
+    alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
+    id++; 
+  }
+
+  return alarmComponents;
+};
+
 module.exports = {
   name: "alarm",
   debug: false,
@@ -260,33 +283,12 @@ module.exports = {
 
         if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to Delete.')] });
 
-        let alarmComponents = [];
-
-        const max = 25;
-        let currentIndex = 0;
-        let id = 1;
-        let currentAlarmComponents = new StringSelectMenuBuilder()
-          .setCustomId(`DeleteAlarmSelect-${id}`)
-          .setPlaceholder(`Select an Alarm to delete.`);
-
-        for (let i = 0; i <= GuildDB.alarms.length; i++) {
-          if (currentIndex == max || i == GuildDB.alarms.length) {
-            alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
-            currentAlarmComponents = new StringSelectMenuBuilder()
-              .setCustomId(`DeleteAlarmSelect-${id}`)
-              .setPlaceholder(`Select an Alarm to delete.`);
-            currentIndex = 0;
-            id++;
-          }
-          
-          currentAlarmComponents.addOptions({
-            label: GuildDB.alarms[i].name,
-            description: `Delete this alarm`,
-            value: GuildDB.alarms[i].name,
-          })
-
-          currentIndex++;
-        }
+        const alarmComponents = generateAlarmMenus(
+          GuildDB.alarms,
+          `DeleteAlarmSelect`,
+          `Select an Alarm to delete.`,
+          `Delete this alarm`
+        );
 
         return interaction.send({ components: alarmComponents, flags: (1 << 6) });
 
@@ -296,33 +298,12 @@ module.exports = {
        
         if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription(`**Notice:** No Existing Alarms to ${add?'Add':'Remove'} Player ${add?'to':'from'}.`)] });
 
-        let alarmComponents = [];
-
-        const max = 25;
-        let currentIndex = 0;
-        let id = 1;
-        let currentAlarmComponents = new StringSelectMenuBuilder()
-          .setCustomId(`ManageAlarmIgnored-${add?'add':'remove'}-${args[0].options[0].value}-${id}`)
-          .setPlaceholder(`Select an Alarm to ${add?'add':'remove'} player ${add?'to':'from'}.`);
-
-        for (let i = 0; i <= GuildDB.alarms.length; i++) {
-          if (currentIndex == max || i == GuildDB.alarms.length) {
-            alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
-            currentAlarmComponents = new StringSelectMenuBuilder()
-              .setCustomId(`ManageAlarmIgnored-${add?'add':'remove'}-${args[0].options[0].value}-${id}`)
-              .setPlaceholder(`Select an Alarm to ${add?'add':'remove'} player ${add?'to':'from'}.`);
-            currentIndex = 0;
-            id++;
-          }
-          
-          currentAlarmComponents.addOptions({
-            label: GuildDB.alarms[i].name,
-            description: `${add?'Add':'Remove'} player ${add?'to':'from'} this Alarm`,
-            value: GuildDB.alarms[i].name
-          });
-
-          currentIndex++;
-        }
+        const alarmComponents = generateAlarmMenus(
+          GuildDB.alarms,
+          `ManageAlarmIgnored-${add?'add':'remove'}-${args[0].options[0].value}`,
+          `Select an Alarm to ${add?'add':'remove'} player ${add?'to':'from'}.`,
+          `${add?'Add':'Remove'} player ${add?'to':'from'} this Alarm`
+        );
 
         return interaction.send({ components: alarmComponents, flags: (1 << 6) });
 
@@ -330,33 +311,12 @@ module.exports = {
 
         if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
 
-        let alarmComponents = [];
-
-        const max = 25;
-        let currentIndex = 0;
-        let id = 1;
-        let currentAlarmComponents = new StringSelectMenuBuilder()
-          .setCustomId(`ManageRule-${args[0].name=='set-rule'?'add':'remove'}${args[0].name=='set-rule'?`-${args[0].options[0].value}`:''}-${id}`)
-          .setPlaceholder(`Select an Alarm to configure.`);
-
-        for (let i = 0; i <= GuildDB.alarms.length; i++) {
-          if (currentIndex == max || i == GuildDB.alarms.length) {
-            alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
-            currentAlarmComponents = new StringSelectMenuBuilder()
-              .setCustomId(`ManageRule-${args[0].name=='set-rule'?'add':'remove'}${args[0].name=='set-rule'?`-${args[0].options[0].value}`:''}-${id}`)
-              .setPlaceholder(`Select an Alarm to configure.`);
-            currentIndex = 0;
-            id++;
-          }
-          
-          currentAlarmComponents.addOptions({
-            label: GuildDB.alarms[i].name,
-            description: `Configure this Alarm`,
-            value: GuildDB.alarms[i].name
-          });
-
-          currentIndex++;
-        }
+        const alarmComponents = generateAlarmMenus(
+          GuildDB.alarms,
+          `ManageRule-${args[0].name=='set-rule'?'add':'remove'}${args[0].name=='set-rule'?`-${args[0].options[0].value}`:''}`,
+          `Select an Alarm to configure.`,
+          `Configure this alarm`
+        );
 
         return interaction.send({ components: alarmComponents, flags: (1 << 6) });
 
@@ -373,7 +333,7 @@ module.exports = {
           ]
         });
 
-        if (!GuildDB.alarms.some(alarm => alarm.disabled == disable)) return interaction.send({
+        if (!GuildDB.alarms.some(alarm => alarm.disabled != disable)) return interaction.send({
           embeds: [
             new EmbedBuilder()
               .setColor(client.config.Colors.Default)
@@ -381,45 +341,12 @@ module.exports = {
           ]
         });
 
-        let alarmComponents = [];
-
-        const max = 25;
-        let currentIndex = 0;
-        let id = 1;
-        let currentAlarmComponents = new StringSelectMenuBuilder()
-          .setCustomId(`EnableOrDisableAlarm-${message}-${id}`)
-          .setPlaceholder(`Select an Alarm to ${message}.`);
-
-        for (let i = 0; i <= GuildDB.alarms.length; i++) {
-          if (currentIndex == max || i == GuildDB.alarms.length) {
-            alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
-            currentAlarmComponents = new StringSelectMenuBuilder()
-              .setCustomId(`EnableOrDisableAlarm-${message}-${id}`)
-              .setPlaceholder(`Select an Alarm to ${message}.`);
-            currentIndex = 0;
-            id++;
-          }
-          
-          // Handle selecting an active alarm to disable
-          if (disable && !GuildDB.alarms[i].disabled) {
-            currentAlarmComponents.addOptions({
-              label: GuildDB.alarms[i].name,
-              description: `Disable this alarm`,
-              value: GuildDB.alarms[i].name,
-            })
-          }
-
-          // Handle selecting a disabled alarm to enable
-          if (!disable && GuildDB.alarms[i].disabled) {
-            currentAlarmComponents.addOptions({
-              label: GuildDB.alarms[i].name,
-              description: `Enable this alarm`,
-              value: GuildDB.alarms[i].name,
-            })
-          }
-
-          currentIndex++;
-        }
+        const alarmComponents = generateAlarmMenus(
+          GuildDB.alarms,
+          `EnableOrDisableAlarm-${message}`,
+          `Select an Alarm to ${message}`,
+          `Configure this alarm`
+        );
 
         return interaction.send({ components: alarmComponents, flags: (1 << 6) });
 
@@ -427,33 +354,12 @@ module.exports = {
 
         if (GuildDB.alarms.length == 0)  return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:**\n> No Existing Alarms to configure.')] });
 
-        let alarmComponents = [];
-
-        const max = 25;
-        let currentIndex = 0;
-        let id = 1;
-        let currentAlarmComponents = new StringSelectMenuBuilder()
-          .setCustomId(`RenameAlarm-${args[0].options[0].value}-${id}`)
-          .setPlaceholder(`Select an Alarm to rename.`);
-
-        for (let i = 0; i <= GuildDB.alarms.length; i++) {
-          if (currentIndex == max || i == GuildDB.alarms.length) {
-            alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
-            currentAlarmComponents = new StringSelectMenuBuilder()
-              .setCustomId(`RenameAlarm-${args[0].options[0].value}-${id}`)
-              .setPlaceholder(`Select an Alarm to rename.`);
-            currentIndex = 0;
-            id++;
-          }
-
-          currentAlarmComponents.addOptions({
-            label: GuildDB.alarms[i].name,
-            description: `Rename this alarm`,
-            value: GuildDB.alarms[i].name, 
-          });
-
-          currentIndex++;
-        }
+        const alarmComponents = generateAlarmMenus(
+          GuildDB.alarms,
+          `RenameAlarm-${args[0].options[0].value}`,
+          `Select an Alarm to rename.`,
+          `Rename this alarm`
+        );
 
         return interaction.send({ components: alarmComponents, flags: (1 << 6) });
 
@@ -461,33 +367,12 @@ module.exports = {
 
         if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
 
-        let alarmComponents = [];
-
-        const max = 25;
-        let currentIndex = 0;
-        let id = 1;
-        let currentAlarmComponents = new StringSelectMenuBuilder()
-          .setCustomId(`MoveOrigin-${args[0].options[0].value}-${args[0].options[1].value}-${id}`)
-          .setPlaceholder(`Select an Alarm to rename.`);
-
-        for (let i = 0; i <= GuildDB.alarms.length; i++) {
-          if (currentIndex == max || i == GuildDB.alarms.length) {
-            alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
-            currentAlarmComponents = new StringSelectMenuBuilder()
-              .setCustomId(`MoveOrigin-${args[0].options[0].value}-${args[0].options[1].value}-${id}`)
-              .setPlaceholder(`Select an Alarm to rename.`);
-            currentIndex = 0;
-            id++;
-          }
-
-          currentAlarmComponents.addOptions({
-            label: GuildDB.alarms[i].name,
-            description: `Move the Origin of this Alarm`,
-            value: GuildDB.alarms[i].name, 
-          });
-
-          currentIndex++;
-        }
+        const alarmComponents = generateAlarmMenus(
+          GuildDB.alarms,
+          `MoveOrigin-${args[0].options[0].value}-${args[0].options[1].value}`,
+          `Select an Alarm to move.`,
+          `Move this alarm`
+        );
 
         return interaction.send({ components: alarmComponents, flags: (1 << 6) });
 
@@ -495,33 +380,12 @@ module.exports = {
 
         if (GuildDB.alarms.length == 0)  return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to configure.')] });
 
-        let alarmComponents = [];
-
-        const max = 25;
-        let currentIndex = 0;
-        let id = 1;
-        let currentAlarmComponents = new StringSelectMenuBuilder()
-          .setCustomId(`MuteAlarm-${args[0].options[0].value ? 1 : 0}-${id}`)
-          .setPlaceholder(`Select an Alarm to mute.`);
-
-        for (let i = 0; i <= GuildDB.alarms.length; i++) {
-          if (currentIndex == max || i == GuildDB.alarms.length) {
-            alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
-            currentAlarmComponents = new StringSelectMenuBuilder()
-              .setCustomId(`MuteAlarm-${args[0].options[0].value ? 1 : 0}-${id}`)
-              .setPlaceholder(`Select an Alarm to rename.`);
-            currentIndex = 0;
-            id++;
-          }
-
-          currentAlarmComponents.addOptions({
-            label: GuildDB.alarms[i].name,
-            description: `Mute role pings of this Alarm`,
-            value: GuildDB.alarms[i].name, 
-          });
-
-          currentIndex++;
-        }
+        const alarmComponents = generateAlarmMenus(
+          GuildDB.alarms,
+          `MuteAlarm-${args[0].options[0].value ? 1 : 0}`,
+          `Select an Alarm to mute.`,
+          `Mute this alarm`
+        );
 
         return interaction.send({ components: alarmComponents, flags: (1 << 6) });
       }

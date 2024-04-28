@@ -328,6 +328,7 @@ class DayzRBot extends Client {
 
       GuildDB.Nitrado.Mission = Missions[settings.settings.config.mission];
 
+      if (settings.game_specific.log_files.length == 0) return; // Ignore if no log files on Nitrado server
       const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
       const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
 
