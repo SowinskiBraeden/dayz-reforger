@@ -40,13 +40,13 @@ module.exports = {
     });
   },
 
-  getDefaultPlayer(gt, pID, NSID) {
+  getDefaultPlayer(gamertag, playerId, nitradoServerId) {
     return {
       // Identifiers
-      gamertag:               gt,
-      playerID:               pID,
+      gamertag:               gamertag,
+      playerID:               playerId,
       discordID:              "",
-      nitradoServerID:        NSID,
+      nitradoServerID:        nitradoServerId,
 
       // General PVP Stats
       KDR:                    0.00,
