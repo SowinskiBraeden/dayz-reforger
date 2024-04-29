@@ -227,7 +227,7 @@ module.exports = {
     const emojiStatus = Statuses[status].emoji || "❓";
     const textStatus  = Statuses[status].text || "Unknown Status";
 
-    let activePlayers = await client.dbo.collection("players").find({"connected": true}).toArray();
+    let activePlayers = await client.dbo.collection("players").find({"nitradoServerID": nitrado_cred.ServerID}).toArray().filter(player => player.connected);
 
     let des = activePlayers.length > 0 ? `` : `**No Players Online**`;
     for (let i = 0; i < activePlayers.length; i++) {
