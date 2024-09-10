@@ -340,130 +340,130 @@ const destinations = {
 	Livonia: [
 		{
 			name: 'Lukow',
-			coord: [3575.00 / 11925.00],
+			coord: [3575.00, 11925.00],
 		}, {
 			name: 'Brena',
-			coord: [6518.75 / 11228.13],
+			coord: [6518.75, 11228.13],
 		}, {
 			name: 'Kolembrody',
-			coord: [8406.25 / 11968.75],
+			coord: [8406.25, 11968.75],
 		}, {
 			name: 'Grabin',
-			coord: [10756.25 / 11062.50],
+			coord: [10756.25, 11062.50],
 		}, {
 			name: 'Sitnik',
-			coord: [11440.63 / 9543.75],
+			coord: [11440.63, 9543.75],
 		}, {
 			name: 'Tarnow',
-			coord: [9275.00 / 10921.88],
+			coord: [9275.00, 10921.88],
 		}, {
 			name: 'Sobatka',
-			coord: [6250.00 / 10193.75],
+			coord: [6250.00, 10193.75],
 		}, {
 			name: 'Gliniska',
-			coord: [5012.50 / 9881.25],
+			coord: [5012.50, 9881.25],
 		}, {
 			name: 'Gliniska Airfield',
-			coord: [3968.75 / 10278.13]
+			coord: [3968.75, 10278.13]
 		}, {
 			name: 'Kopa',
-			coord: [5545.31 / 8748.44],
+			coord: [5545.31, 8748.44],
 		}, {
 			name: 'Olszanka',
-			coord: [4856.25 / 7571.88],
+			coord: [4856.25, 7571.88],
 		}, {
 			name: 'Radacz',
-			coord: [4006.25 / 7972.66],
+			coord: [4006.25, 7972.66],
 		}, {
 			name: 'Topolin',
-			coord: [1665.62 / 7378.13],
+			coord: [1665.62, 7378.13],
 		}, {
 			name: 'Bielawa',
-			coord: [1525.00 / 9700.00],
+			coord: [1525.00, 9700.00],
 		}, {
 			name: 'Adamow',
-			coord: [3081.25 / 6793.75],
+			coord: [3081.25, 6793.75],
 		}, {
 			name: 'Muratyn',
-			coord: [4587.50 / 6387.50],
+			coord: [4587.50, 6387.50],
 		}, {
 			name: 'Lipina',
-			coord: [5943.75 / 6787.50],
+			coord: [5943.75, 6787.50],
 		}, {
 			name: 'Nidek',
-			coord: [6118.75 / 8056.25],
+			coord: [6118.75, 8056.25],
 		}, {
 			name: 'Zapadlisko',
-			coord: [8093.75 / 8710.94],
+			coord: [8093.75, 8710.94],
 		}, {
 			name: 'Krsnik Military',
-			coord: [7841.02 / 10075.39],
+			coord: [7841.02, 10075.39],
 		}, {
 			name: 'Zalesie',
-			coord: [878.12 / 5512.50],
+			coord: [878.12, 5512.50],
 		}, {
 			name: 'Borek Military',
-			coord: [9807.81 / 8500.00],
+			coord: [9807.81, 8500.00],
 		}, {
 			name: 'Polkrabiec',
-			coord: [11878.13 / 6571.09],
+			coord: [11878.13, 6571.09],
 		}, {
 			name: 'Lembork',
-			coord: [8825.00 / 6628.13],
+			coord: [8825.00, 6628.13],
 		}, {
 			name: 'Karlin',
-			coord: [10064.39 / 6924.93],
+			coord: [10064.39, 6924.93],
 		}, {
 			name: 'Radunin',
-			coord: [7301.89 / 6418.68],
+			coord: [7301.89, 6418.68],
 		}, {
 			name: 'Roztoka',
-			coord: [7650.00 / 5246.88],
+			coord: [7650.00, 5246.88],
 		}, {
 			name: 'Sarnowek',
-			coord: [3287.50 / 5009.38],
+			coord: [3287.50, 5009.38],
 		}, {
 			name: 'Huta',
-			coord: [5154.69 / 5520.31],
+			coord: [5154.69, 5520.31],
 		}, {
 			name: 'Drewniki',
-			coord: [5834.38 / 5084.38],
+			coord: [5834.38, 5084.38],
 		}, {
 			name: 'Nadbor',
-			coord: [6056.25 / 4103.13],
+			coord: [6056.25, 4103.13],
 		}, {
 			name: 'Nadbor Military',
-			coord: [5625.00 / 3787.50],
+			coord: [5625.00, 3787.50],
 		}, {
 			name: 'Max',
-			coord: [6448.44 / 4732.81],
+			coord: [6448.44, 4732.81],
 		}, {
 			name: 'Wrzeszcz',
-			coord: [9042.19 / 4385.94],
+			coord: [9042.19, 4385.94],
 		}, {
 			name: 'Gieraltow',
-			coord: [11243.75 / 4332.81],
+			coord: [11243.75, 4332.81],
 		}, {
 			name: 'Konopki',
-			coord: [11460.16 / 2889.84],
+			coord: [11460.16, 2889.84],
 		}, {
 			name: 'Swarog Military',
-			coord: [5017.19 / 2146.88],
+			coord: [5017.19, 2146.88],
 		}, {
 			name: 'Hedrykow',
-			coord: [4487.50 / 4825.00],
+			coord: [4487.50, 4825.00],
 		}, {
 			name: 'Polana',
-			coord: [3296.87 / 2043.75],
+			coord: [3296.87, 2043.75],
 		}, {
 			name: 'Dambog',
-			coord: [597.27 / 1138.67],
+			coord: [597.27, 1138.67],
 		}, {
 			name: 'Dolnik',
-			coord: [11410.94 / 578.12],
+			coord: [11410.94, 578.12],
 		}, {
 			name: 'Widok',
-			coord: [10234.38 / 2165.63],
+			coord: [10234.38, 2165.63],
 		},
 	]
 }
