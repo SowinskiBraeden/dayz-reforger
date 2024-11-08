@@ -6,7 +6,7 @@ const Logger = require("../util/Logger");
 const crypto = require('crypto');
 
 // custom util imports
-const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, PostServerSettings } = require('../util/NitradoAPI');
+const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, PostServerSettings, NitradoCredentialStatus } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
@@ -308,6 +308,7 @@ class DayzRBot extends Client {
       */
 
       if (!c.exists(GuildDB.Nitrado)) return; // Continue if no nitrado credentials
+      if (GuildDB.Nitrado.Status == NitradoCredentialStatus.FAILED) return; // Continue if these credentials are marked as failed
 
       const NitradoCred = {
         ServerID: GuildDB.Nitrado.ServerID, 
@@ -317,17 +318,22 @@ class DayzRBot extends Client {
           c.config.EncryptionMethod,
           c.key,
           c.encryptionIV
-        )
+        ),
       };
 
       const response = await FetchServerSettings(NitradoCred, c, "logsUpdateTimer").then(res => res);
-      if (response == 1) return;
+      if (response == 1) {
+        c.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID }, {$set: { "Nitrado.Status": NitradoCredentialStatus.FAILED }}, (err, _) => {
+          if (err) this.error(`Failed to update Nitrado status to failed. [${GuildDB.serverID}]`);
+        });
+        return;
+      };
       const settings = response.data.gameserver;
 
       // Update Nitrado DayZ Mission if change is detected
       if (GuildDB.Nitrado.Mission !== Missions[settings.settings.config.mission]) {
         c.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: { "Nitrado.Mission": Missions[settings.settings.config.mission] }}, (err, res) => {
-          if (err) this.error(`Failed to save mission to guild config [${guild.serverID}] for nitrado server [${guild.Nitrado.ServerID}]`);
+          if (err) this.error(`Failed to save mission to guild config [${GuildDB.serverID}] for nitrado server [${GuildDB.Nitrado.ServerID}]`);
         });
       }
 
