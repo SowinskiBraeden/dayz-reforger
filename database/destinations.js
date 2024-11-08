@@ -4,6 +4,7 @@ module.exports = {
 	Missions: {
   	"dayzOffline.chernarusplus": "Chernarus",
   	"dayzOffline.enoch": "Livonia",
+  	"dayzOffline.sakhal": "Sakhal",
 	},
 
 	// Calculates the nearest location to a given coordinate
@@ -465,5 +466,219 @@ const destinations = {
 			name: 'Widok',
 			coord: [10234.38, 2165.63],
 		},
-	]
+	],
+	Sakhal: [
+		{
+			name: 'Tochka',
+			coord: [3731.25 / 14404.69],
+		},
+		{
+			name: 'Utes',
+			coord: [5396.25 / 14539.69],
+		},
+		{
+			name: 'Sputnik',
+			coord: [7738.13 / 14820.00],
+		},
+		{
+			name: 'West Uzhki',
+			coord: [10501.88 / 14588.44],
+		},
+		{
+			name: 'East Uzhki',
+			coord: [11251.88 / 14420.63],
+		},
+		{
+			name: 'Tungar',
+			coord: [12673.13 / 14116.88],
+		},
+		{
+			name: 'Jasnomorsk',
+			coord: [6953.44 / 13388.44],
+		},
+		{
+			name: 'Jevai',
+			coord: [7937.81 / 13541.25],
+		},
+		{
+			name: 'Tumanovo',
+			coord: [8444.06 / 13693.13],
+		},
+		{
+			name: 'Severomorsk',
+			coord: [9570.94 / 13525.31],
+		},
+		{
+			name: 'Orlovo',
+			coord: [10369.69 / 13320.94],
+		},
+		{
+			name: 'Podgornoe',
+			coord: [10984.69 / 13170.94],
+		},
+		{
+			name: 'Rybnoe',
+			coord: [12423.75 / 12722.81],
+		},
+		{
+			name: 'Rudnogorsk',
+			coord: [13573.13 / 11874.38],
+		},
+		{
+			name: 'Matrosovo',
+			coord: [14266.88 / 11621.25],
+		},
+		{
+			name: 'Vajkovo',
+			coord: [14555.63 / 9804.38],
+		},
+		{
+			name: 'Sumnoe',
+			coord: [14385.00 / 8866.88],
+		},
+		{
+			name: 'Vostok',
+			coord: [13908.75 / 8362.50],
+		},
+		{
+			name: 'Aniva',
+			coord: [12823.13 / 7370.63],
+		},
+		{
+			name: 'Juznoe',
+			coord: [10950.00 / 6313.13],
+		},
+		{
+			name: 'Taranay',
+			coord: [9703.13 / 6547.50],
+		},
+		{
+			name: 'Nogovo',
+			coord: [7681.88 / 7848.75],
+		},
+		{
+			name: 'Airfield',
+			coord: [7104.38 / 7325.63],
+		},
+		{
+			name: 'Dudino',
+			coord: [6133.13 / 7286.25],
+		},
+		{
+			name: 'Bolotnoe',
+			coord: [5083.13 / 8660.63],
+		},
+		{
+			name: 'South Petropavlovsk-Sachalsky',
+			coord: [5443.13 / 10001.25],
+		},
+		{
+			name: 'North Petropavlovsk-Sachalsky',
+			coord: [5585.63 / 11197.50],
+		},
+		{
+			name: 'Zupanovo',
+			coord: [5747.81 / 12585.94],
+		},
+		{
+			name: 'Sovetskoe',
+			coord: [6398.44 / 12825.00],
+		},
+		{
+			name: 'Neran',
+			coord: [2685.00 / 9251.25],
+		},
+		{
+			name: 'Tugar',
+			coord: [1742.81 / 6121.88],
+		},
+		{
+			name: 'Cerny Mys',
+			coord: [5173.13 / 3828.75],
+		},
+		{
+			name: 'Kekra',
+			coord: [7066.88 / 4280.63],
+		},
+		{
+			name: 'Slomanyy',
+			coord: [6333.75 / 6453.75],
+		},
+		{
+			name: 'Utichy',
+			coord: [8563.13 / 5079.38],
+		},
+		{
+			name: 'Elizarovo',
+			coord: [13395.00 / 5175.00],
+		},
+		{
+			name: 'Solisko',
+			coord: [12693.75 / 2291.25],
+		},
+		{
+			name: 'Mrak',
+			coord: [8480.63 / 1313.44],
+		},
+		{
+			name: 'Ketoj',
+			coord: [5626.88 / 1991.25],
+		},
+		{
+			name: 'Urup',
+			coord: [1680.00 / 870.00],
+		},
+		{
+			name: 'Ayan',
+			coord: [1018.12 / 2891.25],
+		},
+		{
+			name: 'Cerepacha',
+			coord: [813.75 / 11287.50],
+		},
+		{
+			name: 'Odinokij Vulkan',
+			coord: [10020.00 / 12008.44],
+		},
+		{
+			name: 'Pik Bolcij',
+			coord: [8195.63 / 11675.63],
+		},
+		{
+			name: 'Sakhalskaj GeoES',
+			coord: [8366.25 / 10274.06],
+		},
+		{
+			name: 'Dolinovka',
+			coord: [9823.13 / 9838.13],
+		},
+		{
+			name: 'Lesogorovka',
+			coord: [11006.25 / 9729.38],
+		},
+		{
+			name: 'Sachalag Military',
+			coord: [12140.63 / 9757.50],
+		},
+		{
+			name: 'Goriachevo',
+			coord: [8887.50 / 10018.13],
+		},
+		{
+			name: 'Yasnaya Polyana',
+			coord: [8128.13 / 9150.00],
+		},
+		{
+			name: 'Tichoe',
+			coord: [6245.63 / 8655.00],
+		},
+		{
+			name: 'Ledanoj Greben Military',
+			coord: [10378.13 / 8555.63],
+		},
+		{
+			name: 'Vysokoe',
+			coord: [11165.63 / 7910.63],
+		},
+	],
 }
