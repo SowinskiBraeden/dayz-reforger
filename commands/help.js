@@ -133,17 +133,26 @@ module.exports = {
         return interaction.send({ embeds: [creditsEmbed] })
       } else if (args[0].name == 'stats') {
         const end = new Date().getTime();
+        
+        const totalGuilds = await client.shard.fetchClientValues("guilds.cache.size").then(results => {
+          return results.reduce((acc, guildCount) => acc + guildCount, 0);
+        });
+        
+        const totalUsers = await client.shard.broadcastEval(c => {
+          c.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0);
+        }).then(data => data.reduce((acc, memberCount) => acc + memberCount, 0));
+        
         const stats = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setTitle('DayZ Reforger Bot Statistics')
           .addFields(
-            { name: 'Guilds', value: `${client.guilds.cache.size}`, inline: true },
-            { name: 'Users', value: `${client.users.cache.size}`, inline: true },
-            { name: 'Latency', value: `${end - start}ms`, inline: true },
-            { name: 'Uptime', value: `${client.secondsToDhms(process.uptime().toFixed(2))}`, inline: true },
-            { name: 'Bot Version', value: `${client.config.Dev} v${client.config.Version}`, inline: true },
-            { name: 'Discord Version', value: `Discord.js ${package.dependencies["discord.js"]}`, inline: true },
-            { name: 'MongoDB Version', value: `MongoDB    ${package.dependencies.mongodb}`, inline: true},
+            { name: 'Guilds', value: `${totalGuilds}`, inline: false },
+            { name: 'Users', value: `${totalUsers}`, inline: false },
+            { name: 'Latency', value: `${end - start}ms`, inline: false },
+            { name: 'Uptime', value: `${client.secondsToDhms(process.uptime().toFixed(2))}`, inline: false },
+            { name: 'Bot Version', value: `${client.config.Dev} v${client.config.Version}`, inline: false },
+            { name: 'Discord Version', value: `Discord.js ${package.dependencies["discord.js"]}`, inline: false },
+            { name: 'MongoDB Version', value: `MongoDB    ${package.dependencies.mongodb}`, inline: false },
           );
 
         return interaction.send({ embeds: [stats] })
