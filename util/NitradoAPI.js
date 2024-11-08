@@ -301,5 +301,10 @@ module.exports = {
     if (uploaded == 1) return 1;
    
     return 0;
-  }
+  },
+
+  NitradoCredentialStatus: {
+    FAILED:  "FAILED",
+    OK:      "OK",
+  },
 }

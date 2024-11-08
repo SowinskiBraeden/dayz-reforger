@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
 const bitfieldCalculator = require('discord-bitfield-calculator');
-const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage } = require('../util/NitradoAPI');
+const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage, NitradoCredentialStatus } = require('../util/NitradoAPI');
 const { encrypt, decrypt } = require('../util/Cryptic');
 
 module.exports = {
@@ -286,6 +286,7 @@ module.exports = {
                       client.key,
                       client.encryptionIV
                     ), // Encrypt the Authentication Token
+          Status:   NitradoCredentialStatus.OK, // Indicate if these credentials dont work
         };
 
         await client.dbo.collection('guilds').updateOne({ "server.serverID": GuildDB.serverID }, { $set: { "Nitrado": Nitrado } }, (err, res) => {
