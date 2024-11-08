@@ -93,22 +93,27 @@ class DayzRBot extends Client {
           );
         }
 
-        for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
-          const guild = this.guilds.cache.get(GuildDB.serverID);
-          const role = guild.roles.cache.find(role => role.id == factionID);
-          if (!role) {
-            let query = {
-              $pull: { 'server.usedArmbands': data.armband },
-              $unset: { [`server.factionArmbands.${factionID}`]: "" },
-            };
-            this.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
-              if (err) return this.sendInternalError(interaction, err);
-            });
-          }
-        }
-
         const command = interaction.data.name.toLowerCase();
         const args = interaction.data.options;
+
+        // Free unused armbands for related commands
+        if (['armbands', 'claim', 'factions'].includes(command)) {
+          for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
+            const guild = client.guilds.cache.get(GuildDB.serverID);
+            const role = guild.roles.cache.find(role => role.id == factionID);
+            if (!role) {
+              let query = {
+                $pull: { 'server.usedArmbands': data.armband },
+                $unset: { [`server.factionArmbands.${factionID}`]: "" },
+              };
+              await client.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
+                if (err) return client.sendInternalError(interaction, err);
+              });
+            } else {
+              newFactionArmbands[`${factionID}`] = data;
+            }
+          }
+        }
 
         this.log(`Interaction [${interaction.guild_id}] - ${command}`);
 

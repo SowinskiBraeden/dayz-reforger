@@ -15,6 +15,7 @@ module.exports = {
       "Signal Pistol": "https://static.wikia.nocookie.net/dayz_gamepedia/images/a/a7/Flaregun.png/revision/latest/scale-to-width-down/107?cb=20210501150913",
     },
     shotguns: {
+      "BK-12": "https://static.wikia.nocookie.net/dayz_gamepedia/images/c/cb/Izh18Shotgun.png/revision/latest/scale-to-width-down/256?cb=20220922184507", 
       "BK-133": "https://static.wikia.nocookie.net/dayz_gamepedia/images/5/5c/MP-133-Shotgun.png/revision/latest/scale-to-width-down/256?cb=20210210190104",
       "BK-43": "https://static.wikia.nocookie.net/dayz_gamepedia/images/c/c7/Izh43Shotgun.png/revision/latest/scale-to-width-down/256?cb=20210210185835",
       "Vaiga": "https://static.wikia.nocookie.net/dayz_gamepedia/images/c/c8/Vaiga.png/revision/latest/scale-to-width-down/256?cb=20220220185225",
@@ -48,6 +49,7 @@ module.exports = {
       "Mosin 91/30": "https://static.wikia.nocookie.net/dayz_gamepedia/images/a/a8/Mosin9130.png/revision/latest/scale-to-width-down/256?cb=20230126021955",
       "Pioneer": "https://static.wikia.nocookie.net/dayz_gamepedia/images/6/69/Scout.png/revision/latest/scale-to-width-down/256?cb=20220518204357",
       "SSG 82": "https://static.wikia.nocookie.net/dayz_gamepedia/images/1/10/SSG82.png/revision/latest/scale-to-width-down/256?cb=20220922192455",
+      "VS-89": "https://static.wikia.nocookie.net/dayz_gamepedia/images/e/ea/SV98.png/revision/latest/scale-to-width-down/256?cb=20240424164607",
     },
     breakActionRifles: {
       "BK-18": "https://static.wikia.nocookie.net/dayz_gamepedia/images/c/cb/IZH18_Rifle.png/revision/latest/scale-to-width-down/256?cb=20220517154121",
@@ -59,9 +61,9 @@ module.exports = {
     marksmanRifles: {
       "VSD": "https://static.wikia.nocookie.net/dayz_gamepedia/images/a/a2/SVD_w._PSO-1.png/revision/latest/scale-to-width-down/256?cb=20220220235826",
       "VSS": "https://static.wikia.nocookie.net/dayz_gamepedia/images/8/83/VSSVintorez.png/revision/latest/scale-to-width-down/256?cb=20210208202042",
-      "DMR": "https://static.wikia.nocookie.net/dayz_gamepedia/images/b/b4/M14.png/revision/latest/scale-to-width-down/350?cb=20231005142636",
     },
     semiAutomaticRifles: {
+      "DMR": "https://static.wikia.nocookie.net/dayz_gamepedia/images/b/b4/M14.png/revision/latest/scale-to-width-down/350?cb=20231005142636",
       "SK 59/66": "https://static.wikia.nocookie.net/dayz_gamepedia/images/f/fe/SKS.png/revision/latest/scale-to-width-down/256?cb=20220517154633",
       "Sporter 22": "https://static.wikia.nocookie.net/dayz_gamepedia/images/5/5b/Sporter_22_Wood.png/revision/latest/scale-to-width-down/256?cb=20220518204154",  
     },
