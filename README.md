@@ -79,6 +79,6 @@ The bot requires minimal setup to get started.
 
 ## Contact
 
-Braeden Sowinski - [@BraedenSowinski](https://twitter.com/BraedenSowinski) - sowinskibraeden@gmail.com - @mcdazzzled on Discord
+Braeden Sowinski - [@BraedenSowinski](https://twitter.com/BraedenSowinski) - braeden@sowinski.dev - @mcdazzzled on Discord
 
 Project Link: [https://github.com/SowinskiBraeden/dayz-reforger](https://github.com/SowinskiBraeden/dayz-reforger)
