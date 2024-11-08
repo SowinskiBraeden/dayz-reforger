@@ -27,6 +27,18 @@ module.exports = {
     type: CommandOptions.SubCommand,
   },
   {
+    name: "credentials-status",
+    description: "Check the status of your Nitrado Credentials",
+    value: "credentials-status",
+    type: CommandOptions.SubCommand,
+  },
+  {
+    name: "retry-credentials",
+    description: "If your credentials are marked as FAILED, try retreiving Nitrado logs again.",
+    value: "retry-credentials",
+    type: CommandOptions.SubCommand,
+  },
+  {
     name: "ban-player",
     description: "Ban a player from the DayZ server",
     value: "ban-player",
@@ -180,7 +192,30 @@ module.exports = {
       
       if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Notice:**\nThis Discord guild has not been configured with a Nitrado DayZ server. To configure your guild, use </server initialize:1166877457559851011>`)] });
 
-      if (args[0].name == 'ban-player') {
+      if (args[0].name == 'credentials-status') {
+
+        const notice = GuildDB.Nitrado.Status == NitradoCredentialStatus.OK ? "Your provided Nitrado Credentials are working correctly, logs are being checked." : "Your provided Nitrado Credentials are not working. They may be incorrect, or your server may be down. Ensure your DayZ server is online, and try to initialize your server again and verify your credentials are correct."
+        const statusEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setTitle("Nitrado Credentials Status")
+          .setDescription(`**Status**\n> \`${GuildDB.Nitrado.Status}\`\n> ${notice}`);
+
+        return interaction.send({ embeds: [statusEmbed] });
+
+      } else if (args[0].name == 'retry-credentials') {
+
+        client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set:{"Nitrado.Status": NitradoCredentialStatus.OK}}, (err, _) => {
+          if (err) return client.sendInternalError(interaction, err);
+        });
+
+        const updatedEmbed = new EmbedBuilder()
+          .setColor(client.config.Colors.Green)
+          .setTitle("Updated Nitrado Credentials Status")
+          .setDescription(`**Success**\n> Successfully retrying your existing Nitrado Credentials to check DayZ logs.`);
+
+        return interaction.send({ embeds: [updatedEmbed] });
+
+      } else if (args[0].name == 'ban-player') {
 
         let data = await BanPlayer(GuildDB.Nitrado, client, args[0].options[0].value);
 
