@@ -21,6 +21,12 @@ module.exports = {
     type: CommandOptions.SubCommand,
   },
   {
+    name: "disconnect",
+    description: "Delete your Nitrado server from the bot database",
+    value: "disconnect",
+    type: CommandOptions.SubCommand,
+  },
+  {
     name: "ban-player",
     description: "Ban a player from the DayZ server",
     value: "ban-player",
@@ -150,6 +156,26 @@ module.exports = {
 
         return interaction.showModal(NitradoCredentials);
 
+      } else if (args[0].name == 'disconnect') {
+
+        const prompt = new EmbedBuilder()
+          .setTitle(`Delete your Nitrado Server?`)
+          .setDescription('**Notice:** This will completely delete your configured Nitrado server from the bot database.')
+          .setColor(client.config.Colors.Yellow)
+
+        const opt = new ActionRowBuilder()
+          .addComponents(
+            new ButtonBuilder()
+            .setCustomId(`DeleteNitrado-yes-${interaction.member.user.id}`)
+              .setLabel("Yes")
+              .setStyle(ButtonStyle.Danger),
+            new ButtonBuilder()
+              .setCustomId(`DeleteNitrado-no-${interaction.member.user.id}`)
+              .setLabel("No")
+              .setStyle(ButtonStyle.Success)
+          )
+
+        return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
       }
       
       if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Notice:**\nThis Discord guild has not been configured with a Nitrado DayZ server. To configure your guild, use </server initialize:1166877457559851011>`)] });
@@ -312,7 +338,40 @@ module.exports = {
           return interaction.update({ embeds: [], components: [], content: 'Cancelled Overwriting Nitrado Server Information', flags: (1 << 6) });
         }
       }
-    }
+    },
+
+    DeleteNitrado: {
+      run: async(client, interaction, GuildDB) => {
+        if (!interaction.customId.endsWith(interaction.member.user.id))
+          return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
+
+        if (interaction.customId.split('-')[1] == 'yes') {
+          await client.dbo.collection('guilds').updateOne({ "server.serverID": GuildDB.serverID }, { $set: { "Nitrado": null } }, (err, _) => {
+            if (err) client.sendInternalError(interaction, err);
+          });
+
+          return interaction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor(client.config.Colors.Green)
+                .setDescription(`**Success**\n> Successfully removed your Nitrado credentials from the database.`)
+            ],
+            components: [],
+            flags: (1 << 6)
+          });
+        } else {
+          return interaction.update({
+            embeds: [
+              new EmbedBuilder()
+                .setColor(client.config.Colors.Green)
+                .setDescription(`**Cancelled**\n> Your Nitrado credentials were not removed from the database.`)
+            ],
+            components: [],
+            flags: (1 << 6)
+          });
+        }
+      }
+    },
 
   }
 }
