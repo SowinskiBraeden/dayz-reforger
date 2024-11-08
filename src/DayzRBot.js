@@ -96,7 +96,7 @@ class DayzRBot extends Client {
         const command = interaction.data.name.toLowerCase();
         const args = interaction.data.options;
 
-        // Free unused armbands for any command required
+        // Free unused armbands for related commands
         if (['armbands', 'claim', 'factions'].includes(command)) {
           for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
             const guild = client.guilds.cache.get(GuildDB.serverID);
