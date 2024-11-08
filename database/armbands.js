@@ -97,7 +97,7 @@ module.exports = {
       url: "https://static.wikia.nocookie.net/dayz_gamepedia/images/4/42/Flag_jolly_c_co.png/revision/latest?cb=20200820222641"
     },
     {
-      name: "North Sahrani (KOS)",
+      name: "South Sahrani (KOS)",
       url: "https://static.wikia.nocookie.net/dayz_gamepedia/images/a/a1/Flag_kos_co.png/revision/latest?cb=20200820222644"
     },
     {
