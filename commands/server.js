@@ -194,11 +194,12 @@ module.exports = {
 
       if (args[0].name == 'credentials-status') {
 
-        const notice = GuildDB.Nitrado.Status == NitradoCredentialStatus.OK ? "Your provided Nitrado Credentials are working correctly, logs are being checked." : "Your provided Nitrado Credentials are not working. They may be incorrect, or your server may be down. Ensure your DayZ server is online, and try to initialize your server again and verify your credentials are correct."
+        const ok = GuildDB.Nitrado.Status == NitradoCredentialStatus.OK;
+        const notice = ok ? "Your provided Nitrado Credentials are working correctly, logs are being checked." : "Your provided Nitrado Credentials are not working. They may be incorrect, or your server may be down. Ensure your DayZ server is online, and try to initialize your server again and verify your credentials are correct."
         const statusEmbed = new EmbedBuilder()
-          .setColor(client.config.Colors.Green)
+          .setColor(ok ? client.config.Colors.Green : client.config.Colors.Red)
           .setTitle("Nitrado Credentials Status")
-          .setDescription(`**Status**\n> \`${GuildDB.Nitrado.Status}\`\n> ${notice}`);
+          .setDescription(`**Status:** \`${GuildDB.Nitrado.Status}\`\n> ${notice}`);
 
         return interaction.send({ embeds: [statusEmbed] });
 
