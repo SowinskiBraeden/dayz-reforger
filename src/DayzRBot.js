@@ -109,8 +109,6 @@ class DayzRBot extends Client {
               await client.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
                 if (err) return client.sendInternalError(interaction, err);
               });
-            } else {
-              newFactionArmbands[`${factionID}`] = data;
             }
           }
         }
