@@ -100,6 +100,12 @@ module.exports = {
           description: "Clears all configured channels",
           value: "clear",
           type: CommandOptions.SubCommand,   
+        },
+        {
+          name: "view",
+          description: "View configured allowed channels",
+          value: "view",
+          type: CommandOptionTypes.SubCommand,
         }
       ]
     },
@@ -478,6 +484,30 @@ module.exports = {
             return interaction.send({ embeds: [promptClearChannels], components: [optClearChannels], flags: (1 << 6) });
             
 
+          } else if (channels_config == 'view') {
+            
+            if (!GuildDB.customChannelStatus) {
+              const noConfiguredChannels = new EmbedBuilder()
+                .setColor(client.config.Colors.Default)
+                .setTitle('Channels')
+                .setDescription('> There are no configured channels');
+
+              return interaction.send({ embeds: [noConfiguredChannels] });
+            }
+
+            const configuredChannels = new EmbedBuilder()
+              .setColor(client.config.Colors.Default)
+              .setTitle('Channels')
+
+            let des = '';
+            for (let i = 0; i < GuildDB.allowedChannels.length; i++) {
+              if (i == 0) des += `> <#${GuildDB.allowedChannels[i]}>`;
+              else des += `\n> <#${GuildDB.allowedChannels[i]}>`;
+            }
+            configuredChannels.setDescription(des);
+
+            return interaction.send({ embeds: [configuredChannels] });
+          
           }
 
         case 'bot_admin_role':
