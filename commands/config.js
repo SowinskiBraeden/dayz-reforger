@@ -217,26 +217,41 @@ module.exports = {
     },
     {
       name: "exclude",
-      description: "Exclude roles that users can use to claim an armband",
+      description: "Exclude roles that can be used to claim armbands",
       value: "exclude",
-      type: CommandOptions.SubCommand,
+      type: CommandOptions.SubCommandGroup,
       options: [
-        {
-          name: "action",
-          description: "Add or remove a role from the exclude list.",
-          value: "action",
-          type: CommandOptions.String,
-          choices: [
-            { name: 'add', value: 'add' }, { name: 'remove', value: 'remove' },
-          ],
-          required: true,
+         {
+          name: "add",
+          description: "Configure role to be excluded",
+          value: "add",
+          type: CommandOptions.SubCommand,
+          options: [{
+            name: "role",
+            description: "Role to confiure",
+            value: "role",
+            type: CommandOptions.Role,
+            required: true,
+          }]
         },
         {
-          name: "role",
-          description: "The role to manage",
-          value: "role",
-          type: CommandOptions.Role,
-          required: true,
+          name: "remove",
+          description: "Remove configured role thats excluded",
+          value: "remove",
+          type: CommandOptions.SubCommand,
+          options: [{
+            name: "role",
+            description: "Role to remove",
+            value: "role",
+            type: CommandOptions.Role,
+            required: true,
+          }]
+        },
+        {
+          name: "view",
+          description: "View the configured excluded roles",
+          value: "view",
+          type: CommandOptions.SubCommand,
         },
       ]
     },
@@ -605,27 +620,54 @@ module.exports = {
           return interaction.send({ embeds: [successSetAdminRoleEmbed] });
 
         case 'exclude':
-          if (args[0].options[0].value == 'add') {
-            client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$push: {'server.excludedRoles': args[0].options[1].value}}, (err, res) => {
+          const exclude_config = args[0].options[0].name;
+          const exclude_roleid = ['add', 'remove'].includes(exclude_config) ? args[0].options[0].options[0].value : null;
+          
+          if (exclude_config == 'add') {
+            client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$push: {'server.excludedRoles': exclude_roleid}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
             })
 
             const successExcludeEmbed = new EmbedBuilder()
               .setColor(client.config.Colors.Green)
-              .setDescription(`**Done!**\n> Successfully added <@&${args[0].options[1].value}> to list of excluded roles.`)
+              .setDescription(`**Done!**\n> Successfully added <@&${exclude_roleid}> to list of excluded roles.`)
 
             return interaction.send({ embeds: [successExcludeEmbed] });
 
-          } else if (args[0].options[0].value == 'remove') {
-            client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$pull: {'server.excludedRoles': args[0].options[1].value}}, (err, res) => {
+          } else if (exclude_config == 'remove') {
+            client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$pull: {'server.excludedRoles': exclude_roleid}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
             })
 
             const successRemoveExcludeEmbed = new EmbedBuilder()
               .setColor(client.config.Colors.Green)
-              .setDescription(`**Done!**\n> Successfully removed <@&${args[0].options[1].value}> to list of excluded roles.`)
+              .setDescription(`**Done!**\n> Successfully removed <@&${exclude_roleid}> to list of excluded roles.`)
 
             return interaction.send({ embeds: [successRemoveExcludeEmbed] });
+          
+          } else if (exclude_config == "view") {
+
+            if (GuildDB.excludedRoles.length == 0) {
+              const noExcludedRoles = new EmbedBuilder()
+                .setColor(client.config.Colors.Default)
+                .setTitle('Excluded Roles')
+                .setDescription('> There have been no excluded roles');
+
+              return interaction.send({ embeds: [noExcludedRoles] });
+            }
+
+            const excludedRolesEmbed = new EmbedBuilder()
+              .setColor(client.config.Colors.Default)
+              .setTitle('Excluded Roles')
+
+            let des = '';
+            for (let i = 0; i < GuildDB.excludedRoles.length; i++) {
+              des += `\n> <@&${GuildDB.excludedRoles[i]}>`;
+            }
+            excludedRolesEmbed.setDescription(des);
+
+            return interaction.send({ embeds: [excludedRolesEmbed] });
+
           }
 
         case 'reset':
