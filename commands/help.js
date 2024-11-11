@@ -146,13 +146,12 @@ module.exports = {
           .setColor(client.config.Colors.Default)
           .setTitle('DayZ Reforger Bot Statistics')
           .addFields(
-            { name: 'Guilds', value: `${totalGuilds}`, inline: false },
-            { name: 'Users', value: `${totalUsers}`, inline: false },
-            { name: 'Latency', value: `${end - start}ms`, inline: false },
-            { name: 'Uptime', value: `${client.secondsToDhms(process.uptime().toFixed(2))}`, inline: false },
-            { name: 'Bot Version', value: `${client.config.Dev} v${client.config.Version}`, inline: false },
-            { name: 'Discord Version', value: `Discord.js ${package.dependencies["discord.js"]}`, inline: false },
-            { name: 'MongoDB Version', value: `MongoDB    ${package.dependencies.mongodb}`, inline: false },
+            { name: 'Guilds',          value: `\`\`\`${totalGuilds}\`\`\``,                                       inline: true },
+            { name: 'Users',           value: `\`\`\`${totalUsers}\`\`\``,                                        inline: true },
+            { name: 'Latency',         value: `\`\`\`${end - start}ms\`\`\``,                                     inline: true },
+            { name: 'Uptime',          value: `\`\`\`${client.secondsToDhms(process.uptime().toFixed(2))}\`\`\``, inline: true },
+            { name: 'Bot Version',     value: `\`\`\`${client.config.Dev} v${client.config.Version}\`\`\``,       inline: true },
+            { name: 'Discord Version', value: `\`\`\`Discord.js ${package.dependencies["discord.js"]}\`\`\``,     inline: true },
           );
 
         return interaction.send({ embeds: [stats] })
