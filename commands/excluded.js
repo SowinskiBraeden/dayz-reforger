@@ -24,7 +24,7 @@ module.exports = {
         let noExcludes = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setTitle('Excluded Roles')
-          .setDescription('> There have been no configured channels');
+          .setDescription('> There have been no excluded roles');
 
         return interaction.send({ embeds: [noExcludes] });
       }

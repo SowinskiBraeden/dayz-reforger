@@ -105,7 +105,7 @@ module.exports = {
           name: "view",
           description: "View configured allowed channels",
           value: "view",
-          type: CommandOptionTypes.SubCommand,
+          type: CommandOptions.SubCommand,
         }
       ]
     },
@@ -166,25 +166,40 @@ module.exports = {
       name: "bot_admin_role",
       description: "Set/remove bot admin role",
       value: "bot_admin_role",
-      type: CommandOptions.SubCommand,
+      type: CommandOptions.SubCommandGroup,
       options: [
         {
-          name: "action",
-          description: "Set or remove a role to be a bot administrator",
-          value: "action",
-          type: CommandOptions.String,
-          choices: [
-            { name: 'add', value: 'add' }, { name: 'remove', value: 'remove' },
-          ],
-          required: true,
+          name: "add",
+          description: "Configure role to be bot admin",
+          value: "add",
+          type: CommandOptions.SubCommand,
+          options: [{
+            name: "role",
+            description: "Role to confiure",
+            value: "role",
+            type: CommandOptions.Role,
+            required: true,
+          }]
         },
         {
-          name: "role",
-          description: "Role to configure",
-          value: "role",
-          type: CommandOptions.Role,
-          required: true,
+          name: "remove",
+          description: "Remove configured role as bot admin",
+          value: "remove",
+          type: CommandOptions.SubCommand,
+          options: [{
+            name: "role",
+            description: "Role to remove",
+            value: "role",
+            type: CommandOptions.Role,
+            required: true,
+          }]
         },
+        {
+          name: "view",
+          description: "View the configured bot admin roles",
+          value: "view",
+          type: CommandOptions.SubCommand,
+        }
       ]
     },
     {
@@ -511,8 +526,9 @@ module.exports = {
           }
 
         case 'bot_admin_role':
-          if (args[0].options[0].value == 'add') {
-            const botAdminRoleId = args[0].options[1].value;
+          const bot_admin_config = args[0].options[0].name;
+          const botAdminRoleId = ['add', 'remove'].includes(bot_admin_config) ? args[0].options[0].options[0].value : null;
+          if (bot_admin_config == 'add') {
 
             client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$push: {"server.botAdminRoles": botAdminRoleId}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
@@ -524,7 +540,7 @@ module.exports = {
       
             return interaction.send({ embeds: [successSetBotAdminRoleEmbed] });    
 
-          } else if (args[0].options[0].value== 'remove') {
+          } else if (bot_admin_config == 'remove') {
 
             if (!GuildDB.botAdminRoles.includes(botAdminRoleId)) {
               const nonAdminRoleEmbed = new EmbedBuilder()
@@ -551,6 +567,30 @@ module.exports = {
               )
 
             return interaction.send({ embeds: [promptRemoveAdminRole], components: [optRemoveAdminRole], flags: (1 << 6) });
+          
+          } else if (bot_admin_config == 'view') {
+
+            if (GuildDB.botAdminRoles.length == 0) {
+              const noBotAdminRoles = new EmbedBuilder()
+                .setColor(client.config.Colors.Default)
+                .setTitle('Admin Roles')
+                .setDescription('> There have been no configured admin roles');
+
+              return interaction.send({ embeds: [noBotAdminRoles] });
+            }
+
+            const botAdminRolesEmbed = new EmbedBuilder()
+              .setColor(client.config.Colors.Default)
+              .setTitle('Admin Roles')
+
+            let des = '';
+            for (let i = 0; i < GuildDB.botAdminRoles.length; i++) {
+              des += `\n> <@&${GuildDB.botAdminRoles[i]}>`;
+            }
+            botAdminRolesEmbed.setDescription(des);
+
+            return interaction.send({ embeds: [botAdminRolesEmbed] });
+
           }
 
         case 'admin_role':
