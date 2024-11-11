@@ -203,9 +203,9 @@ module.exports = {
       ]
     },
     {
-      name: "admin_role",
+      name: "admin_ping_role",
       description: "Admin role to ping in admin logs channel",
-      value: "admin_role",
+      value: "admin_ping_role",
       type: CommandOptions.SubCommand,
       options: [{
         name: "role",
@@ -593,7 +593,7 @@ module.exports = {
 
           }
 
-        case 'admin_role':
+        case 'admin_ping_role':
           client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.adminRole": args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });

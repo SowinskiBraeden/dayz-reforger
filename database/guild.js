@@ -94,6 +94,7 @@ module.exports = {
       
       linkedGamertagRole:    "",
       memberRole:            "",
+      adminRole:             "",
       
       combatLogTimer:        5, // minutes
     }
