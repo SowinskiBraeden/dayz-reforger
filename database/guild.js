@@ -37,6 +37,7 @@ module.exports = {
       factionArmbands:       guild.server.factionArmbands,
       usedArmbands:          guild.server.usedArmbands,
       excludedRoles:         guild.server.excludedRoles,
+      hasExcludedRoles:      guild.server.excludedRoles.length > 0 ? true : false,
       botAdminRoles:         guild.server.botAdminRoles,
             
       alarms:                guild.server.alarms,
@@ -93,7 +94,6 @@ module.exports = {
       
       linkedGamertagRole:    "",
       memberRole:            "",
-      adminRole:             "",
       
       combatLogTimer:        5, // minutes
     }

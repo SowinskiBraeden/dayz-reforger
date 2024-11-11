@@ -579,24 +579,67 @@ module.exports = {
           return interaction.send({ embeds: [promptReset], components: [optReset], flags: (1 << 6) });
       
         case 'view':
-          const channelsInfo = GuildDB.customChannelStatus ? '\n╚➤ \`/channels\` to view' : '';
-          const channelColor = GuildDB.customChannelStatus ? '+ ' : '- ';
-          let botAdminRoles = '';
-          for (let i = 0; i < GuildDB.botAdminRoles.length; i++) {
-            botAdminRoles += `\n╚➤ <@&${GuildDB.botAdminRoles[i]}>`;
-          }
-          const botAdminRoleColor = GuildDB.hasBotAdmin ? `+ ` : '- ';
-          const excludedRolesColor = GuildDB.excludedRoles.length > 0 ? `+ ` : '- ';
-          const excludedRolesInfo = GuildDB.excludedRoles.length > 0 ? '\n╚➤ \`/excluded\` to view' : '';
 
+          // wrappers
+          const w = "\`\`\`";
+          const a = "ansi\n";
+          const f = "fix\n";
+          const m = "arm\n"
+          const g = "[2;32m";
+          const r = "[2;31m";
+
+          // boolean display
+          const autoRestart             = GuildDB.autoRestart        ? `${g}true` : `${r}false`;
+          const showKillfeedCoords      = GuildDB.showKillfeedCoords ? `${g}true` : `${r}false`;
+          const showKillfeedWeapon      = GuildDB.showKillfeedWeapon ? `${g}true` : `${r}false`;
+          const purchaseUAV             = GuildDB.purchaseUAV        ? `${g}true` : `${r}false`;
+          const purchaseEMP             = GuildDB.purchaseEMP        ? `${g}true` : `${r}false`;
+          const adminRoles              = GuildDB.hasBotAdmin        ? `${g}true` : `${r}false`
+          const excludedRoles           = GuildDB.hasExcludedRoles   ? `${g}true` : `${r}false`; 
+
+          // Role / channel display
+          const NONE                    = `${w}${m}none${w}`;
+          const channelsInfo            = GuildDB.customChannelStatus                  ? '\`</channels:1225869620813107246>\` to view' : NONE;
+          const killfeedChannel         = client.exists(GuildDB.killfeedChannel)       ? `<#${GuildDB.killfeedChannel}>`               : NONE;
+          const connectionLogs          = client.exists(GuildDB.connectionLogsChannel) ? `<#${GuildDB.connectionLogsChannel}>`         : NONE;
+          const activePlayers           = client.exists(GuildDB.activePlayersChannel)  ? `<#${GuildDB.activePlayersChannel}>`          : NONE;
+          const welcomeChannel          = client.exists(GuildDB.welcomeChannel)        ? `<#${GuildDB.welcomeChannel}>`                : NONE;
+          const linkedGTRole            = client.exists(GuildDB.linkedGamertagRole)    ? `<@&${GuildDB.linkedGamertagRole}>`           : NONE;
+          const memberRole              = client.exists(GuildDB.memberRole)            ? `<@&${GuildDB.memberRole}>`                   : NONE;
+
+          // value display
+          const incomeLimiter           = `${GuildDB.incomeLimiter} hours`;
+          const startingBalance         = `$${GuildDB.startingBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+          const uavPrice                = `$${GuildDB.uavPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+          const empPrice                = `$${GuildDB.empPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+          const combatLogTimer          = `${GuildDB.combatLogTimer} minutes`;
+
+          // Ugly below but kinda nice above
           const settingsEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Default)
             .setTitle('Current Guild Configurations')
             .addFields(
-              { name: 'Guild ID', value: `\`\`\`arm\n${GuildDB.serverID}\`\`\``, inline: true },
-              { name: 'Has Allowed Channels?', value: `\`\`\`diff\n${channelColor}${GuildDB.customChannelStatus}\`\`\`${channelsInfo}`, inline: true },
-              { name: 'Has bot admin role?', value: `\`\`\`diff\n${botAdminRoleColor}${client.exists(GuildDB.botAdmin)}\`\`\`${botAdminRoles}`, inline: true },
-              { name: 'Excluded roles?', value: `\`\`\`diff\n${excludedRolesColor}${GuildDB.excludedRoles.length > 0}\`\`\`${excludedRolesInfo}` },
+              { name: 'Guild ID',                value: `${w}${f}${GuildDB.serverID}${w}`,   inline: true },
+              { name: 'Server Name',             value: `${w}${f}${GuildDB.serverName}${w}`, inline: true },
+              { name: 'Auto Restart',            value: `${w}${a}${autoRestart}${w}`,        inline: true },
+              { name: 'UAVs Enabled',            value: `${w}${a}${purchaseUAV}${w}`,        inline: true },
+              { name: 'EMPs Enabled',            value: `${w}${a}${purchaseEMP}${w}`,        inline: true },
+              { name: 'Show Killfeed Coords',    value: `${w}${a}${showKillfeedCoords}${w}`, inline: true },
+              { name: 'Show Killfeed Weapons',   value: `${w}${a}${showKillfeedWeapon}${w}`, inline: true },
+              { name: 'Has Admin Rols',          value: `${w}${a}${adminRoles}${w}`,         inline: true },
+              { name: 'Has Excluded Roles',      value: `${w}${a}${excludedRoles}${w}`,      inline: true },
+              { name: 'Allowed Channels',        value: `${channelsInfo}`,                   inline: true },
+              { name: 'Killfeed Channel',        value: `${killfeedChannel}`,                inline: true },
+              { name: 'Connection Logs Channel', value: `${connectionLogs}`,                 inline: true },
+              { name: 'Player List Channel',     value: `${activePlayers}`,                  inline: true },
+              { name: 'Welcome Channel',         value: `${welcomeChannel}`,                 inline: true },
+              { name: 'Linked Gamertag Role',    value: `${linkedGTRole}`,                   inline: true },
+              { name: 'Member Role',             value: `${memberRole}`,                     inline: true },
+              { name: 'Income Limiter',          value: `${w}${f}${incomeLimiter}${w}`,      inline: true },
+              { name: 'Starting Balance',        value: `${w}${f}${startingBalance}${w}`,    inline: true },
+              { name: 'UAV Price',               value: `${w}${f}${uavPrice}${w}`,           inline: true },
+              { name: 'EMP Price',               value: `${w}${f}${empPrice}${w}`,           inline: true },
+              { name: 'Combat Log Timer',        value: `${w}${f}${combatLogTimer}${w}`,     inline: true },
             );
 
           return interaction.send({ embeds: [settingsEmbed] });
