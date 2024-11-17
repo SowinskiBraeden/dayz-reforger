@@ -384,8 +384,10 @@ class DayzRBot extends Client {
       databaselogs.attempts = 0; // reset attempts
       this.databaseConnected = true;
     } catch (err) {
-      databaselogs.attempts++;
-      let db = (mongoURI.includes("@") ? mongoURI.split("@")[1] : mongoURI.split("//")[1]).endsWith("/") ? mongoURI.slice(0, -1) : mongoURI;
+      databaselogs.attempts++; 
+      databaselogs.connected = false; 
+      let db = mongoURI.includes("@") ? mongoURI.split("@")[1] : mongoURI.split("//")[1];
+      db = db.includes("/") ? db.split("/")[0] : db;
       this.error(`Failed to connect to mongodb (mongodb://${db}/${dbo}): attempt ${databaselogs.attempts} - ${err}`);
       failed = true;
     }
@@ -399,7 +401,8 @@ class DayzRBot extends Client {
   async initialize() {
     // Wait for MongoDB to connect
     await this.connectMongo(this.config.mongoURI, this.config.dbo);
-    
+
+    if (!this.databaseConnected) return;
     let guilds = await this.dbo.collection("guilds").find({}).toArray();
    
     /*
