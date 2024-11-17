@@ -5,8 +5,7 @@ const { getDefaultPlayer } = require('../database/player');
 const { FetchServerSettings } = require('../util/NitradoAPI');
 const { UpdatePlayer, insertPVPstats, createWeaponStats } = require('../database/player')
 const { Missions } = require('../database/destinations');
-
-let lastSendMessage;
+const { GetWebhook, WebhookSend, WebhookMessageEdit } = require("../util/WebhookHandler");
 
 module.exports = {
 
@@ -208,6 +207,7 @@ module.exports = {
 
     if (!client.exists(guild.activePlayersChannel)) return;
     const channel = client.GetChannel(guild.activePlayersChannel);
+    if (!channel) return;
 
     const data = await FetchServerSettings(nitrado_cred, client, 'HandleActivePlayersList');  // Fetch server status
     const e = data && data !== 1; // Check if data exists
@@ -250,11 +250,16 @@ module.exports = {
       .setTimestamp()
       .setTitle(`Players Online:`)
       .setDescription(des || (nodes ? "No Players Online :(" : ""));
-
-    if (lastSendMessage) lastSendMessage.delete().catch(error => client.sendError(channel, `HandleActivePlayersList Error: \n${error}`));  // Remove previous message before reprinting
-
-    return channel.send({ embeds: [serverEmbed, activePlayersEmbed] }).then(sentMessage =>
-      lastSendMessage = sentMessage
-    );
+      
+    const NAME = "DayZ.R Admin Logs";
+    const webhook = await GetWebhook(client, NAME, guild.connectionLogsChannel);
+    
+    let id = client.playerListMsgIds.get(guild.serverID);
+    if (id == "") {
+      id = await WebhookSend(client, webhook, { embeds: [serverEmbed, activePlayersEmbed] }).id;
+      client.playerListMsgIds.set(guild.serverID, id);
+    } else {
+      WebhookMessageEdit(client, webhook, id, { embeds: [serverEmbed, activePlayersEmbed] });
+    }
   }
 };

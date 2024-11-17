@@ -67,12 +67,15 @@ class DayzRBot extends Client {
 
     this.db;
     this.dbo;
+
     this.databaseConnected = false;
-    this.arInterval = arInterval;
-    this.arIntervalIds = new Map();
-    this.playerSessions = new Map();
-    this.logHistory = new Map();
-    this.alarmPingQueue = new Map();
+    this.arInterval        = arInterval;
+    this.arIntervalIds     = new Map();
+    this.playerSessions    = new Map();
+    this.logHistory        = new Map();
+    this.alarmPingQueue    = new Map();
+    this.playerListMsgIds  = new Map();
+
     this.initialize();
     this.LoadCommandsAndInteractionHandlers();
     this.LoadEvents();
@@ -436,6 +439,8 @@ class DayzRBot extends Client {
       }
       this.logHistory.set(guilds[i].Nitrado.ServerID, guilds[i].server.lastLog); // Using Nitrado Server ID over guild ID in case of future support for multiple nitrado servers in a single guild
       this.playerSessions.set(guilds[i].Nitrado.ServerID, new Map());            // Same reason here as named above.
+      this.alarmPingQueue.set(guilds[i].serverID, new Map());                    // Initialize alarm queue to be empty
+      this.playerListMsgIds.set(guilds[i].serverID, "");                         // Initialize player list message ids
       this.log(`[${guilds[i].server.serverID}] Initialized existing Nitrado`);
     }
   }
