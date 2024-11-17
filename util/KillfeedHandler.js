@@ -133,11 +133,15 @@ module.exports = {
 
     if ([Templates.LandMine, Templates.Explosion, Templates.Vehicle].includes(killedBy))
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
-      if (!channel) return;
       let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
       if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, NitradoServerID);
+      victimStat.deaths++;
+      victimStat.deathStreak++;
+      victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.worstDeathStreak;
+      victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
+      victimStat.killStreak = 0;
       victimStat.lastDeathDate = newDt;
-
+      
       const cod = killedBy == Templates.LandMine ? `Land Mine Trap` : 
                   killedBy == Templates.Vehicle ? Vehicles[info.causeOfDeath] : info.causeOfDeath;
       const coord = showCoords ? `\n***Location [${info.victimPOS[0]}, ${info.victimPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.victimPOS[0]};${info.victimPOS[1]})***\n${destination}` : '';
@@ -147,12 +151,13 @@ module.exports = {
         .setColor(client.config.Colors.Default)
         .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** ${killMessage} a **${cod}.**${coord}`);
 
+      await UpdatePlayer(client, victimStat);
+      
+      if (!channel) return;
       const webhook = await GetWebhook(this, NAME, guild.killfeedChannel);
-
       WebhookSend(client, webhook, { embeds: [killEvent]});
 
       // if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
-      await UpdatePlayer(client, victimStat);
       return;
     }
 
