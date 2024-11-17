@@ -5,6 +5,7 @@ const { nearest } = require('../database/destinations');
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
 const { calculateNewCombatRating } = require('./CombatRatingHandler');
 const { weapons, weaponClassOf } = require('../database/weapons');
+const { GetWebhook, WebhookSend } = require("../util/WebhookHandler");
 
 const Templates = {
   Killed:       1,
@@ -79,9 +80,10 @@ module.exports = {
   },
 
   HandleKillfeed: async (NitradoServerID, client, guild, line) => {
-    
+  
+    const NAME = "DayZ.R Killfeed";
     const channel = client.GetChannel(guild.killfeedChannel);
-
+    
     const killedBy = line.includes('hit by Player') && line.includes('(DEAD)') && line.includes('meters') ? Templates.HitByAndDead :
                      line.includes('hit by Player') && !line.includes('meters')                           ? Templates.Melee : // Missing meters indicates it was a melee attack.
                      line.includes('hit by Player')                                                       ? Templates.HitBy :
@@ -131,6 +133,7 @@ module.exports = {
 
     if ([Templates.LandMine, Templates.Explosion, Templates.Vehicle].includes(killedBy))
     if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
+      if (!channel) return;
       let victimStat = await client.dbo.collection("players").findOne({"playerID": info.victimID});
       if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, NitradoServerID);
       victimStat.lastDeathDate = newDt;
@@ -144,9 +147,13 @@ module.exports = {
         .setColor(client.config.Colors.Default)
         .setDescription(`**Death Event** - <t:${unixTime}>\n**${info.victim}** ${killMessage} a **${cod}.**${coord}`);
 
-      if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
+      const webhook = await GetWebhook(this, NAME, guild.killfeedChannel);
+
+      WebhookSend(client, webhook, { embeds: [killEvent]});
+
+      // if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
       await UpdatePlayer(client, victimStat);
-      return
+      return;
     }
 
     KillInAlarm(client, guild.serverID, info); // check if kill happened in a no kill zone
@@ -262,9 +269,16 @@ module.exports = {
       let weaponClass = weaponClassOf(weapon);
       killEvent.setThumbnail(weapons[weaponClass][weapon])
     }
+    
+    if (!channel) return;
 
-    if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
-    if (client.exists(receivedBounty) && client.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
+    const webhook = await GetWebhook(this, NAME, guild.killfeedChannel);
+
+    WebhookSend(client, webhook, { embeds: [killEvent] });
+    if (client.exists(receivedBounty) && client.exists(channel)) WebhookSend(client, webhook, { content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
+
+    // if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
+    // if (client.exists(receivedBounty) && client.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
     
     return;
   }
