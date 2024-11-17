@@ -2,6 +2,7 @@ const { BanPlayer, UnbanPlayer } = require('./NitradoAPI');
 const { EmbedBuilder } = require('discord.js');
 const { nearest } = require('../database/destinations');
 const { GetGuild } = require('../database/guild');
+const { GetWebhook, WebhookSend } = require("../util/WebhookHandler");
 
 // Private functions (only called locally)
 
@@ -20,6 +21,10 @@ const ExpireEvent = async(client, guild, e) => {
 }
 
 const HandlePlayerTrackEvent = async (client, guild, e) => {
+  if (!client.exists(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
+  const channel = client.GetChannel(e.channel);
+  if (!channel) return;
+
   let player = await client.dbo.collection("players").findOne({"gamertag": e.gamertag});
 
   let newDt = await client.getDateEST(player.time);
@@ -31,10 +36,15 @@ const HandlePlayerTrackEvent = async (client, guild, e) => {
     .setColor(client.config.Colors.Default)
     .setDescription(`**${e.name} Event**\n${e.gamertag} was located at **[${player.pos[0]}, ${player.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${player.pos[0]};${player.pos[1]})** at <t:${unixTime}>\n${destination}`);
 
-  if (!client.exists(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
-  const channel = client.GetChannel(e.channel);
-  if (e.role) channel.send({ content: `<@&${e.role}>`, embeds: [trackEvent] });
-  else channel.send({ embeds: [trackEvent] });
+  const NAME = "DayZ.R Player Tracker";
+  const webhook = await GetWebhook(client, NAME, e.channel);
+
+  let content = { embeds: [trackEvent] };
+  if (client.exists(guild.adminRole)) content.content = `<@&${e.role}>`;
+  WebhookSend(client, webhook, content);
+
+  // if (e.role) channel.send({ content: `<@&${e.role}>`, embeds: [trackEvent] });
+  // else channel.send({ embeds: [trackEvent] });
 
   let now = new Date();
   let diff = ((now - e.creationDate) / 1000) / 60;
@@ -157,6 +167,7 @@ module.exports = {
 
       if (distance < alarm.radius) {
         const channel = client.GetChannel(alarm.channel);
+        if (!channel) continue;
 
         let newDt = await client.getDateEST(data.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
@@ -166,7 +177,13 @@ module.exports = {
           .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.killer}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned for killing **${data.victim}**.__`)
           .addFields({ name: '**Location**', value: `**[${data.killerPOS[0]}, ${data.killerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.killerPOS[0]};${data.killerPOS[1]})**`, inline: false })
       
-        channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+        const NAME = "DayZ.R Zone Alert";
+        const webhook = await GetWebhook(client, NAME, alarm.channel);
+        
+        let content = { content: `<@&${alarm.role}>`, embeds: [alarmEmbed] };
+        WebhookSend(client, webhook, content);
+
+        // channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
 
         BanPlayer(client, data.killer);
         break;
@@ -198,6 +215,7 @@ module.exports = {
 
       if (distance < alarm.radius) {
         const channel = client.GetChannel(alarm.channel);
+        if (!channel) return;
 
         let newDt = await client.getDateEST(info.time);
         let unixTime = Math.floor(newDt.getTime()/1000);
@@ -207,7 +225,13 @@ module.exports = {
           .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${info.player}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned for **placing a fireplace**.__`)
           .addFields({ name: '**Location**', value: `**[${info.playerPOS[0]}, ${info.playerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.playerPOS[0]};${info.playerPOS[1]})**`, inline: false })
       
-        channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
+        const NAME = "DayZ.R Zone Alert";
+        const webhook = await GetWebhook(client, NAME, alarm.channel);
+        
+        let content = { content: `<@&${alarm.role}>`, embeds: [alarmEmbed] };
+        WebhookSend(client, webhook, content);
+
+        // channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
 
         BanPlayer(client, info.player);
         break;

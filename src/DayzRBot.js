@@ -11,6 +11,7 @@ const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandl
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
 const { decrypt } = require('../util/Cryptic');
+const { GetWebhook, WebhookSend } = require("../util/WebhookHandler");
 
 // Data structures imports
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
@@ -213,17 +214,25 @@ class DayzRBot extends Client {
     const maxEmbed = 10;
 
     this.alarmPingQueue.forEach(queue => {
-      queue.forEach((data, channel_id) => {
+      queue.forEach(async (data, channel_id) => {
         const channel = this.GetChannel(channel_id);
         if (!channel) return;
-        data.forEach((embeds, role) => {
+
+        const NAME = "DayZ.R Zone Alert";
+        const webhook = await GetWebhook(this, NAME, channel_id);   
+
+        data.forEach(async (embeds, role) => {
           let embedArrays = [];
           while (embeds.length > 0);
             embedArrays.push(embeds.splice(0, maxEmbed));
 
-          for (let i = 0; i < embedArrays.length; i++) {
-            if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
-            else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
+          for (let i = 0; i < embedArrays.length; i++) { 
+            let content = { embeds: embedArrays[i] };
+            if (role != '-no-role-ping-') content.content = `<@&${role}>`;
+            WebhookSend(this, webhook, content);
+            
+            // if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
+            // else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
           }
         });
       });
