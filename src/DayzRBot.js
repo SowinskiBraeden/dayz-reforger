@@ -11,6 +11,7 @@ const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandl
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
 const { decrypt } = require('../util/Cryptic');
+const { GetWebhook, WebhookSend } = require("../util/WebhookHandler");
 
 // Data structures imports
 const { getDefaultPlayer, UpdatePlayer } = require('../database/player');
@@ -66,12 +67,15 @@ class DayzRBot extends Client {
 
     this.db;
     this.dbo;
+
     this.databaseConnected = false;
-    this.arInterval = arInterval;
-    this.arIntervalIds = new Map();
-    this.playerSessions = new Map();
-    this.logHistory = new Map();
-    this.alarmPingQueue = new Map();
+    this.arInterval        = arInterval;
+    this.arIntervalIds     = new Map();
+    this.playerSessions    = new Map();
+    this.logHistory        = new Map();
+    this.alarmPingQueue    = new Map();
+    this.playerListMsgIds  = new Map();
+
     this.initialize();
     this.LoadCommandsAndInteractionHandlers();
     this.LoadEvents();
@@ -99,15 +103,15 @@ class DayzRBot extends Client {
         // Free unused armbands for related commands
         if (['armbands', 'claim', 'factions'].includes(command)) {
           for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
-            const guild = client.guilds.cache.get(GuildDB.serverID);
+            const guild = this.guilds.cache.get(GuildDB.serverID);
             const role = guild.roles.cache.find(role => role.id == factionID);
             if (!role) {
               let query = {
                 $pull: { 'server.usedArmbands': data.armband },
                 $unset: { [`server.factionArmbands.${factionID}`]: "" },
               };
-              await client.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
-                if (err) return client.sendInternalError(interaction, err);
+              this.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
+                if (err) return this.sendInternalError(interaction, err);
               });
             }
           }
@@ -213,17 +217,25 @@ class DayzRBot extends Client {
     const maxEmbed = 10;
 
     this.alarmPingQueue.forEach(queue => {
-      queue.forEach((data, channel_id) => {
+      queue.forEach(async (data, channel_id) => {
         const channel = this.GetChannel(channel_id);
         if (!channel) return;
-        data.forEach((embeds, role) => {
+
+        const NAME = "DayZ.R Zone Alert";
+        const webhook = await GetWebhook(this, NAME, channel_id);   
+
+        data.forEach(async (embeds, role) => {
           let embedArrays = [];
           while (embeds.length > 0);
             embedArrays.push(embeds.splice(0, maxEmbed));
 
-          for (let i = 0; i < embedArrays.length; i++) {
-            if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
-            else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
+          for (let i = 0; i < embedArrays.length; i++) { 
+            let content = { embeds: embedArrays[i] };
+            if (role != '-no-role-ping-') content.content = `<@&${role}>`;
+            WebhookSend(this, webhook, content);
+            
+            // if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
+            // else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
           }
         });
       });
@@ -384,8 +396,10 @@ class DayzRBot extends Client {
       databaselogs.attempts = 0; // reset attempts
       this.databaseConnected = true;
     } catch (err) {
-      databaselogs.attempts++;
-      let db = (mongoURI.includes("@") ? mongoURI.split("@")[1] : mongoURI.split("//")[1]).endsWith("/") ? mongoURI.slice(0, -1) : mongoURI;
+      databaselogs.attempts++; 
+      databaselogs.connected = false; 
+      let db = mongoURI.includes("@") ? mongoURI.split("@")[1] : mongoURI.split("//")[1];
+      db = db.includes("/") ? db.split("/")[0] : db;
       this.error(`Failed to connect to mongodb (mongodb://${db}/${dbo}): attempt ${databaselogs.attempts} - ${err}`);
       failed = true;
     }
@@ -399,7 +413,8 @@ class DayzRBot extends Client {
   async initialize() {
     // Wait for MongoDB to connect
     await this.connectMongo(this.config.mongoURI, this.config.dbo);
-    
+
+    if (!this.databaseConnected) return;
     let guilds = await this.dbo.collection("guilds").find({}).toArray();
    
     /*
@@ -424,6 +439,8 @@ class DayzRBot extends Client {
       }
       this.logHistory.set(guilds[i].Nitrado.ServerID, guilds[i].server.lastLog); // Using Nitrado Server ID over guild ID in case of future support for multiple nitrado servers in a single guild
       this.playerSessions.set(guilds[i].Nitrado.ServerID, new Map());            // Same reason here as named above.
+      this.alarmPingQueue.set(guilds[i].serverID, new Map());                    // Initialize alarm queue to be empty
+      this.playerListMsgIds.set(guilds[i].serverID, "");                         // Initialize player list message ids
       this.log(`[${guilds[i].server.serverID}] Initialized existing Nitrado`);
     }
   }
