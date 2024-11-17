@@ -99,15 +99,15 @@ class DayzRBot extends Client {
         // Free unused armbands for related commands
         if (['armbands', 'claim', 'factions'].includes(command)) {
           for (const [factionID, data] of Object.entries(GuildDB.factionArmbands)) {
-            const guild = client.guilds.cache.get(GuildDB.serverID);
+            const guild = this.guilds.cache.get(GuildDB.serverID);
             const role = guild.roles.cache.find(role => role.id == factionID);
             if (!role) {
               let query = {
                 $pull: { 'server.usedArmbands': data.armband },
                 $unset: { [`server.factionArmbands.${factionID}`]: "" },
               };
-              await client.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
-                if (err) return client.sendInternalError(interaction, err);
+              this.dbo.collection("guilds").updateOne({ 'server.serverID': GuildDB.serverID }, query, (err, res) => {
+                if (err) return this.sendInternalError(interaction, err);
               });
             }
           }
