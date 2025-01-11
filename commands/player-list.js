@@ -31,15 +31,16 @@ module.exports = {
         return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
       }
 
-      const data = await FetchServerSettings(GuildDB.Nitrado, client, 'commands/player-list.js');  // Fetch server status
+      await interaction.deferReply();
 
+      const data = await FetchServerSettings(GuildDB.Nitrado, client, 'commands/player-list.js');  // Fetch server status
       const e = data && data !== 1; // Check if data exists
       
       const hostname      = e ? data.data.gameserver.settings.config.hostname : 'N/A';
-      const map           = Missions[data.data.gameserver.settings.config.mission];
+      const map           = e ? Missions[data.data.gameserver.settings.config.mission] : 'N/A';
       const status        = e ? data.data.gameserver.status : 'N/A';
       const slots         = e ? data.data.gameserver.slots : 'N/A';
-      const playersOnline = data.data.gameserver.query.player_current;
+      const playersOnline = e ? data.data.gameserver.query.player_current : 'N/A';
 
       const Statuses = {
         "started": {emoji: "🟢", text: "Active"},
@@ -47,8 +48,8 @@ module.exports = {
         "restarting": {emoji: "↻", text: "Restarting"},
       };
 
-      const emojiStatus = Statuses[status].emoji || "❓";
-      const textStatus = Statuses[status].text || "Unknown Status";
+      const emojiStatus = e ? Statuses[status].emoji : "❓";
+      const textStatus = e ? Statuses[status].text : "Unknown Status";
 
       let activePlayers = await client.dbo.collection("players").find({"connected": true}).toArray();
 
@@ -74,7 +75,7 @@ module.exports = {
         .setTitle(`Players Online:`)
         .setDescription(des || (nodes ? "No Players Online :(" : ""));
 
-      return interaction.send({ embeds: [serverEmbed, activePlayersEmbed] });
+      return interaction.editReply({ embeds: [serverEmbed, activePlayersEmbed] });
     },
   },
 }

@@ -176,6 +176,7 @@ module.exports = {
 
         if (!res.ok) {
           client.error(`Failed to get Nitrado server stats (${nitrado_cred.ServerID}): status: ${res.status}, message: ${res.statusText}: ${fetcher} via FetchServerSettings`);
+          if (res.status == 401) return 1; // return immediately if unauthorized
           if (retries === 2) return 1; // Return error status on the second failed status code.
         } else {
           const data = await res.json();
