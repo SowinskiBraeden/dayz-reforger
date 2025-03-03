@@ -439,9 +439,9 @@ class DayzRBot extends Client {
       }
       this.logHistory.set(guilds[i].Nitrado.ServerID, guilds[i].server.lastLog); // Using Nitrado Server ID over guild ID in case of future support for multiple nitrado servers in a single guild
       this.playerSessions.set(guilds[i].Nitrado.ServerID, new Map());            // Same reason here as named above.
-      this.alarmPingQueue.set(guilds[i].serverID, new Map());                    // Initialize alarm queue to be empty
-      this.playerListMsgIds.set(guilds[i].serverID, "");                         // Initialize player list message ids
-      this.log(`[${guilds[i].server.serverID}] Initialized existing Nitrado`);
+      this.alarmPingQueue.set(guilds[i].server.serverID, new Map());                    // Initialize alarm queue to be empty
+      this.playerListMsgIds.set(guilds[i].server.serverID, "");                         // Initialize player list message ids
+      this.log(`[${guilds[i].server.serverID}] Initialized existing Nitrado Server: (${guilds[i].Nitrado.ServerID})`);
     }
   }
 
@@ -451,6 +451,8 @@ class DayzRBot extends Client {
     if (guild.autoRestart) this.arIntervalIds.set(guildId, setInterval(CheckServerStatus, this.arInterval, Nitrado, this))
     this.logHistory.set(Nitrado.ServerID, guild.lastLog);
     this.playerSessions.set(Nitrado.ServerID, new Map());
+    this.alarmPingQueue.set(guildId, new Map());
+    this.playerListMsgIds.set(guildId, "");
     this.log(`[${guild.serverID}] Initialized new Nitrado`);
   }
 
