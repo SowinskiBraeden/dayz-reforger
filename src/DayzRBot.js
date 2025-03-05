@@ -226,7 +226,7 @@ class DayzRBot extends Client {
 
         data.forEach(async (embeds, role) => {
           let embedArrays = [];
-          while (embeds.length > 0);
+          while (embeds.length > 0)
             embedArrays.push(embeds.splice(0, maxEmbed));
 
           for (let i = 0; i < embedArrays.length; i++) { 
@@ -453,7 +453,7 @@ class DayzRBot extends Client {
     this.playerSessions.set(Nitrado.ServerID, new Map());
     this.alarmPingQueue.set(guildId, new Map());
     this.playerListMsgIds.set(guildId, "");
-    this.log(`[${guild.serverID}] Initialized new Nitrado`);
+    this.log(`[${guildId}] Initialized new Nitrado`);
   }
 
   exists(n) { return typeof(n) == 'number' ? !isNaN(n) : null != n && undefined != n && "" != n }
