@@ -154,7 +154,7 @@ module.exports = {
       await UpdatePlayer(client, victimStat);
       
       if (!channel) return;
-      const webhook = await GetWebhook(this, NAME, guild.killfeedChannel);
+      const webhook = await GetWebhook(client, NAME, guild.killfeedChannel);
       WebhookSend(client, webhook, { embeds: [killEvent]});
 
       // if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
@@ -277,7 +277,7 @@ module.exports = {
     
     if (!channel) return;
 
-    const webhook = await GetWebhook(this, NAME, guild.killfeedChannel);
+    const webhook = await GetWebhook(client, NAME, guild.killfeedChannel);
 
     WebhookSend(client, webhook, { embeds: [killEvent] });
     if (client.exists(receivedBounty) && client.exists(channel)) WebhookSend(client, webhook, { content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });

@@ -186,7 +186,7 @@ module.exports = {
         // channel.send({ content: `<@&${alarm.role}>`, embeds: [alarmEmbed] });
 
         BanPlayer(client, data.killer);
-        break;
+       break;
       }
     }
     return;
