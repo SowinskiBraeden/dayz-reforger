@@ -69,7 +69,7 @@ If you're simply looking to add a new command and not make significant changes t
       SlashCommand: { // Do not change the name of this funciton
         /**
         *
-        * @param {require("../structures/DayzRBot")} client
+        * @param {require("./structures/DayzRBot")} client
         * @param {import("discord.js").Message} message
         * @param {string[]} args
         * @param {*} param3
