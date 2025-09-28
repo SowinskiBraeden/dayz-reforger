@@ -1,31 +1,40 @@
 {
-  "name": "dayzr-bot",
-  "version": "13.3.25",
-  "description": "A General Purpose Discord Bot for DayZ Nitrado Servers.",
-  "main": "index.js",
-  "nodemonConfig": {
-    "ignore": [
-      "logs/*.log",
-      "logs/*.json"
-    ]
-  },
-  "scripts": {
-    "start": "node index.js",
-    "dev": "node index.js",
-    "debug": "nodemon index.js"
-  },
-  "author": "Braeden Sowinski",
-  "license": "MIT",
-  "dependencies": {
-    "@discordjs/rest": "^1.1.0",
-    "colors": "^1.4.0",
-    "concat-stream": "^2.0.0",
-    "crypto": "^1.0.1",
-    "discord-bitfield-calculator": "^1.0.0",
-    "discord.js": "^14.8.0",
-    "dotenv": "^16.0.3",
-    "form-data": "^4.0.0",
-    "mongodb": "^4.12.1",
-    "winston": "^3.8.1"
-  }
+    "name": "dayzr-bot",
+    "version": "13.3.25",
+    "description": "A General Purpose Discord Bot for DayZ Nitrado Servers.",
+    "main": "index.js",
+    "nodemonConfig": {
+        "ignore": [
+            "logs/*.log",
+            "logs/*.json"
+        ]
+    },
+    "scripts": {
+        "start": "node dist/index.js",
+        "dev": "ts-node src/index.ts",
+        "build": "tsc"
+    },
+    "author": "Braeden Sowinski",
+    "license": "MIT",
+    "dependencies": {
+        "@discordjs/rest": "^1.1.0",
+        "colors": "^1.4.0",
+        "concat-stream": "^2.0.0",
+        "crypto": "^1.0.1",
+        "discord-bitfield-calculator": "^1.0.0",
+        "discord.js": "^14.8.0",
+        "dotenv": "^16.0.3",
+        "form-data": "^4.0.0",
+        "mongodb": "^4.12.1",
+        "winston": "^3.8.1"
+    },
+    "devDependencies": {
+        "@types/node": "^24.5.2",
+        "@typescript-eslint/eslint-plugin": "^8.44.1",
+        "@typescript-eslint/parser": "^8.44.1",
+        "eslint": "^9.36.0",
+        "prettier": "^3.6.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.2"
+    }
 }
