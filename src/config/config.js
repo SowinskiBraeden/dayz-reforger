@@ -1,4 +1,4 @@
-const package = require("../../package.json");
+const version = require("../../package.json").version;
 require("dotenv").config();
 
 const PresenceTypes = {
@@ -19,7 +19,7 @@ const PresenceStatus = {
 
 module.exports = {
     Dev: process.env.Dev || "DEV.",
-    Version: package.version, // (major).(minor).(patch)
+    Version: version, // (major).(minor).(patch)
     Admins: ["362791661274660874", "329371697570381824"], // Admins of the bot
     SupportServer: "https://discord.gg/KVFJCvvFtK", // Support Server Link
     Token: process.env.token || "", //Discord Bot Token

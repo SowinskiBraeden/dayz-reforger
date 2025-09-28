@@ -1,6 +1,9 @@
 # Node modules
 node_modules/*
 
+# Builds
+dist/*
+
 # Testing/dev related
 *_test.js
 dev-*.js

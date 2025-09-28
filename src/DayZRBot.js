@@ -6,26 +6,26 @@ const Logger = require("./util/Logger");
 const crypto = require("crypto");
 
 // custom util imports
-const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, PostServerSettings, NitradoCredentialStatus } = require("../util/NitradoAPI");
-const { HandlePlayerLogs, HandleActivePlayersList } = require("../util/LogsHandler");
-const { HandleKillfeed, UpdateLastDeathDate } = require("../util/KillfeedHandler");
-const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require("../util/AlarmsHandler");
-const { decrypt } = require("../util/Cryptic");
+const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, PostServerSettings, NitradoCredentialStatus } = require("./util/NitradoAPI");
+const { HandlePlayerLogs, HandleActivePlayersList } = require("./util/LogsHandler");
+const { HandleKillfeed, UpdateLastDeathDate } = require("./util/KillfeedHandler");
+const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require("./util/AlarmsHandler");
+const { decrypt } = require("./util/Cryptic");
 const { GetWebhook, WebhookSend } = require("./util/WebhookHandler");
 
 // Data structures imports
-const { getDefaultPlayer, UpdatePlayer } = require("../database/player");
-const { Missions } = require("../database/destinations");
-const { GetGuild } = require("../database/guild");
+const { getDefaultPlayer, UpdatePlayer } = require("./database/player");
+const { Missions } = require("./database/destinations");
+const { GetGuild } = require("./database/guild");
 
 const path = require("path");
 const fs = require("fs");
 const readline = require("readline");
 
-const minute = 60000; // 1 minute in milliseconds
-const arInterval = 600000; // Set auto-restart interval 10 minutes (600,000ms)
+const MINUTE = 60000; // 1 minute in milliseconds
+const AUTO_RESTART_INTERVAL = 600000; // Set auto-restart interval 10 minutes (600,000ms)
 
-class DayzRBot extends Client {
+class DayZR extends Client {
 
     constructor(options, config) {
         super(options);
@@ -33,8 +33,8 @@ class DayzRBot extends Client {
         this.config = config;
         this.commands = new Collection();
         this.interactionHandlers = new Collection();
-        this.logger = new Logger(path.join(__dirname, "..", "logs/Logs.log"));
-        this.timer = this.config.Dev == "PROD." ? minute * 5 : minute / 4;
+        this.logger = new Logger(path.join(__dirname, "..", "logs", "Logs.log"));
+        this.timer = this.config.Dev == "PROD." ? MINUTE * 5 : MINUTE / 4;
 
         if (
             this.config.Token === "" ||
@@ -69,7 +69,7 @@ class DayzRBot extends Client {
         this.dbo;
 
         this.databaseConnected = false;
-        this.arInterval = arInterval;
+        this.arInterval = AUTO_RESTART_INTERVAL;
         this.arIntervalIds = new Map();
         this.playerSessions = new Map();
         this.logHistory = new Map();
@@ -415,6 +415,7 @@ class DayzRBot extends Client {
         await this.connectMongo(this.config.mongoURI, this.config.dbo);
 
         if (!this.databaseConnected) return;
+        
         let guilds = await this.dbo.collection("guilds").find({}).toArray();
 
         /*
@@ -473,7 +474,7 @@ class DayzRBot extends Client {
     }
 
     LoadCommandsAndInteractionHandlers() {
-        let CommandsDir = path.join(__dirname, "..", "commands");
+        let CommandsDir = path.join(__dirname, "commands");
         fs.readdir(CommandsDir, (err, files) => {
             if (err) this.error(err);
             else
@@ -497,7 +498,7 @@ class DayzRBot extends Client {
     }
 
     LoadEvents() {
-        let EventsDir = path.join(__dirname, "..", "events");
+        let EventsDir = path.join(__dirname, "events");
         fs.readdir(EventsDir, (err, files) => {
             if (err) this.error(err);
             else
@@ -555,4 +556,4 @@ class DayzRBot extends Client {
     }
 }
 
-module.exports = DayzRBot;
+module.exports = DayZR;

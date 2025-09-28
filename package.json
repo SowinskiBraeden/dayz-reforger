@@ -11,7 +11,7 @@
     },
     "scripts": {
         "start": "node dist/index.js",
-        "dev": "ts-node src/index.ts",
+        "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
         "build": "tsc"
     },
     "author": "Braeden Sowinski",
@@ -35,6 +35,7 @@
         "eslint": "^9.36.0",
         "prettier": "^3.6.2",
         "ts-node": "^10.9.2",
+        "ts-node-dev": "^2.0.0",
         "typescript": "^5.9.2"
     }
 }

@@ -6,7 +6,10 @@
         "outDir": "dist",
         "strict": true,
         "esModuleInterop": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "allowJs": true
     },
     "include": ["src"],
     "exclude": ["node_modules"]

@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
-const package = require("../package");
+const pack = require("../../package"); // Project root package.json
 
 module.exports = {
     name: "help",
@@ -151,7 +151,7 @@ module.exports = {
                         { name: "Latency", value: `\`\`\`${end - start}ms\`\`\``, inline: true },
                         { name: "Uptime", value: `\`\`\`${client.secondsToDhms(process.uptime().toFixed(2))}\`\`\``, inline: true },
                         { name: "Bot Version", value: `\`\`\`${client.config.Dev} v${client.config.Version}\`\`\``, inline: true },
-                        { name: "Discord Version", value: `\`\`\`Discord.js ${package.dependencies["discord.js"]}\`\`\``, inline: true },
+                        { name: "Discord Version", value: `\`\`\`Discord.js ${pack.dependencies["discord.js"]}\`\`\``, inline: true },
                     );
 
                 return interaction.send({ embeds: [stats] })
