@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
 
 module.exports = {
@@ -16,19 +16,19 @@ module.exports = {
         name: "player-track",
         description: "Track a player and announce location",
         value: "player-track",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player",
             value: "gamertag",
-            type: CommandOptions.String,
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
         {
             name: "time",
             description: "Duration of tracking",
             value: "time",
-            type: CommandOptions.Integer,
+            type: ApplicationCommandOptionType.Integer,
             required: true,
             choices: [
                 { name: "10-minutes", value: 10 }, { name: "15-minutes", value: 15 }, { name: "20-minutes", value: 20 }, { name: "25-minutes", value: 25 },
@@ -39,28 +39,28 @@ module.exports = {
             name: "event-name",
             description: "Name of the event",
             value: "event-name",
-            type: CommandOptions.String,
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
         {
             name: "channel",
             description: "Channel to post tracking data",
             value: "channel",
-            type: CommandOptions.Channel,
+            type: ApplicationCommandOptionType.Channel,
             channel_types: [0], // Restrict to text channel
             required: true,
         }, {
             name: "role",
             description: "Optional role to ping",
             value: "role",
-            type: CommandOptions.Role,
+            type: ApplicationCommandOptionType.Role,
             required: false,
         }]
     }, {
         name: "delete",
         description: "Delete an active event",
         value: "delete",
-        type: CommandOptions.SubCommand
+        type: ApplicationCommandOptionType.SubCommand
     }],
     SlashCommand: {
         /**

@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const pack = require("../../package"); // Project root package.json
 
 module.exports = {
@@ -17,12 +17,12 @@ module.exports = {
             name: "commands",
             description: "List all commands",
             value: "commands",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "command",
                 description: "Get information on a specific command",
                 value: "command",
-                type: CommandOptions.String,
+                type: ApplicationCommandOptionType.String,
                 required: false,
             }]
         },
@@ -30,19 +30,19 @@ module.exports = {
             name: "support",
             description: "Get support for Application",
             value: "support",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
         },
         {
             name: "credits",
             description: "DayZ.R Bot Credits",
             value: "credits",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
         },
         {
             name: "stats",
             description: "Current Bot Statistics",
             value: "stats",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
         }
     ],
     SlashCommand: {

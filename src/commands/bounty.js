@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const { createUser, addUser } = require("../database/user");
 const { UpdatePlayer } = require("../database/player");
 
@@ -17,37 +17,37 @@ module.exports = {
         name: "set",
         description: "Set a bounty on a player",
         value: "set",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player for bounty",
             value: "gamertag",
-            type: CommandOptions.String,
+            type: ApplicationCommandOptionType.String,
             required: true,
         }, {
             name: "value",
             description: "Amount of the bounty",
             value: "value",
-            type: CommandOptions.Float,
+            type: ApplicationCommandOptionType.Float,
             min_value: 0.01,
             required: true
         }, {
             name: "anonymous",
             description: "Make this bounty anonymous (does not show your name)",
             value: false,
-            type: CommandOptions.Boolean,
+            type: ApplicationCommandOptionType.Boolean,
             required: false
         }]
     }, {
         name: "pay",
         description: "Pay off your bounty",
         value: "pay",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
     }, {
         name: "view",
         description: "View all active bounties",
         value: "view",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
     }],
     SlashCommand: {
         /**

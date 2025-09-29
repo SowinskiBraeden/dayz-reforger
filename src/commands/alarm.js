@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
 
 const generateAlarmMenus = (alarms, customId, placeholder, description) => {
@@ -40,13 +40,13 @@ module.exports = {
             name: "create",
             description: "Create a new Zone Ping Alarm",
             value: "create",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [
                 {
                     name: "x-coord",
                     description: "X Coordinate of the origin",
                     value: "x-coord",
-                    type: CommandOptions.Float,
+                    type: ApplicationCommandOptionType.Float,
                     min_value: 0.01,
                     required: true,
                 },
@@ -54,7 +54,7 @@ module.exports = {
                     name: "y-coord",
                     description: "Y Coordinate of the origin",
                     value: "y-coord",
-                    type: CommandOptions.Float,
+                    type: ApplicationCommandOptionType.Float,
                     min_value: 0.01,
                     required: true,
                 },
@@ -62,7 +62,7 @@ module.exports = {
                     name: "radius",
                     description: "Radius of Alarm",
                     value: "radius",
-                    type: CommandOptions.Float,
+                    type: ApplicationCommandOptionType.Float,
                     min_value: 25.00,
                     required: true,
                 },
@@ -70,14 +70,14 @@ module.exports = {
                     name: "name",
                     description: "Alarm Name",
                     value: "name",
-                    type: CommandOptions.String,
+                    type: ApplicationCommandOptionType.String,
                     required: true,
                 },
                 {
                     name: "channel",
                     description: "Alarm Channel",
                     value: "channel",
-                    type: CommandOptions.Channel,
+                    type: ApplicationCommandOptionType.Channel,
                     channel_types: [0], // Restrict to text channel
                     required: true,
                 },
@@ -85,21 +85,21 @@ module.exports = {
                     name: "role",
                     description: "Role to Ping on Alarm",
                     value: "role",
-                    type: CommandOptions.Role,
+                    type: ApplicationCommandOptionType.Role,
                     required: true,
                 },
                 {
                     name: "emp-exempt",
                     description: "Is this Alarm Exempt to EMP Attacks?",
                     value: false,
-                    type: CommandOptions.Boolean,
+                    type: ApplicationCommandOptionType.Boolean,
                     required: false,
                 },
                 {
                     name: "show-player-coords",
                     description: "Show a players coords when in the radius of the Alarm?",
                     value: true,
-                    type: CommandOptions.Boolean,
+                    type: ApplicationCommandOptionType.Boolean,
                     required: false,
                 }
             ]
@@ -108,18 +108,18 @@ module.exports = {
             name: "delete",
             description: "Delete an Alarm",
             value: "delete",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
         },
         {
             name: "add-player",
             description: "Add player to be ignored list of an Alarm",
             value: "add-player",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "gamertag",
                 description: "Gamertag of player to ignore",
                 value: "gamertag",
-                type: CommandOptions.String,
+                type: ApplicationCommandOptionType.String,
                 required: true,
             }]
         },
@@ -127,12 +127,12 @@ module.exports = {
             name: "remove-player",
             description: "Remove a player from the ignored list of an Alarm",
             value: "remove-player",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "gamertag",
                 description: "Gamertag of player to ignore",
                 value: "gamertag",
-                type: CommandOptions.String,
+                type: ApplicationCommandOptionType.String,
                 required: true,
             }]
         },
@@ -140,24 +140,24 @@ module.exports = {
             name: "disable",
             description: "Disable an Alarm",
             value: "disable",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
         },
         {
             name: "enable",
             description: "Enable an Alarm",
             value: "enable",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
         },
         {
             name: "mute",
             description: "Mute the role ping of an Alarm",
             value: "mute",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "toggle",
                 description: "Turn on/off role pings for this alarm",
                 value: false,
-                type: CommandOptions.Boolean,
+                type: ApplicationCommandOptionType.Boolean,
                 required: true,
             }]
         },
@@ -165,12 +165,12 @@ module.exports = {
             name: "set-rule",
             description: "Add a Rule to an Alarm",
             value: "set-rule",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "rule",
                 description: "Select a rule to add to an Alarm",
                 value: "rule",
-                type: CommandOptions.String,
+                type: ApplicationCommandOptionType.String,
                 required: true,
                 choices: [
                     { name: "Ban on Entry", value: "ban_on_entry" },
@@ -183,18 +183,18 @@ module.exports = {
             name: "remove-rule",
             description: "Remove a rule from an Alarm",
             value: "remove-rule",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
         },
         {
             name: "rename",
             description: "Rename an Alarm",
             value: "rename",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "name",
                 description: "New Alarm Name",
                 value: "name",
-                type: CommandOptions.String,
+                type: ApplicationCommandOptionType.String,
                 required: true,
             }]
         },
@@ -202,12 +202,12 @@ module.exports = {
             name: "move-origin",
             description: "Move the origin of an Alarm",
             value: "move-origin",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "x-coord",
                 description: "X Coordinate of the new origin",
                 value: "x-coord",
-                type: CommandOptions.Float,
+                type: ApplicationCommandOptionType.Float,
                 min_value: 0.01,
                 required: true,
             },
@@ -215,7 +215,7 @@ module.exports = {
                 name: "y-coord",
                 description: "Y Coordinate of the new origin",
                 value: "y-coord",
-                type: CommandOptions.Float,
+                type: ApplicationCommandOptionType.Float,
                 min_value: 0.01,
                 required: true,
             }]

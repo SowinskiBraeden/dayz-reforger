@@ -1,5 +1,5 @@
 import DayZR from "./DayZRBot";
-import config from "./config/config";
+import { config } from "./config/config";
 import { GatewayIntentBits } from "discord.js";
 
 import path from "path";

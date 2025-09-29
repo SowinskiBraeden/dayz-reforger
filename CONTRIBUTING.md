@@ -48,7 +48,7 @@ If you're simply looking to add a new command and not make significant changes t
 3. Use the following template to start your command file:
   ```javascript
     const { EmbedBuilder } = require('discord.js');                                  // Not required, but encouraged to use embeds to reply to commands.
-    const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes; // Not required but recommended for clear cmd options.
+    const ApplicationCommandOptionType = require('../util/CommandOptionTypes').CommandOptionTypes; // Not required but recommended for clear cmd options.
 
     module.exports = {
       name: "new-command",                   // Insert your command name here, I encourage that you use hyphens `-` to seperate words.
@@ -62,7 +62,7 @@ If you're simply looking to add a new command and not make significant changes t
           name: "cmd_param_1",
           description: "What this parameter is for",
           value: "cmd_param_1_default", // Default value of this parameter
-          type: CommandOptions.String,
+          type: ApplicationCommandOptionType.String,
           required: true,
         }
       ],
@@ -111,7 +111,7 @@ Adding additional interactions to your command? Buttons, Select Menus, etc? You 
 1. Create an `Interactions` object within your command file. E.g. my new command `/commands/greet.js` will have the following:
   ```javascript
     const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, } = require('discord.js'); // Some additional imported definitions for our button.
-    const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
+    const ApplicationCommandOptionType = require('../util/CommandOptionTypes').CommandOptionTypes;
 
     module.exports = {
       name: "greet",
@@ -123,7 +123,7 @@ Adding additional interactions to your command? Buttons, Select Menus, etc? You 
         name: "name",
         description: "Name to greet",
         value: "name", // Default value of this parameter
-        type: CommandOptions.String,
+        type: ApplicationCommandOptionType.String,
         required: true,
       }],
       SlashCommand: {

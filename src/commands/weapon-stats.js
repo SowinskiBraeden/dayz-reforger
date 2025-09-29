@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const { weapons } = require("../database/weapons");
 const { insertPVPstats, createWeaponStats } = require("../database/player");
 
@@ -17,7 +17,7 @@ module.exports = {
         name: "category",
         description: "Weapon category",
         value: "category",
-        type: CommandOptions.String,
+        type: ApplicationCommandOptionType.String,
         required: true,
         choices: [
             { name: "Handguns", value: "handguns" },
@@ -36,12 +36,12 @@ module.exports = {
         name: "discord",
         description: "Discord user to lookup stats",
         value: "discord",
-        type: CommandOptions.User,
+        type: ApplicationCommandOptionType.User,
         required: false,
     }, {
         name: "gamertag",
         description: "Gamertag to lookup stats",
-        type: CommandOptions.String,
+        type: ApplicationCommandOptionType.String,
         required: false,
     }],
     SlashCommand: {

@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { createUser, addUser } = require("../database/user");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 
 module.exports = {
     name: "purchase-emp",
@@ -16,7 +16,7 @@ module.exports = {
         name: "duration",
         description: "Select the duration of the emp (30 or 60 minutes)",
         value: "duration",
-        type: CommandOptions.Integer,
+        type: ApplicationCommandOptionType.Integer,
         required: true,
         choices: [
             { name: "30 Minutes", value: 30 },

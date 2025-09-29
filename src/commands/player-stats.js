@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const { insertPVPstats } = require("../database/player");
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
         name: "category",
         description: "Leaderboard Category",
         value: "category",
-        type: CommandOptions.String,
+        type: ApplicationCommandOptionType.String,
         required: true,
         choices: [
             { name: "Money", value: "money" },
@@ -39,12 +39,12 @@ module.exports = {
         name: "discord",
         description: "discord user to lookup stats",
         value: "discord",
-        type: CommandOptions.User,
+        type: ApplicationCommandOptionType.User,
         required: false,
     }, {
         name: "gamertag",
         description: "gamertag to lookup stats",
-        type: CommandOptions.String,
+        type: ApplicationCommandOptionType.String,
         required: false,
     }],
     SlashCommand: {

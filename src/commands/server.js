@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
 const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage, NitradoCredentialStatus } = require("../util/NitradoAPI");
 const { encrypt, decrypt } = require("../util/Cryptic");
@@ -18,48 +18,48 @@ module.exports = {
         name: "initialize",
         description: "Connect your Nitrado server to the bot",
         value: "initialize",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
     },
     {
         name: "disconnect",
         description: "Delete your Nitrado server from the bot database",
         value: "disconnect",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
     },
     {
         name: "credentials-status",
         description: "Check the status of your Nitrado Credentials",
         value: "credentials-status",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
     },
     {
         name: "retry-credentials",
         description: "If your credentials are marked as FAILED, try retreiving Nitrado logs again.",
         value: "retry-credentials",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
     },
     {
         name: "ban-player",
         description: "Ban a player from the DayZ server",
         value: "ban-player",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "gamertag",
             description: "gamertag of the player to ban.",
             value: "gamertag",
-            type: CommandOptions.String,
+            type: ApplicationCommandOptionType.String,
             required: true,
         }]
     }, {
         name: "unban-player",
         description: "Unban a player from the DayZ server",
         value: "unban-player",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "gamertag",
             description: "gamertag of the player to unban.",
             value: "gamertag",
-            type: CommandOptions.String,
+            type: ApplicationCommandOptionType.String,
             required: true,
         }]
     },
@@ -67,34 +67,34 @@ module.exports = {
         name: "restart",
         description: "Restart the DayZ Server",
         value: "restart",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
     }, {
         name: "auto-restart",
         description: "Enable/Disable periodic server checks and restart if stopped",
         value: "auto-restart",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
     }, {
         name: "disable-base-damage",
         description: "Disable/Enable base damage",
         value: "disable-base-damage",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "preference",
             description: "DisableBaseDamage Preference",
             value: true,
-            type: CommandOptions.Boolean,
+            type: ApplicationCommandOptionType.Boolean,
             required: true,
         }]
     }, {
         name: "disable-container-damage",
         description: "Disable/Enable container damage",
         value: "disable-container-damage",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "preference",
             description: "disableContainerDamage Preference",
             value: true,
-            type: CommandOptions.Boolean,
+            type: ApplicationCommandOptionType.Boolean,
             required: true,
         }]
     }],

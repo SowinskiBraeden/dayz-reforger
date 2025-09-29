@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
 const { Armbands } = require("../database/armbands.js");
 const { createUser, addUser } = require("../database/user");
@@ -19,55 +19,55 @@ module.exports = {
         name: "gamertag-link",
         description: "Link a gamertag for a user",
         value: "gamertag-link",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "user",
             description: "User to link gamertag to",
             value: "user",
-            type: CommandOptions.User,
+            type: ApplicationCommandOptionType.User,
             required: true,
         },
         {
             name: "gamertag",
             description: "Gamertag of player",
             value: "gamertag",
-            type: CommandOptions.String,
+            type: ApplicationCommandOptionType.String,
             required: true,
         }]
     }, {
         name: "gamertag-unlink",
         description: "Unlink a gamertag for a user",
         value: "gamertag-unlink",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "user",
             description: "User to link gamertag to",
             value: "user",
-            type: CommandOptions.User,
+            type: ApplicationCommandOptionType.User,
             required: true,
         }]
     }, {
         name: "claim-armband",
         description: "Claim an armband for a faction",
         value: "claim-armband",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "faction_role",
             description: "Claim an armband for this faction role.",
             value: "faction_role",
-            type: CommandOptions.Role,
+            type: ApplicationCommandOptionType.Role,
             required: true,
         }]
     }, {
         name: "bounty-clear",
         description: "Clear a bounty off a player",
         value: "bounty-clear",
-        type: CommandOptions.SubCommand,
+        type: ApplicationCommandOptionType.SubCommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player",
             value: "gamertag",
-            type: CommandOptions.String,
+            type: ApplicationCommandOptionType.String,
             required: true,
         }]
     },
@@ -75,43 +75,43 @@ module.exports = {
         name: "money",
         description: "Add/Remove money to a user",
         value: "money",
-        type: CommandOptions.SubCommandGroup,
+        type: ApplicationCommandOptionType.SubCommandGroup,
         options: [{
             name: "add",
             description: "Add money to user",
             value: "add",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "amount",
                 description: "The amount to add to balance",
                 value: "amount",
-                type: CommandOptions.Float,
+                type: ApplicationCommandOptionType.Float,
                 min_value: 0.01,
                 required: true,
             }, {
                 name: "to",
                 description: "User to alter balance",
                 value: "to",
-                type: CommandOptions.User,
+                type: ApplicationCommandOptionType.User,
                 required: true,
             }],
         }, {
             name: "remove",
             description: "Remove money from a user",
             value: "remove",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "amount",
                 description: "The amount to remove from balance",
                 value: "amount",
-                type: CommandOptions.Float,
+                type: ApplicationCommandOptionType.Float,
                 min_value: 0.01,
                 required: true,
             }, {
                 name: "from",
                 description: "User to alter balance",
                 value: "from",
-                type: CommandOptions.User,
+                type: ApplicationCommandOptionType.User,
                 required: true,
             }]
         }]

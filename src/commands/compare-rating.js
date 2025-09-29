@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const { insertPVPstats } = require("../database/player");
 
 module.exports = {
@@ -16,12 +16,12 @@ module.exports = {
         name: "discord",
         description: "Discord user to lookup stats",
         value: "discord",
-        type: CommandOptions.User,
+        type: ApplicationCommandOptionType.User,
         required: false,
     }, {
         name: "gamertag",
         description: "Gamertag to lookup stats",
-        type: CommandOptions.String,
+        type: ApplicationCommandOptionType.String,
         required: false,
     }],
     SlashCommand: {

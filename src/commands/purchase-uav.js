@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const { createUser, addUser } = require("../database/user")
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
             name: "x-coord",
             description: "X Coordinate of the origin",
             value: "x-coord",
-            type: CommandOptions.Float,
+            type: ApplicationCommandOptionType.Float,
             min_value: 0.01,
             required: true,
         },
@@ -25,7 +25,7 @@ module.exports = {
             name: "y-coord",
             description: "Y Coordinate of the origin",
             value: "y-coord",
-            type: CommandOptions.Float,
+            type: ApplicationCommandOptionType.Float,
             min_value: 0.01,
             required: true,
         },

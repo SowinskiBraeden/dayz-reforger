@@ -1,31 +1,40 @@
-const { calculateVector } = require("../util/Vector");
+import { calculateVector } from "@util/Vector";
 
-module.exports = {
-    Missions: {
-        "dayzOffline.chernarusplus": "Chernarus",
-        "dayzOffline.enoch": "Livonia",
-        "dayzOffline.sakhal": "Sakhal",
-    },
+export const Missions = {
+  "dayzOffline.chernarusplus": "Chernarus",
+  "dayzOffline.enoch": "Livonia",
+  "dayzOffline.sakhal": "Sakhal",
+} as const;
 
-    // Calculates the nearest location to a given coordinate
-    nearest: (pos, mission) => {
-        let tempDest;
-        let lastDist = 1000000;
-        let destination_dir;
-        for (let i = 0; i < destinations[mission].length; i++) {
-            let { distance, theta, dir } = calculateVector(pos, destinations[mission][i].coord);
-            if (distance < lastDist) {
-                tempDest = destinations[mission][i].name;
-                lastDist = distance;
-                destination_dir = dir;
-            }
+export type MissionKey  = keyof typeof Missions;
+export type MissionName = typeof Missions[MissionKey];
+
+export type Position = [number, number];
+
+// Calculates the nearest location to a given coordinate
+export function nearest(pos: Position, mission: MissionName): string {
+    let tempDest;
+    let lastDist = 1000000;
+    let destination_dir;
+    
+    for (let i = 0; i < destinations[mission].length; i++) {
+        let { distance, theta, dir } = calculateVector(pos, destinations[mission][i].coord);
+        if (distance < lastDist) {
+            tempDest = destinations[mission][i].name;
+            lastDist = distance;
+            destination_dir = dir;
         }
-        return lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
     }
+    return lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
+};
+
+interface Destination {
+    name: string;
+    coord: Position;
 }
 
 // A curated list of destinations across DayZ Chernarus and Livonia
-const destinations = {
+const destinations: Record<MissionName, Array<Destination>> = {
     Chernarus: [
         {
             name: "Sinystok",

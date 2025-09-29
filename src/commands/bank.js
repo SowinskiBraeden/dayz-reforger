@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const CommandOptions = require("../util/CommandOptionTypes").CommandOptionTypes;
+const { ApplicationCommandOptionType } = require("discord.js");
 const { createUser, addUser } = require("../database/user");
 
 module.exports = {
@@ -17,12 +17,12 @@ module.exports = {
             name: "balance",
             description: "View your bank balance",
             value: "balance",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [{
                 name: "user",
                 description: "User to view ballance",
                 value: "user",
-                type: CommandOptions.User,
+                type: ApplicationCommandOptionType.User,
                 required: false,
             }]
         },
@@ -30,20 +30,20 @@ module.exports = {
             name: "transfer",
             description: "Transfer money to another user",
             value: "transfer",
-            type: CommandOptions.SubCommand,
+            type: ApplicationCommandOptionType.SubCommand,
             options: [
                 {
                     name: "user",
                     description: "User to transfer to",
                     value: "user",
-                    type: CommandOptions.User,
+                    type: ApplicationCommandOptionType.User,
                     required: true,
                 },
                 {
                     name: "amount",
                     description: "The amount to transfer",
                     value: "amount",
-                    type: CommandOptions.Float,
+                    type: ApplicationCommandOptionType.Float,
                     min_value: 0.01,
                     required: true,
                 },
