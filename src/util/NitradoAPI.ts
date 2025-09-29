@@ -17,38 +17,55 @@ export const enum NitradoCredentialStatus {
  * come back and actually go through line by line and clean this whole file
  */
 
-const UploadNitradoFile = async (nitrado_cred: any, client: any, remoteDir: any, remoteFilename: any, localFileDir: any) => {
-    for (let retries = 0; retries <= MAX_RETRIES; retries++) {
-        try {
-            const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/file_server/upload?` + new URLSearchParams({
+const UploadNitradoFile = async (nitrado_cred: any, 
+                                    client: any, 
+                                    remoteDir: any, 
+                                    remoteFilename: any, 
+                                    localFileDir: any) => 
+                                    {
+    for (let retries = 0; retries <= MAX_RETRIES; retries++) 
+    {
+        try 
+        {
+            const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/file_server/upload?` 
+                            + new URLSearchParams({
                 path: remoteDir,
                 file: remoteFilename
             }), {
                 method: "POST",
-                headers: {
+                headers: 
+                {
                     "Authorization": nitrado_cred.Auth
                 },
             }).then(response => response.json());
 
             let contents = fs.readFileSync(localFileDir, "utf8");
 
-            const uploadRes = await fetch(res.data.token.url, {
+            const uploadRes = await fetch(res.data.token.url, 
+            {
                 method: "POST",
-                headers: {
+                headers: 
+                {
                     "Content-Type": "application/binary",
                     token: res.data.token.token
                 },
                 body: contents,
             })
-            if (!uploadRes.ok) {
+            if (!uploadRes.ok) 
+            {
                 client.error(`Failed to upload file to Nitrado (${nitrado_cred.ServerID}): status: ${uploadRes.status}, message: ${res.statusText}: UploadNitradoFile`);
                 if (retries === 2) return 1; // Return error status on the second failed status code.
-            } else {
+            } 
+            else 
+            {
                 return uploadRes;
             }
-        } catch (error: any) {
+        } 
+        catch (error: any) 
+        {
             client.error(`UploadNitradoFile: Error connecting to server (${nitrado_cred.ServerID}): ${error.message}`);
-            if (retries === MAX_RETRIES) {
+            if (retries === MAX_RETRIES) 
+            {
                 client.error(`UploadNitradoFile: Error connecting to server (${nitrado_cred.ServerID}) after ${MAX_RETRIES} retries`);
                 return 1;
             }
@@ -57,10 +74,12 @@ const UploadNitradoFile = async (nitrado_cred: any, client: any, remoteDir: any,
     }
 }
 
-const HandlePlayerBan = async (nitrado_cred: any, client: any, gamertag: any, ban: any) => {
+const HandlePlayerBan = async (nitrado_cred: any, client: any, gamertag: any, ban: any) => 
+{
     const data = await module.exports.FetchServerSettings(nitrado_cred, client, "HandlePlayerBan");  // Fetch server status
 
-    if (data && data != 1) {
+    if (data && data != 1) 
+    {
         let bans = data.data.gameserver.settings.general.bans;
         if (ban) bans += `\r\n${gamertag}`;
         else if (!ban) bans = bans.replace(gamertag, "");
@@ -72,12 +91,18 @@ const HandlePlayerBan = async (nitrado_cred: any, client: any, gamertag: any, ba
     }
 }
 
-const GetRemoteDir = async (nitrado_cred: any, client: any, dir = "") => {
+const GetRemoteDir = async (nitrado_cred: any, 
+                            client: any, 
+                            dir = "") => 
+                            {
     const dirParam = client.exists(dir) ? `?dir=${dir}` : "";
-    for (let retries = 0; retries <= MAX_RETRIES; retries++) {
-        try {
+    for (let retries = 0; retries <= MAX_RETRIES; retries++) 
+    {
+        try 
+        {
             const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/file_server/list${dirParam}`, {
-                headers: {
+                headers: 
+                {
                     "Authorization": nitrado_cred.Auth
                 }
             }).then(response =>
@@ -87,9 +112,12 @@ const GetRemoteDir = async (nitrado_cred: any, client: any, dir = "") => {
             if (res.status === "error") return 1;
 
             return res.data.entries;
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             client.error(`GetRemoteDir: Error connecting to server (${nitrado_cred.ServerID}): ${error}`);
-            if (retries == MAX_RETRIES) {
+            if (retries == MAX_RETRIES) 
+            {
                 client.error(`GetRemoteDir: Error connecting to server (${nitrado_cred.ServerID}) after ${MAX_RETRIES} retries`);
                 return 1;
             }
@@ -99,11 +127,15 @@ const GetRemoteDir = async (nitrado_cred: any, client: any, dir = "") => {
 }
 
 /*** exported function ***/
-export const DownloadNitradoFile = async (nitrado_cred: any, client: any, filename: any, outputDir: any) => {
-    for (let retries = 0; retries <= MAX_RETRIES; retries++) {
-        try {
+export const DownloadNitradoFile = async (nitrado_cred: any, client: any, filename: any, outputDir: any) => 
+{
+    for (let retries = 0; retries <= MAX_RETRIES; retries++) 
+    {
+        try 
+        {
             const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/file_server/download?file=${filename}`, {
-                headers: {
+                headers: 
+                {
                     "Authorization": nitrado_cred.Auth
                 }
             }).then(response =>
@@ -111,16 +143,20 @@ export const DownloadNitradoFile = async (nitrado_cred: any, client: any, filena
             ).then(res => res);
 
             const stream: any = fs.createWriteStream(outputDir);
-            if (!res.data || !res.data.token) {
+            if (!res.data || !res.data.token) 
+            {
                 client.error(`Error downloading File "${filename}": message: ${res.message}: DownloadNitradoFile`);
                 return 1;
             }
             const { body }: any = await fetch(res.data.token.url);
             await finished(Readable.fromWeb(body).pipe(stream));
             return 0;
-        } catch (error: any) {
+        } 
+        catch (error: any) 
+        {
             client.error(`DownloadNitradoFile: Error connecting to server (${nitrado_cred.ServerID}): ${error.message}`);
-            if (retries === MAX_RETRIES) {
+            if (retries === MAX_RETRIES) 
+            {
                 client.error(`DownloadNitradoFile: Error connecting to server (${nitrado_cred.ServerID}) after ${MAX_RETRIES} retries`);
                 return 1;
             }
@@ -135,33 +171,51 @@ export const DownloadNitradoFile = async (nitrado_cred: any, client: any, filena
     rather than write two whole different functions for each.
 */
 
-export const BanPlayer = async (nitrado_cred: any, client: any, gamertag: any) => await HandlePlayerBan(nitrado_cred, client, gamertag, true);
-export const UnbanPlayer = async (nitrado_cred: any, client: any, gamertag: any) => await HandlePlayerBan(nitrado_cred, client, gamertag, false);
+export const BanPlayer = async (nitrado_cred: any, 
+                                client: any, 
+                                gamertag: any) => await HandlePlayerBan(nitrado_cred, client, gamertag, true);
+export const UnbanPlayer = async (nitrado_cred: any, 
+                                    client: any, 
+                                    gamertag: any) => await HandlePlayerBan(nitrado_cred, client, gamertag, false);
 
-export const RestartServer = async (nitrado_cred: any, client: any, restart_message: any, message: any) => {
-    const params = {
+export const RestartServer = async (nitrado_cred: any, 
+                                    client: any, 
+                                    restart_message: any, 
+                                    message: any) => {
+    const params = 
+    {
         restart_message: restart_message,
         message: message
     };
-    for (let retries = 0; retries < MAX_RETRIES; retries++) {
-        try {
-            const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/restart`, {
+    for (let retries = 0; retries < MAX_RETRIES; retries++) 
+    {
+        try 
+        {
+            const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/restart`, 
+            {
                 method: "POST",
-                headers: {
+                headers: 
+                {
                     "Authorization": nitrado_cred.Auth,
                 },
                 body: JSON.stringify(params)
             });
 
-            if (!res.ok) {
+            if (!res.ok) 
+            {
                 client.error(`Failed to restart Nitrado server (${nitrado_cred.ServerID}): status: ${res.status}, message: ${res.statusText}: RestartServer`);
                 return 1; // Return error status on failed status code.
-            } else {
+            } 
+            else 
+            {
                 return 0;
             }
-        } catch (error: any) {
+        } 
+        catch (error: any) 
+        {
             client.error(`RestartServer: Error connecting to server (${nitrado_cred.ServerID}): ${error.message}`);
-            if (retries === MAX_RETRIES) {
+            if (retries === MAX_RETRIES) 
+            {
                 client.error(`RestartServer: Error connecting to server (${nitrado_cred.ServerID}) after ${MAX_RETRIES} retries`);
                 return 1;
             }
@@ -170,27 +224,38 @@ export const RestartServer = async (nitrado_cred: any, client: any, restart_mess
     }
 };
 
-export const FetchServerSettings = async (nitrado_cred: any, client: any, fetcher: any) => {
-    for (let retries = 0; retries <= MAX_RETRIES; retries++) {
-        try {
+export const FetchServerSettings = async (nitrado_cred: any, client: any, fetcher: any) => 
+{
+    for (let retries = 0; retries <= MAX_RETRIES; retries++) 
+    {
+        try 
+        {
             // get current status
-            const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers`, {
-                headers: {
+            const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers`, 
+            {
+                headers: 
+                {
                     "Authorization": nitrado_cred.Auth
                 }
             });
 
-            if (!res.ok) {
+            if (!res.ok) 
+            {
                 client.error(`Failed to get Nitrado server stats (${nitrado_cred.ServerID}): status: ${res.status}, message: ${res.statusText}: ${fetcher} via FetchServerSettings`);
                 if (res.status == 401) return 1; // return immediately if unauthorized
                 if (retries === 2) return 1; // Return error status on the second failed status code.
-            } else {
+            } 
+            else 
+            {
                 const data = await res.json();
                 return data;
             }
-        } catch (error: any) {
+        } 
+        catch (error: any) 
+        {
             client.error(`${fetcher} via FetchServerSettings: Error connecting to server (${nitrado_cred.ServerID}): ${error.message}`);
-            if (retries === MAX_RETRIES) {
+            if (retries === MAX_RETRIES) 
+            {
                 client.error(`${fetcher} via FetchServerSettings: Error connecting to server (${nitrado_cred.ServerID}) after ${MAX_RETRIES} retries`);
                 return 1;
             }
@@ -199,15 +264,22 @@ export const FetchServerSettings = async (nitrado_cred: any, client: any, fetche
     }
 };
 
-export const PostServerSettings = async (nitrado_cred: any, client: any, category: any, key: any, value: any) => {
-    for (let retries = 0; retries <= MAX_RETRIES; retries++) {
-        try {
+export const PostServerSettings = async (nitrado_cred: any, 
+                                            client: any, 
+                                            category: any, 
+                                            key: any, value: any) => {
+    for (let retries = 0; retries <= MAX_RETRIES; retries++) 
+    {
+        try 
+        {
             const formData = new FormData();
             formData.append("category", category);
             formData.append("key", key);
             formData.append("value", value);
-            formData.pipe(concat((data: any) => {
-                async function postData() {
+            formData.pipe(concat((data: any) => 
+            {
+                async function postData() 
+                {
                     const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/settings`, {
                         method: "POST",
                         credentials: "include",
@@ -217,10 +289,13 @@ export const PostServerSettings = async (nitrado_cred: any, client: any, categor
                         },
                         body: data,
                     });
-                    if (!res.ok) {
+                    if (!res.ok) 
+                    {
                         client.error(`Failed to get post Nitrado server settings (${nitrado_cred.ServerID}): status: ${res.status}, message: ${res.statusText}: PostServerSettings`);
                         if (retries === 2) return 1; // Return error status on the second failed status code.
-                    } else {
+                    } 
+                    else 
+                    {
                         const data = await res.json();
                         return data;
                     }
@@ -228,9 +303,12 @@ export const PostServerSettings = async (nitrado_cred: any, client: any, categor
                 postData();
             }));
             return 0;
-        } catch (error: any) {
+        } 
+        catch (error: any) 
+        {
             client.error(`PostServerSettings: Error connecting to server (${nitrado_cred.ServerID}): ${error.message}`);
-            if (retries === MAX_RETRIES) {
+            if (retries === MAX_RETRIES) 
+            {
                 client.error(`PostServerSettings: Error connecting to server (${nitrado_cred.ServerID}) after ${MAX_RETRIES} retries`);
                 return 1;
             }
@@ -239,12 +317,16 @@ export const PostServerSettings = async (nitrado_cred: any, client: any, categor
     }
 };
 
-export const CheckServerStatus = async (nitrado_cred: any, client: any) => {
+export const CheckServerStatus = async (nitrado_cred: any, client: any) => 
+{
     const data = await module.exports.FetchServerSettings(nitrado_cred, client, "CheckServerStatus");  // Fetch server status
 
-    if (data && data != 1) {
-        if (data && data.data.gameserver.status === "stopped") {
-            client.log(`Restart of Nitrado server ${nitrado_cred.ServerID} has been invoked by the bot, the periodic check showed status of "${data.data.gameserver.status}".`);
+    if (data && data != 1) 
+    {
+        if (data && data.data.gameserver.status === "stopped") 
+        {
+            client.log(`Restart of Nitrado server ${nitrado_cred.ServerID} has been invoked by the bot,
+                                                    the periodic check showed status of "${data.data.gameserver.status}".`);
             // Write optional "restart_message" to set in the Nitrado server logs and send a notice "message" to your server community.
             let restart_message = "Server being restarted by periodic bot check.";
             let message = "The server was restarted by periodic bot check!";
@@ -254,7 +336,9 @@ export const CheckServerStatus = async (nitrado_cred: any, client: any) => {
     }
 };
 
-export const DisableBaseDamage = async (nitrado_cred: any, client: any, preference: any) => {
+export const DisableBaseDamage = async (nitrado_cred: any, 
+                                        client: any, 
+                                        preference: any) => {
     const pref = preference ? "1" : "0";
     const posted = await module.exports.PostServerSettings(nitrado_cred, client, "config", "disableBaseDamage", pref);
     if (posted == 1) return 1;
@@ -282,9 +366,12 @@ export const DisableBaseDamage = async (nitrado_cred: any, client: any, preferen
     return 0;
 };
 
-export const DisableContainerDamage = async (nitrado_cred: any, client: any, preference: any) => {
+export const DisableContainerDamage = async (nitrado_cred: any, 
+                                                client: any, 
+                                                preference: any) => {
     const pref = preference ? "1" : "0";
-    const posted = await module.exports.PostServerSettings(nitrado_cred, client, "config", "disableContainerDamage", pref);
+    const posted = await module.exports.PostServerSettings(nitrado_cred, 
+                                                            client, "config", "disableContainerDamage", pref);
     if (posted == 1) return 1;
 
     const remoteDirs = await GetRemoteDir(nitrado_cred, client);
