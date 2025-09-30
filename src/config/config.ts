@@ -7,7 +7,8 @@ export const enum DevelopmentBranch {
     Prod = "PROD.",
 };
 
-export const enum Colors {
+// switch to const later once removed Colors from config
+export enum Colors {
     Default = "#8a7c72",
     DarkRed = "#ba0f0f",
     Red     = "#f55c5c",
@@ -25,6 +26,7 @@ export interface Config {
     Dev:              DevelopmentBranch;
     Version:          string;
     Admins:           Array<string>;
+    Colors:           typeof Colors;
     SupportServer:    string;
     Token:            string;
     SecretKey:        string;
@@ -43,6 +45,7 @@ export const config: Config = {
     Dev:              <DevelopmentBranch>process.env.Dev || DevelopmentBranch.Dev,
     Version:          version,
     Admins:           ["362791661274660874", "329371697570381824"], // Admins of the bot
+    Colors:           Colors, // only here for backwards compatibility with commands/*
     SupportServer:    "https://discord.gg/KVFJCvvFtK", // Support Server Link
     Token:            process.env.token || "", //Discord Bot Token
     SecretKey:        process.env.key || "01234567891",
