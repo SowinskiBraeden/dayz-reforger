@@ -18,13 +18,13 @@ module.exports = {
             name: "killfeed",
             description: "Configure the killfeed",
             value: "killfeed",
-            type: ApplicationCommandOptionType.SubCommandGroup,
+            type: ApplicationCommandOptionType.SubcommandGroup,
             options: [
                 {
                     name: "channel",
                     description: "Configure the killfeed channel",
                     value: "channel",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "channel",
                         description: "The channel to configure",
@@ -37,7 +37,7 @@ module.exports = {
                     name: "show_coords",
                     description: "Show the coordinates of the victim in the killfeed channel.",
                     value: "show_coords",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "configuration",
                         description: "True or False",
@@ -50,7 +50,7 @@ module.exports = {
                     name: "show_weapon",
                     description: "Show the image of the weapon in the killfeed",
                     value: "show_weapon",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "configuration",
                         description: "True or False",
@@ -65,13 +65,13 @@ module.exports = {
             name: "allowed_channels",
             description: "Set channels you're allowed to use the bot in",
             value: "allowed_channels",
-            type: ApplicationCommandOptionType.SubCommandGroup,
+            type: ApplicationCommandOptionType.SubcommandGroup,
             options: [
                 {
                     name: "add",
                     description: "Add channel",
                     value: "add",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "channel",
                         description: "The channel to configure",
@@ -85,7 +85,7 @@ module.exports = {
                     name: "remove",
                     description: "Remove channel",
                     value: "remove",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "channel",
                         description: "The channel to configure",
@@ -99,13 +99,13 @@ module.exports = {
                     name: "clear",
                     description: "Clears all configured channels",
                     value: "clear",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                 },
                 {
                     name: "view",
                     description: "View configured allowed channels",
                     value: "view",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                 }
             ]
         },
@@ -113,7 +113,7 @@ module.exports = {
             name: "set_channel",
             description: "Configure a channel",
             value: "set_channel",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "channel_type",
@@ -140,7 +140,7 @@ module.exports = {
             name: "linked_gt_role",
             description: "Role for users with linked gamertags",
             value: "linked_gt_role",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "role",
                 description: "Role to configure",
@@ -153,7 +153,7 @@ module.exports = {
             name: "member_role",
             description: "Role for users who join the server",
             value: "member_role",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "role",
                 description: "Role to configure",
@@ -166,13 +166,13 @@ module.exports = {
             name: "bot_admin_role",
             description: "Set/remove bot admin role",
             value: "bot_admin_role",
-            type: ApplicationCommandOptionType.SubCommandGroup,
+            type: ApplicationCommandOptionType.SubcommandGroup,
             options: [
                 {
                     name: "add",
                     description: "Configure role to be bot admin",
                     value: "add",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "role",
                         description: "Role to confiure",
@@ -185,7 +185,7 @@ module.exports = {
                     name: "remove",
                     description: "Remove configured role as bot admin",
                     value: "remove",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "role",
                         description: "Role to remove",
@@ -198,7 +198,7 @@ module.exports = {
                     name: "view",
                     description: "View the configured bot admin roles",
                     value: "view",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                 }
             ]
         },
@@ -206,7 +206,7 @@ module.exports = {
             name: "admin_ping_role",
             description: "Admin role to ping in admin logs channel",
             value: "admin_ping_role",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "role",
                 description: "Role to configure",
@@ -219,13 +219,13 @@ module.exports = {
             name: "exclude",
             description: "Exclude roles that can be used to claim armbands",
             value: "exclude",
-            type: ApplicationCommandOptionType.SubCommandGroup,
+            type: ApplicationCommandOptionType.SubcommandGroup,
             options: [
                 {
                     name: "add",
                     description: "Configure role to be excluded",
                     value: "add",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "role",
                         description: "Role to confiure",
@@ -238,7 +238,7 @@ module.exports = {
                     name: "remove",
                     description: "Remove configured role thats excluded",
                     value: "remove",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "role",
                         description: "Role to remove",
@@ -251,7 +251,7 @@ module.exports = {
                     name: "view",
                     description: "View the configured excluded roles",
                     value: "view",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                 },
             ]
         },
@@ -259,24 +259,24 @@ module.exports = {
             name: "reset",
             description: "Restore all settings to default configurations",
             value: "reset",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: "view",
             description: "View current settings configuration",
             value: "view",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: "starting_balance",
             description: "Set the starting balance of a new user",
             value: "starting_balance",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "amount",
                 description: "The amount to set the starting balance",
                 value: "amount",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 1.00,
                 required: true,
             }]
@@ -285,12 +285,12 @@ module.exports = {
             name: "uav-price",
             description: "Configure the price of a UAV",
             value: "uav-price",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "amount",
                 description: "The amount to set the UAV price",
                 value: "amount",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 0.01,
                 required: true,
             }]
@@ -299,12 +299,12 @@ module.exports = {
             name: "emp-price",
             description: "Configure the price of an EMP",
             value: "emp-price",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "amount",
                 description: "The amount to set the EMP price",
                 value: "amount",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 0.01,
                 required: true,
             }]
@@ -313,13 +313,13 @@ module.exports = {
             name: "income_role",
             description: "Set/remove roles to recieve income",
             value: "set_income_role",
-            type: ApplicationCommandOptionType.SubCommandGroup,
+            type: ApplicationCommandOptionType.SubcommandGroup,
             options: [
                 {
                     name: "set",
                     description: "Set role",
                     value: "set",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [
                         {
                             name: "role",
@@ -332,7 +332,7 @@ module.exports = {
                             name: "amount",
                             description: "The amount to collect",
                             value: 120.00,
-                            type: ApplicationCommandOptionType.Float,
+                            type: ApplicationCommandOptionType.Number,
                             min_value: 0.01,
                             required: true,
                         }
@@ -342,7 +342,7 @@ module.exports = {
                     name: "remove",
                     description: "Remove role",
                     value: "remove",
-                    type: ApplicationCommandOptionType.SubCommand,
+                    type: ApplicationCommandOptionType.Subcommand,
                     options: [{
                         name: "role",
                         description: "Role to remove",
@@ -357,12 +357,12 @@ module.exports = {
             name: "income_limiter",
             description: "Change the number of hours to wait before collecting next income",
             value: "income_limiter",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "hours",
                 description: "Number of hours till income can be collected",
                 value: 168.00, // 1 week
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 1.00,
                 required: true,
             }]
@@ -371,7 +371,7 @@ module.exports = {
             name: "combat-log-timer",
             description: "Adjust number of minutes to detect combat logs (0 disables combat log)",
             value: "combat-log-timer",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "minutes",
                 description: "Minutes to qualify combat log",
@@ -384,7 +384,7 @@ module.exports = {
             name: "toggle-uav-purchase",
             description: "Allow/Disallow UAV purchases",
             value: "toggle-uav-purchase",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "configuration",
                 description: "True or False",
@@ -397,7 +397,7 @@ module.exports = {
             name: "toggle-emp-purchase",
             description: "Allow/Disallow EMP purchases",
             value: "toggle-uav-purchase",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "configuration",
                 description: "True or False",
@@ -410,7 +410,7 @@ module.exports = {
             name: "welcome_message_server_name",
             description: "Configure the server name in the welcome message",
             value: "welcome_message_server_name",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "name",
                 description: "Server name to include in welcome message",

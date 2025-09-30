@@ -15,7 +15,7 @@ module.exports = {
         name: "discord",
         description: "Find a Discord user from a Gamertag",
         value: "discord",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player",
@@ -27,7 +27,7 @@ module.exports = {
         name: "gamertag",
         description: "Find a Gamertag from a Discord user",
         value: "gamertag",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "user",
             description: "Discord User",

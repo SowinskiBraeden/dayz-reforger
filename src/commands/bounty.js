@@ -17,7 +17,7 @@ module.exports = {
         name: "set",
         description: "Set a bounty on a player",
         value: "set",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player for bounty",
@@ -28,7 +28,7 @@ module.exports = {
             name: "value",
             description: "Amount of the bounty",
             value: "value",
-            type: ApplicationCommandOptionType.Float,
+            type: ApplicationCommandOptionType.Number,
             min_value: 0.01,
             required: true
         }, {
@@ -42,12 +42,12 @@ module.exports = {
         name: "pay",
         description: "Pay off your bounty",
         value: "pay",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     }, {
         name: "view",
         description: "View all active bounties",
         value: "view",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     }],
     SlashCommand: {
         /**

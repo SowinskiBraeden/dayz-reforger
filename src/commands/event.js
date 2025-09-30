@@ -16,7 +16,7 @@ module.exports = {
         name: "player-track",
         description: "Track a player and announce location",
         value: "player-track",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player",
@@ -60,7 +60,7 @@ module.exports = {
         name: "delete",
         description: "Delete an active event",
         value: "delete",
-        type: ApplicationCommandOptionType.SubCommand
+        type: ApplicationCommandOptionType.Subcommand
     }],
     SlashCommand: {
         /**

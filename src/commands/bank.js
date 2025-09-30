@@ -17,7 +17,7 @@ module.exports = {
             name: "balance",
             description: "View your bank balance",
             value: "balance",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "user",
                 description: "User to view ballance",
@@ -30,7 +30,7 @@ module.exports = {
             name: "transfer",
             description: "Transfer money to another user",
             value: "transfer",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "user",
@@ -43,7 +43,7 @@ module.exports = {
                     name: "amount",
                     description: "The amount to transfer",
                     value: "amount",
-                    type: ApplicationCommandOptionType.Float,
+                    type: ApplicationCommandOptionType.Number,
                     min_value: 0.01,
                     required: true,
                 },

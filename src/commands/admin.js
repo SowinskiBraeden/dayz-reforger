@@ -19,7 +19,7 @@ module.exports = {
         name: "gamertag-link",
         description: "Link a gamertag for a user",
         value: "gamertag-link",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "user",
             description: "User to link gamertag to",
@@ -38,7 +38,7 @@ module.exports = {
         name: "gamertag-unlink",
         description: "Unlink a gamertag for a user",
         value: "gamertag-unlink",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "user",
             description: "User to link gamertag to",
@@ -50,7 +50,7 @@ module.exports = {
         name: "claim-armband",
         description: "Claim an armband for a faction",
         value: "claim-armband",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "faction_role",
             description: "Claim an armband for this faction role.",
@@ -62,7 +62,7 @@ module.exports = {
         name: "bounty-clear",
         description: "Clear a bounty off a player",
         value: "bounty-clear",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player",
@@ -75,17 +75,17 @@ module.exports = {
         name: "money",
         description: "Add/Remove money to a user",
         value: "money",
-        type: ApplicationCommandOptionType.SubCommandGroup,
+        type: ApplicationCommandOptionType.SubcommandGroup,
         options: [{
             name: "add",
             description: "Add money to user",
             value: "add",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "amount",
                 description: "The amount to add to balance",
                 value: "amount",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 0.01,
                 required: true,
             }, {
@@ -99,12 +99,12 @@ module.exports = {
             name: "remove",
             description: "Remove money from a user",
             value: "remove",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "amount",
                 description: "The amount to remove from balance",
                 value: "amount",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 0.01,
                 required: true,
             }, {
