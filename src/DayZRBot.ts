@@ -1,38 +1,39 @@
-// Discord.js & REST API
-import {
-    Collection,
-    Client,
-    EmbedBuilder,
-    Routes,
-    InteractionResponseType,
-    InteractionType,
-    GatewayDispatchEvents,
-    ClientOptions,
-    Guild,
-    ChatInputCommandInteraction,
-    Snowflake,
-    Role,
-    Message,
-    TextBasedChannel,
-    ButtonInteraction,
-    StringSelectMenuInteraction,
-    Channel,
-} from "discord.js";
-import { REST } from "@discordjs/rest";
-
-// MongoDB
-import { MongoClient } from "mongodb";
-
 // Node.js built-ins
-import * as path     from "path";
-import * as fs       from "node:fs";
-import * as readline from "node:readline";
 import * as crypto   from "crypto";
+import * as fs       from "node:fs";
+import * as path     from "path";
+import * as readline from "node:readline";
 import { Readable }  from "node:stream";
 
-// Custom utilities
-import Logger                                            from "./util/Logger";
-import { RegisterGlobalCommands, RegisterGuildCommands } from "./util/RegisterSlashCommands";
+// Third-party libraries
+import {
+  ButtonInteraction,
+  Channel,
+  ChatInputCommandInteraction,
+  Client,
+  ClientOptions,
+  Collection,
+  EmbedBuilder,
+  GatewayDispatchEvents,
+  Guild,
+  InteractionResponseType,
+  InteractionType,
+  Message,
+  Role,
+  Routes,
+  Snowflake,
+  StringSelectMenuInteraction,
+  TextBasedChannel,
+} from "discord.js";
+import { REST } from "@discordjs/rest";
+import { MongoClient } from "mongodb";
+
+// Config
+import { Colors, Config } from "./config/config";
+
+// Utilities
+import Logger from "./util/Logger";
+import { decrypt } from "./util/Cryptic";
 import {
   DownloadNitradoFile,
   CheckServerStatus,
@@ -40,17 +41,16 @@ import {
   PostServerSettings,
   NitradoCredentialStatus,
 } from "./util/NitradoAPI";
+import { RegisterGlobalCommands, RegisterGuildCommands } from "./util/RegisterSlashCommands";
 import { HandlePlayerLogs, HandleActivePlayersList } from "./util/LogsHandler";
 import { HandleKillfeed, UpdateLastDeathDate } from "./util/KillfeedHandler";
 import { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } from "./util/AlarmsHandler";
-import { decrypt } from "./util/Cryptic";
 import { GetWebhook, WebhookSend } from "./util/WebhookHandler";
-import { Config, Colors } from "./config/config";
 
-// Database structures
-import { getDefaultPlayer, UpdatePlayer, Player } from "./database/player";
+// Database
+import { Player, UpdatePlayer, getDefaultPlayer } from "./database/player";
 import { Missions, MissionKey } from "./database/destinations";
-import { GetGuild, GuildConfig, NitradoConfig } from "./database/guild";
+import { GuildConfig, NitradoConfig, GetGuild } from "./database/guild";
 
 const MINUTE = 60000; // 1 minute in milliseconds
 const AUTO_RESTART_INTERVAL = 600000; // Set auto-restart interval 10 minutes (600,000ms)
