@@ -20,6 +20,13 @@ export interface Alarm
     // TODO: fill this out
 };
 
+export interface NitradoCredentials
+{
+    ServerID: string;
+    UserID:   string;
+    Auth:     string;
+};
+
 export interface NitradoConfig
 {
     ServerID: string;
@@ -78,7 +85,7 @@ interface GuildConfigAttributes
     combatLogTimer:        number;
 }
 
-interface GuildConfigDB
+export interface GuildConfigDB
 {
     server: GuildConfigAttributes;
     Nitrado: NitradoConfig | null;
