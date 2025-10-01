@@ -337,7 +337,7 @@ export const CheckServerStatus = async (nitrado_cred: any, client: any) =>
 };
 
 export const DisableBaseDamage = async (nitrado_cred: any, 
-                                        client: any, 
+    client: any, 
                                         preference: any) => {
     const pref = preference ? "1" : "0";
     const posted = await module.exports.PostServerSettings(nitrado_cred, client, "config", "disableBaseDamage", pref);
@@ -366,9 +366,11 @@ export const DisableBaseDamage = async (nitrado_cred: any,
     return 0;
 };
 
-export const DisableContainerDamage = async (nitrado_cred: any, 
-                                                client: any, 
-                                                preference: any) => {
+export const DisableContainerDamage = async (
+    nitrado_cred: any, 
+    client: any, 
+    preference: any) => 
+{
     const pref = preference ? "1" : "0";
     const posted = await module.exports.PostServerSettings(nitrado_cred, 
                                                             client, "config", "disableContainerDamage", pref);
