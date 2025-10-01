@@ -1,5 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { UpdatePlayer } = require("../database/player");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "gamertag-unlink",
@@ -21,7 +22,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -30,7 +31,7 @@ module.exports = {
             }
 
             let playerStat = await client.dbo.collection("players").findOne({ "discordID": interaction.member.user.id });
-            if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**No Gamertag Linked** It Appears your don"t have a gamertag linked to your account.`)] });
+            if (!isDefined(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**No Gamertag Linked** It Appears your don"t have a gamertag linked to your account.`)] });
 
             const warnGTOverwrite = new EmbedBuilder()
                 .setColor(client.config.Colors.Yellow)

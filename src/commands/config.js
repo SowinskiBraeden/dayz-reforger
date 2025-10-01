@@ -2,6 +2,7 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("
 const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
 const { getDefaultSettings } = require("../database/guild");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "config",
@@ -712,12 +713,12 @@ module.exports = {
                     // Role / channel display
                     const NONE = `${w}${m}none${w}`;
                     const channelsInfo = GuildDB.customChannelStatus ? "\`</channels:1225869620813107246>\` to view" : NONE;
-                    const killfeedChannel = client.exists(GuildDB.killfeedChannel) ? `<#${GuildDB.killfeedChannel}>` : NONE;
-                    const connectionLogs = client.exists(GuildDB.connectionLogsChannel) ? `<#${GuildDB.connectionLogsChannel}>` : NONE;
-                    const activePlayers = client.exists(GuildDB.activePlayersChannel) ? `<#${GuildDB.activePlayersChannel}>` : NONE;
-                    const welcomeChannel = client.exists(GuildDB.welcomeChannel) ? `<#${GuildDB.welcomeChannel}>` : NONE;
-                    const linkedGTRole = client.exists(GuildDB.linkedGamertagRole) ? `<@&${GuildDB.linkedGamertagRole}>` : NONE;
-                    const memberRole = client.exists(GuildDB.memberRole) ? `<@&${GuildDB.memberRole}>` : NONE;
+                    const killfeedChannel = isDefined(GuildDB.killfeedChannel) ? `<#${GuildDB.killfeedChannel}>` : NONE;
+                    const connectionLogs = isDefined(GuildDB.connectionLogsChannel) ? `<#${GuildDB.connectionLogsChannel}>` : NONE;
+                    const activePlayers = isDefined(GuildDB.activePlayersChannel) ? `<#${GuildDB.activePlayersChannel}>` : NONE;
+                    const welcomeChannel = isDefined(GuildDB.welcomeChannel) ? `<#${GuildDB.welcomeChannel}>` : NONE;
+                    const linkedGTRole = isDefined(GuildDB.linkedGamertagRole) ? `<@&${GuildDB.linkedGamertagRole}>` : NONE;
+                    const memberRole = isDefined(GuildDB.memberRole) ? `<@&${GuildDB.memberRole}>` : NONE;
 
                     // value display
                     const incomeLimiter = `${GuildDB.incomeLimiter} hours`;

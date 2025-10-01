@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const { insertPVPstats } = require("../database/player");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "compare-rating",
@@ -34,7 +35,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -56,8 +57,8 @@ module.exports = {
             if (gamertag) comp = leaderboard.find(s => s.gamertag == gamertag);
             let self = leaderboard.find(s => s.discordID == interaction.member.user.id);
 
-            if (!client.exists(comp)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
-            if (!client.exists(self)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** You haven"t linked your gamertag and your stats cannot be found.`)] });
+            if (!isDefined(comp)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
+            if (!isDefined(self)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** You haven"t linked your gamertag and your stats cannot be found.`)] });
 
             let lbPosSelf = leaderboard.indexOf(self) + 1;
             let lbPosComp = leaderboard.indexOf(comp) + 1;
@@ -69,8 +70,8 @@ module.exports = {
             let selfDataMax = Math.max(...selfData);
             let compDataMax = Math.max(...compData);
 
-            if (!client.exists(self.highestCombatRating) || self.highestCombatRating < selfDataMax) self.highestCombatRating = selfDataMax;
-            if (!client.exists(comp.highestCombatRating) || comp.highestCombatRating < compDataMax) comp.highestCombatRating = compDataMax;
+            if (!isDefined(self.highestCombatRating) || self.highestCombatRating < selfDataMax) self.highestCombatRating = selfDataMax;
+            if (!isDefined(comp.highestCombatRating) || comp.highestCombatRating < compDataMax) comp.highestCombatRating = compDataMax;
 
             let tag = comp.discordID != "" ? `<@${comp.discordID}>` : comp.gamertag;
 

@@ -2,6 +2,7 @@ const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("dis
 const { ApplicationCommandOptionType } = require("discord.js");
 const { weapons } = require("../database/weapons");
 const { insertPVPstats, createWeaponStats } = require("../database/player");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "weapon-stats",
@@ -54,7 +55,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -78,7 +79,7 @@ module.exports = {
             // Searching for self
             if (self) query = await client.dbo.collection("players").findOne({ "discordID": interaction.member.user.id });
 
-            if (!client.exists(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
+            if (!isDefined(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
 
             let weaponSelect = new StringSelectMenuBuilder()
                 .setCustomId(`ViewWeaponStats-${query.playerID}-${interaction.member.user.id}`)
@@ -110,8 +111,8 @@ module.exports = {
                 let player = await client.dbo.collection("players").findOne({ "playerID": playerID });
                 const tag = player.discordID != "" ? `<@${player.discordID}>"s` : `**${player.gamertag}"s**`;
 
-                if (!client.exists(player.shotsLanded)) player = insertPVPstats(player);
-                if (!client.exists(player.weaponStats[weapon])) player = createWeaponStats(player, weapon);
+                if (!isDefined(player.shotsLanded)) player = insertPVPstats(player);
+                if (!isDefined(player.weaponStats[weapon])) player = createWeaponStats(player, weapon);
 
                 let stats = new EmbedBuilder()
                     .setColor(client.config.Colors.Default)

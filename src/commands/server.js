@@ -1,8 +1,9 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
-const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage, NitradoCredentialStatus } = require("../util/NitradoAPI");
+const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage, NitradoCredentialStatus } = require("../services/NitradoAPI");
 const { encrypt, decrypt } = require("../util/Cryptic");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "server",
@@ -117,7 +118,7 @@ module.exports = {
 
             if (args[0].name == "initialize") {
 
-                if (client.exists(GuildDB.Nitrado)) {
+                if (isDefined(GuildDB.Nitrado)) {
                     const prompt = new EmbedBuilder()
                         .setTitle(`Nitrado Server Information Already Configured!`)
                         .setDescription("**Notice:** This will overwrite your previously configured Nitrado Server Information")
@@ -190,7 +191,7 @@ module.exports = {
                 return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
             }
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Notice:**\nThis Discord guild has not been configured with a Nitrado DayZ server. To configure your guild, use </server initialize:1166877457559851011>`)] });
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Notice:**\nThis Discord guild has not been configured with a Nitrado DayZ server. To configure your guild, use </server initialize:1166877457559851011>`)] });
 
             if (args[0].name == "credentials-status") {
 

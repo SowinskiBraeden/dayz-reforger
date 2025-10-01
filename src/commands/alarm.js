@@ -1,6 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
+const isDefined = require("../util/Validation.js");
 
 const generateAlarmMenus = (alarms, customId, placeholder, description) => {
     let alarmComponents = [];
@@ -237,7 +238,7 @@ module.exports = {
             if (GuildDB.hasBotAdmin && interaction.member.roles.filter(e => GuildDB.botAdminRoles.indexOf(e) !== -1).length > 0) canUseCommand = true;
             if (!canUseCommand) return interaction.send({ content: "You don\"t have the permissions to use this command." });
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -259,8 +260,8 @@ module.exports = {
                     role: args[0].options[5].value,
                     ignoredPlayers: [],
                     rules: [],
-                    empExempt: client.exists(args[0].options[6]) ? args[0].options[6].value : false,
-                    showPlayerCoord: client.exists(args[0].options[7]) ? args[0].options[7].value : true,
+                    empExempt: isDefined(args[0].options[6]) ? args[0].options[6].value : false,
+                    showPlayerCoord: isDefined(args[0].options[7]) ? args[0].options[7].value : true,
                     disabled: false,
                     empExpire: null,
                 };
@@ -451,7 +452,7 @@ module.exports = {
                 let alarmIndex = GuildDB.alarms.indexOf(alarm);
 
                 let playerStat = await client.dbo.collection("players").findOne({ "gamertag": interaction.customId.split("-")[2] });
-                if (!client.exists(playerStat)) return interaction.update({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.")], components: [] });
+                if (!isDefined(playerStat)) return interaction.update({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.")], components: [] });
 
                 let add = interaction.customId.split("-")[1] == "add";
 

@@ -2,6 +2,7 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("
 const { ApplicationCommandOptionType } = require("discord.js");
 const { addUser } = require("../database/user");
 const bitfieldCalculator = require("discord-bitfield-calculator");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "reset",
@@ -33,7 +34,7 @@ module.exports = {
             let canUseCommand = false;
 
             if (permissions.includes("MANAGE_GUILD")) canUseCommand = true;
-            if (client.exists(GuildDB.botAdmin) && interaction.member.roles.includes(GuildDB.botAdmin)) canUseCommand = true;
+            if (isDefined(GuildDB.botAdmin) && interaction.member.roles.includes(GuildDB.botAdmin)) canUseCommand = true;
             if (!canUseCommand) return interaction.send({ content: "You don\"t have the permissions to use this command." });
 
             const targetUserID = args[0].value.replace("<@!", "").replace(">", "");

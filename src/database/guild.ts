@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 import DayZR from "../DayZRBot";
-import { NitradoCredentialStatus } from "../util/NitradoAPI";
+import { NitradoCredentialStatus } from "../services/NitradoAPI";
 import { ArmbandName } from "./armbands";
 import { MissionName } from "./destinations";
 

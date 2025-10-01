@@ -32,7 +32,7 @@ import { MongoClient } from "mongodb";
 import { Colors, Config } from "./config/config";
 
 // Utilities
-import Logger from "./util/Logger";
+import Logger from "./services/Logger";
 import { decrypt } from "./util/Cryptic";
 import {
   DownloadNitradoFile,
@@ -40,12 +40,13 @@ import {
   FetchServerSettings,
   PostServerSettings,
   NitradoCredentialStatus,
-} from "./util/NitradoAPI";
-import { RegisterGlobalCommands, RegisterGuildCommands } from "./util/RegisterSlashCommands";
-import { HandlePlayerLogs, HandleActivePlayersList } from "./util/LogsHandler";
-import { HandleKillfeed, UpdateLastDeathDate } from "./util/KillfeedHandler";
-import { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } from "./util/AlarmsHandler";
-import { GetWebhook, WebhookSend } from "./util/WebhookHandler";
+} from "./services/NitradoAPI";
+import { RegisterGlobalCommands, RegisterGuildCommands } from "./services/RegisterSlashCommands";
+import { HandlePlayerLogs, HandleActivePlayersList } from "./handlers/LogsHandler";
+import { HandleKillfeed, UpdateLastDeathDate } from "./handlers/KillfeedHandler";
+import { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } from "./handlers/AlarmsHandler";
+import { GetWebhook, WebhookSend } from "./services/WebhookService";
+import isDefined from "./util/Validation";
 
 // Database
 import { Player, UpdatePlayer, getDefaultPlayer } from "./database/player";
@@ -223,7 +224,7 @@ export default class DayZR extends Client
 
             let GuildDB: GuildConfig = await GetGuild(this, interaction.guildId);
 
-            if (this.exists(GuildDB.Nitrado) && this.exists(GuildDB.Nitrado.Auth))
+            if (isDefined(GuildDB.Nitrado) && isDefined(GuildDB.Nitrado.Auth))
             {
                 GuildDB.Nitrado.Auth = decrypt(
                     GuildDB.Nitrado.Auth,
@@ -545,16 +546,16 @@ export default class DayZR extends Client
                     };
 
                     // Skip this player if the player does not exist.
-                    if (!this.exists(info.player) || !this.exists(info.playerID)) continue;
+                    if (!isDefined(info.player) || !isDefined(info.playerID)) continue;
 
                     lastDetectedTime = this.getDateEST(info.time);
 
                     let playerStat: Player = await this.dbo.collection("players").findOne({ "playerID": info.playerID });
-                    if (!this.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, guild.Nitrado.ServerID);
+                    if (!isDefined(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, guild.Nitrado.ServerID);
 
                     // Skip this player if the lastDisconnectionDate time is later than the player log entry.
                     if (!previouslyConnected.includes(playerStat) && 
-                        this.exists(playerStat.lastDisconnectionDate) && 
+                        isDefined(playerStat.lastDisconnectionDate) && 
                         playerStat.lastDisconnectionDate !== null && 
                         playerStat.lastDisconnectionDate.getTime() > lastDetectedTime.getTime()
                     ) continue;
@@ -649,7 +650,7 @@ export default class DayZR extends Client
             */
 
             // Continue if no nitrado credentials
-            if (!c.exists(GuildDB.Nitrado)) return;
+            if (!isDefined(GuildDB.Nitrado)) return;
 
             // Continue if these credentials are marked as failed
             if (GuildDB.Nitrado.Status == NitradoCredentialStatus.FAILED) return; 
@@ -858,7 +859,7 @@ export default class DayZR extends Client
         for (let i = 0; i < guilds.length; i++)
         {
             // // Ignore guilds with no Nitrado configuration
-            if (!this.exists(guilds[i].Nitrado)) continue;
+            if (!isDefined(guilds[i].Nitrado)) continue;
             
             if (guilds[i].server.autoRestart) 
             {
@@ -910,18 +911,6 @@ export default class DayZR extends Client
     }
 
     /**
-     * exists simply ensures a given input is not
-     * null, undefined, an empty string or NaN.
-     *
-     * @param n to validate
-     * @returns if this object exists (boolean)
-     */
-    public exists<T> (n: T | null | undefined | "" | number): n is T
-    {
-        return typeof n === "number" ? !isNaN(n) : n !== null && n !== undefined && n !== "";
-    }
-
-    /**
      * secondsToDhms converts a given number of seconds
      * to its equivilent in days, hours, minutes and seconds.
      * 
@@ -967,7 +956,7 @@ export default class DayZR extends Client
                 files.forEach((file) =>
                 {
                     let cmd: Command = require(CommandsDir + "/" + file);
-                    if (!this.exists(cmd.name) || !this.exists(cmd.description))
+                    if (!isDefined(cmd.name) || !isDefined(cmd.description))
                     {
                         return this.error(
                             "Unable to load Command: " +
@@ -978,7 +967,7 @@ export default class DayZR extends Client
 
                     this.commands.set(file.split(".")[0].toLowerCase(), cmd);
                     
-                    if (this.exists(cmd.Interactions))
+                    if (isDefined(cmd.Interactions))
                     {
                         for (let [interaction, handler] of Object.entries(cmd.Interactions))
                         {

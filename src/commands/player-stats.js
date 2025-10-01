@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const { insertPVPstats } = require("../database/player");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "player-stats",
@@ -57,7 +58,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }, start) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -84,7 +85,7 @@ module.exports = {
                 if (gamertag) query = leaderboard.find(u => u.user.userID == playerStat.discordID);   // Searching by gamertag
                 if (self) query = leaderboard.find(u => u.user.userID == interaction.member.user.id); // Searching for self
 
-                if (!client.exists(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
+                if (!isDefined(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
                 leaderboardPos = leaderboard.indexOf(query);
 
             } else {
@@ -97,7 +98,7 @@ module.exports = {
                 if (gamertag) query = leaderboard.find(s => s.gamertag == gamertag);                // Searching by gamertag
                 if (self) query = leaderboard.find(s => s.discordID == interaction.member.user.id); // Searching for self
 
-                if (!client.exists(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
+                if (!isDefined(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
                 leaderboardPos = leaderboard.indexOf(query);
 
             }
@@ -142,7 +143,7 @@ module.exports = {
 
             statsEmbed.addFields({ name: "Leaderboard Position", value: `# ${leaderboardPos}`, inline: true });
 
-            if ((category == "shotsLanded" || category == "timesShot") && !client.exists(query.shotsLanded)) query = insertPVPstats(query);
+            if ((category == "shotsLanded" || category == "timesShot") && !isDefined(query.shotsLanded)) query = insertPVPstats(query);
 
             if (category == "totalSessionTime") {
                 statsEmbed.addFields(
@@ -242,8 +243,8 @@ module.exports = {
 
                 let dataMax = Math.max(...query.combatRatingHistory);
                 let dataMin = Math.min(...query.combatRatingHistory);
-                if (!client.exists(query.highestCombatRating) || query.highestCombatRating < dataMax) query.highestCombatRating = dataMax;
-                if (!client.exists(query.lowestCombatRating) || query.lowestCombatRating > dataMin) query.lowestCombatRating = dataMin;
+                if (!isDefined(query.highestCombatRating) || query.highestCombatRating < dataMax) query.highestCombatRating = dataMax;
+                if (!isDefined(query.lowestCombatRating) || query.lowestCombatRating > dataMin) query.lowestCombatRating = dataMin;
 
                 statsEmbed.addFields(
                     { name: "Combat Rating", value: `${query.combatRating}`, inline: true },
