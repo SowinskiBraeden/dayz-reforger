@@ -18,11 +18,12 @@ export const enum NitradoCredentialStatus {
  * come back and actually go through line by line and clean this whole file
  */
 
-const UploadNitradoFile = async (nitrado_cred: any, 
-                                    client: any, 
-                                    remoteDir: any, 
-                                    remoteFilename: any, 
-                                    localFileDir: any) => 
+const UploadNitradoFile = async (
+    nitrado_cred:   any, 
+    client:         any, 
+    remoteDir:      any, 
+    remoteFilename: any, 
+    localFileDir:   any) => 
                                     {
     for (let retries = 0; retries <= MAX_RETRIES; retries++) 
     {
@@ -75,7 +76,11 @@ const UploadNitradoFile = async (nitrado_cred: any,
     }
 }
 
-const HandlePlayerBan = async (nitrado_cred: any, client: any, gamertag: any, ban: any) => 
+const HandlePlayerBan = async (
+    nitrado_cred: any, 
+    client:       any, 
+    gamertag:     any, 
+    ban:          any) => 
 {
     const data = await module.exports.FetchServerSettings(nitrado_cred, client, "HandlePlayerBan");  // Fetch server status
 
@@ -128,7 +133,11 @@ const GetRemoteDir = async (
 }
 
 /*** exported function ***/
-export const DownloadNitradoFile = async (nitrado_cred: any, client: any, filename: any, outputDir: any) => 
+export const DownloadNitradoFile = async (
+    nitrado_cred: any, 
+    client:       any, 
+    filename:     any, 
+    outputDir:    any) => 
 {
     for (let retries = 0; retries <= MAX_RETRIES; retries++) 
     {
@@ -172,17 +181,22 @@ export const DownloadNitradoFile = async (nitrado_cred: any, client: any, filena
     rather than write two whole different functions for each.
 */
 
-export const BanPlayer = async (nitrado_cred: any, 
-                                client: any, 
-                                gamertag: any) => await HandlePlayerBan(nitrado_cred, client, gamertag, true);
-export const UnbanPlayer = async (nitrado_cred: any, 
-                                    client: any, 
-                                    gamertag: any) => await HandlePlayerBan(nitrado_cred, client, gamertag, false);
+export const BanPlayer = async (
+    nitrado_cred: any, 
+    client:       any, 
+    gamertag:     any) => await HandlePlayerBan(nitrado_cred, client, gamertag, true);
 
-export const RestartServer = async (nitrado_cred: any, 
-                                    client: any, 
-                                    restart_message: any, 
-                                    message: any) => {
+export const UnbanPlayer = async (
+    nitrado_cred: any, 
+    client:       any, 
+    gamertag:     any) => await HandlePlayerBan(nitrado_cred, client, gamertag, false);
+
+export const RestartServer = async (
+    nitrado_cred: any, 
+    client: any, 
+    restart_message: any, 
+    message: any) => 
+    {
     const params = 
     {
         restart_message: restart_message,
@@ -225,7 +239,10 @@ export const RestartServer = async (nitrado_cred: any,
     }
 };
 
-export const FetchServerSettings = async (nitrado_cred: any, client: any, fetcher: any) => 
+export const FetchServerSettings = async (
+    nitrado_cred: any, 
+    client:       any, 
+    fetcher:      any) => 
 {
     for (let retries = 0; retries <= MAX_RETRIES; retries++) 
     {
@@ -265,10 +282,13 @@ export const FetchServerSettings = async (nitrado_cred: any, client: any, fetche
     }
 };
 
-export const PostServerSettings = async (nitrado_cred: any, 
-                                            client: any, 
-                                            category: any, 
-                                            key: any, value: any) => {
+export const PostServerSettings = async (
+    nitrado_cred: any, 
+    client:       any, 
+    category:     any, 
+    key:          any, 
+    value:        any) => 
+    {
     for (let retries = 0; retries <= MAX_RETRIES; retries++) 
     {
         try 
@@ -318,7 +338,9 @@ export const PostServerSettings = async (nitrado_cred: any,
     }
 };
 
-export const CheckServerStatus = async (nitrado_cred: any, client: any) => 
+export const CheckServerStatus = async (
+    nitrado_cred: any, 
+    client:       any) => 
 {
     const data = await module.exports.FetchServerSettings(nitrado_cred, client, "CheckServerStatus");  // Fetch server status
 
@@ -332,14 +354,19 @@ export const CheckServerStatus = async (nitrado_cred: any, client: any) =>
             let restart_message = "Server being restarted by periodic bot check.";
             let message = "The server was restarted by periodic bot check!";
 
-            module.exports.RestartServer(nitrado_cred, client, restart_message, message);
+            module.exports.RestartServer(
+                nitrado_cred, 
+                client, 
+                restart_message, message);
         }
     }
 };
 
-export const DisableBaseDamage = async (nitrado_cred: any, 
+export const DisableBaseDamage = async (
+    nitrado_cred: any, 
     client: any, 
-                                        preference: any) => {
+    preference: any) => 
+    {
     const pref = preference ? "1" : "0";
     const posted = await module.exports.PostServerSettings(nitrado_cred, client, "config", "disableBaseDamage", pref);
     if (posted == 1) return 1;
