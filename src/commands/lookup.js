@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "lookup",
@@ -15,7 +16,7 @@ module.exports = {
         name: "discord",
         description: "Find a Discord user from a Gamertag",
         value: "discord",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player",
@@ -27,7 +28,7 @@ module.exports = {
         name: "gamertag",
         description: "Find a Gamertag from a Discord user",
         value: "gamertag",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "user",
             description: "Discord User",
@@ -46,7 +47,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -59,7 +60,7 @@ module.exports = {
                 let playerStat = await client.dbo.collection("players").findOne({ "gamertag": args[0].options[0].value });
                 if (playerStat == undefined) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].options[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
-                if (client.exists(playerStat.discordID)) {
+                if (isDefined(playerStat.discordID)) {
                     const found = new EmbedBuilder()
                         .setColor(client.config.Colors.Yellow)
                         .setDescription(`**Record Found**\n> The gamertag \` ${playerStat.gamertag} \` is currently linked to <@${playerStat.discordID}>.`)

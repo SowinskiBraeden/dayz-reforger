@@ -2,14 +2,15 @@ const { BanPlayer, UnbanPlayer } = require("./NitradoAPI");
 const { EmbedBuilder } = require("discord.js");
 const { nearest } = require("../database/destinations");
 const { GetGuild } = require("../database/guild");
-const { GetWebhook, WebhookSend } = require("./WebhookHandler");
+const { GetWebhook, WebhookSend } = require("../services/WebhookService");
+const isDefined = require("../util/Validation.js");
 
 // Private functions (only called locally)
 
 const ExpireEvent = async (client, guild, e) => {
     let hasMR = (guild.memberRole != "");
     const channel = client.GetChannel(e.channel);
-    if (client.exists(e.channel)) channel.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription(`${hasMR ? `<@&${guild.memberRole}>\n` : ""}**The ${e.name} Event has ended!**`)] });
+    if (isDefined(e.channel)) channel.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription(`${hasMR ? `<@&${guild.memberRole}>\n` : ""}**The ${e.name} Event has ended!**`)] });
 
     client.dbo.collection("guilds").updateOne({ "server.serverID": guild.serverID }, {
         $pull: {
@@ -21,7 +22,7 @@ const ExpireEvent = async (client, guild, e) => {
 }
 
 const HandlePlayerTrackEvent = async (client, guild, e) => {
-    if (!client.exists(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
+    if (!isDefined(e.channel)) return ExpireEvent(client, guild, e); // Expire event since it has invalid channel.
     const channel = client.GetChannel(e.channel);
     if (!channel) return;
 
@@ -40,7 +41,7 @@ const HandlePlayerTrackEvent = async (client, guild, e) => {
     const webhook = await GetWebhook(client, NAME, e.channel);
 
     let content = { embeds: [trackEvent] };
-    if (client.exists(guild.adminRole)) content.content = `<@&${e.role}>`;
+    if (isDefined(guild.adminRole)) content.content = `<@&${e.role}>`;
     WebhookSend(client, webhook, content);
 
     // if (e.role) channel.send({ content: `<@&${e.role}>`, embeds: [trackEvent] });

@@ -3,6 +3,7 @@ const concat = require("concat-stream"); // convert to import ?
 import { Readable } from "stream";
 import FormData from "form-data";
 import * as fs from "fs";
+import isDefined from "../util/Validation";
 
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 5000; // 5 seconds
@@ -91,11 +92,11 @@ const HandlePlayerBan = async (nitrado_cred: any, client: any, gamertag: any, ba
     }
 }
 
-const GetRemoteDir = async (nitrado_cred: any, 
-                            client: any, 
-                            dir = "") => 
-                            {
-    const dirParam = client.exists(dir) ? `?dir=${dir}` : "";
+const GetRemoteDir = async (
+    nitrado_cred: any, 
+    client: any, dir = "") => 
+    {
+    const dirParam = isDefined(dir) ? `?dir=${dir}` : "";
     for (let retries = 0; retries <= MAX_RETRIES; retries++) 
     {
         try 

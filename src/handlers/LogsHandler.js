@@ -5,7 +5,8 @@ const { getDefaultPlayer } = require("../database/player");
 const { FetchServerSettings } = require("./NitradoAPI");
 const { UpdatePlayer, insertPVPstats, createWeaponStats } = require("../database/player")
 const { Missions } = require("../database/destinations");
-const { GetWebhook, WebhookSend, WebhookMessageEdit } = require("./WebhookHandler");
+const { GetWebhook, WebhookSend, WebhookMessageEdit } = require("../services/WebhookService");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
 
@@ -27,15 +28,15 @@ module.exports = {
                 playerID: data[3],
             };
 
-            if (!client.exists(info.player) || !client.exists(info.playerID)) return;
+            if (!isDefined(info.player) || !isDefined(info.playerID)) return;
 
             let playerStat = await client.dbo.collection("players").findOne({ "playerID": info.playerID });
-            if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
+            if (!isDefined(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
             const newDt = await client.getDateEST(info.time);
 
             playerStat.lastConnectionDate = newDt;
             playerStat.connected = true;
-            if (!client.exists(playerStat.connections)) playerStat.connections = 0;
+            if (!isDefined(playerStat.connections)) playerStat.connections = 0;
             playerStat.connections++;
 
             // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
@@ -72,10 +73,10 @@ module.exports = {
                 playerID: data[3],
             };
 
-            if (!client.exists(info.player) || !client.exists(info.playerID)) return;
+            if (!isDefined(info.player) || !isDefined(info.playerID)) return;
 
             let playerStat = await client.dbo.collection("players").findOne({ "playerID": info.playerID });
-            if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
+            if (!isDefined(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
 
             let oldUnixTime;
             let sessionTimeSeconds;
@@ -85,7 +86,7 @@ module.exports = {
                 oldUnixTime = Math.round(playerStat.lastConnectionDate.getTime() / 1000); // Seconds
                 sessionTimeSeconds = unixTime - oldUnixTime;
             } else sessionTimeSeconds = 0;
-            if (!client.exists(playerStat.longestSessionTime)) playerStat.longestSessionTime = 0;
+            if (!isDefined(playerStat.longestSessionTime)) playerStat.longestSessionTime = 0;
 
             playerStat.totalSessionTime = playerStat.totalSessionTime + sessionTimeSeconds;
             playerStat.lastSessionTime = sessionTimeSeconds;
@@ -126,11 +127,11 @@ module.exports = {
                 pos: data[4].split(", ").map(v => parseFloat(v))
             };
 
-            if (!client.exists(info.player) || !client.exists(info.playerID)) return;
+            if (!isDefined(info.player) || !isDefined(info.playerID)) return;
 
             let playerStat = await client.dbo.collection("players").findOne({ "playerID": info.playerID });
-            if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
-            if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
+            if (!isDefined(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
+            if (!isDefined(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
 
             playerStat.lastPos = playerStat.pos;
             playerStat.pos = info.pos;
@@ -165,18 +166,18 @@ module.exports = {
                 weapon: data[12],
             };
 
-            if (!client.exists(info.player) || !client.exists(info.playerID) || !client.exists(info.attacker) || !client.exists(info.attackerID)) return;
+            if (!isDefined(info.player) || !isDefined(info.playerID) || !isDefined(info.attacker) || !isDefined(info.attackerID)) return;
 
             let playerStat = await client.dbo.collection("players").findOne({ "playerID": info.playerID });
             let attackerStat = await client.dbo.collection("players").findOne({ "playerID": info.attackerID });
-            if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
-            if (!client.exists(attackerStat)) attackerStat = getDefaultPlayer(info.attacker, info.attackerID, NitradoServerID);
+            if (!isDefined(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
+            if (!isDefined(attackerStat)) attackerStat = getDefaultPlayer(info.attacker, info.attackerID, NitradoServerID);
 
             playerStat.lastDamageDate = await client.getDateEST(info.time);
             playerStat.lastHitBy = info.attacker;
 
-            if (!client.exists(playerStat.shotsLanded)) playerStat = insertPVPstats(playerStat);
-            if (!client.exists(attackerStat.shotsLanded)) attackerStat = insertPVPstats(attackerStat);
+            if (!isDefined(playerStat.shotsLanded)) playerStat = insertPVPstats(playerStat);
+            if (!isDefined(attackerStat.shotsLanded)) attackerStat = insertPVPstats(attackerStat);
 
             // Update in depth PVP stats if non Melee weapon
             if (info.weapon.includes("Engraved")) info.weapon = info.weapon.split("Engraved ")[1];
@@ -184,13 +185,13 @@ module.exports = {
             if (info.weapon in playerStat.weaponStats) {
                 playerStat.timesShot++;
                 playerStat.timesShotPerBodyPart[info.bodyPart]++;
-                if (!client.exists(playerStat.weaponStats[info.weapon])) playerStat = createWeaponStats(playerStat, info.weapon);
+                if (!isDefined(playerStat.weaponStats[info.weapon])) playerStat = createWeaponStats(playerStat, info.weapon);
                 playerStat.weaponStats[info.weapon].timesShot++;
                 playerStat.weaponStats[info.weapon].timesShotPerBodyPart[info.bodyPart]++;
 
                 attackerStat.shotsLanded++;
                 attackerStat.shotsLandedPerBodyPart[info.bodyPart]++;
-                if (!client.exists(attackerStat.weaponStats[info.weapon])) attackerStat = createWeaponStats(attackerStat, info.weapon);
+                if (!isDefined(attackerStat.weaponStats[info.weapon])) attackerStat = createWeaponStats(attackerStat, info.weapon);
                 attackerStat.weaponStats[info.weapon].shotsLanded++;
                 attackerStat.weaponStats[info.weapon].shotsLandedPerBodyPart[info.bodyPart]++;
             }
@@ -205,7 +206,7 @@ module.exports = {
     HandleActivePlayersList: async (nitrado_cred, client, guild) => {
         client.activePlayersTick = 0; // reset hour tick
 
-        if (!client.exists(guild.activePlayersChannel)) return;
+        if (!isDefined(guild.activePlayersChannel)) return;
         const channel = client.GetChannel(guild.activePlayersChannel);
         if (!channel) return;
 

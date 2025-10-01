@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const { createUser, addUser } = require("../database/user");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "bank",
@@ -17,7 +18,7 @@ module.exports = {
             name: "balance",
             description: "View your bank balance",
             value: "balance",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "user",
                 description: "User to view ballance",
@@ -30,7 +31,7 @@ module.exports = {
             name: "transfer",
             description: "Transfer money to another user",
             value: "transfer",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "user",
@@ -43,7 +44,7 @@ module.exports = {
                     name: "amount",
                     description: "The amount to transfer",
                     value: "amount",
-                    type: ApplicationCommandOptionType.Float,
+                    type: ApplicationCommandOptionType.Number,
                     min_value: 0.01,
                     required: true,
                 },
@@ -67,11 +68,11 @@ module.exports = {
 
             if (!banking) {
                 banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
-                if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+                if (!isDefined(banking)) return client.sendInternalError(interaction, err);
             }
             banking = banking.user;
 
-            if (!client.exists(banking.guilds[GuildDB.serverID])) {
+            if (!isDefined(banking.guilds[GuildDB.serverID])) {
                 const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
                 if (!success) return client.sendInternalError(interaction, "Failed to add bank");
             }
@@ -88,11 +89,11 @@ module.exports = {
 
                     if (!targetUserBanking) {
                         targetUserBanking = await createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, client)
-                        if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+                        if (!isDefined(banking)) return client.sendInternalError(interaction, err);
                     }
                     targetUserBanking = targetUserBanking.user;
 
-                    if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
+                    if (!isDefined(targetUserBanking.guilds[GuildDB.serverID])) {
                         const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
                         if (!success) return client.sendInternalError(interaction, "Failed to add bank");
                     }
@@ -138,11 +139,11 @@ module.exports = {
 
                 if (!targetUserBanking) {
                     targetUserBanking = await createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, client)
-                    if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+                    if (!isDefined(banking)) return client.sendInternalError(interaction, err);
                 }
                 targetUserBanking = targetUserBanking.user;
 
-                if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
+                if (!isDefined(targetUserBanking.guilds[GuildDB.serverID])) {
                     const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
                     if (!success) return client.sendInternalError(interaction, "Failed to add bank");
                 }

@@ -1,6 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const { UpdatePlayer } = require("../database/player");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "gamertag-link",
@@ -29,7 +30,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -38,9 +39,9 @@ module.exports = {
             }
 
             let playerStat = await client.dbo.collection("players").findOne({ "gamertag": args[0].value });
-            if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
+            if (!isDefined(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
-            if (client.exists(playerStat.discordID)) {
+            if (isDefined(playerStat.discordID)) {
                 const warnGTOverwrite = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription(`**Notice:**\n> The gamertag has previously been linked to <@${playerStat.discordID}>. Are you sure you would like to change this?`)
@@ -65,12 +66,12 @@ module.exports = {
             await UpdatePlayer(client, playerStat, interaction);
 
             let member = interaction.guild.members.cache.get(interaction.member.user.id);
-            if (client.exists(GuildDB.linkedGamertagRole)) {
+            if (isDefined(GuildDB.linkedGamertagRole)) {
                 let role = interaction.guild.roles.cache.get(GuildDB.linkedGamertagRole);
                 member.roles.add(role);
             }
 
-            if (client.exists(GuildDB.memberRole)) {
+            if (isDefined(GuildDB.memberRole)) {
                 let role = interaction.guild.roles.cache.get(GuildDB.memberRole);
                 member.roles.add(role);
             }
@@ -98,12 +99,12 @@ module.exports = {
                     await UpdatePlayer(client, playerStat, interaction);
 
                     let member = interaction.guild.members.cache.get(interaction.member.user.id);
-                    if (client.exists(GuildDB.linkedGamertagRole)) {
+                    if (isDefined(GuildDB.linkedGamertagRole)) {
                         let role = interaction.guild.roles.cache.get(GuildDB.linkedGamertagRole);
                         member.roles.add(role);
                     }
 
-                    if (client.exists(GuildDB.memberRole)) {
+                    if (isDefined(GuildDB.memberRole)) {
                         let role = interaction.guild.roles.cache.get(GuildDB.memberRole);
                         member.roles.add(role);
                     }

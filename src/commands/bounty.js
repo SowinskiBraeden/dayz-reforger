@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const { createUser, addUser } = require("../database/user");
 const { UpdatePlayer } = require("../database/player");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "bounty",
@@ -17,7 +18,7 @@ module.exports = {
         name: "set",
         description: "Set a bounty on a player",
         value: "set",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player for bounty",
@@ -28,7 +29,7 @@ module.exports = {
             name: "value",
             description: "Amount of the bounty",
             value: "value",
-            type: ApplicationCommandOptionType.Float,
+            type: ApplicationCommandOptionType.Number,
             min_value: 0.01,
             required: true
         }, {
@@ -42,12 +43,12 @@ module.exports = {
         name: "pay",
         description: "Pay off your bounty",
         value: "pay",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     }, {
         name: "view",
         description: "View all active bounties",
         value: "view",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     }],
     SlashCommand: {
         /**
@@ -59,7 +60,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -73,11 +74,11 @@ module.exports = {
 
                 if (!banking) {
                     banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
-                    if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+                    if (!isDefined(banking)) return client.sendInternalError(interaction, err);
                 }
                 banking = banking.user;
 
-                if (!client.exists(banking.guilds[GuildDB.serverID])) {
+                if (!isDefined(banking.guilds[GuildDB.serverID])) {
                     const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
                     if (!success) return client.sendInternalError(interaction, "Failed to add bank");
                 }
@@ -86,7 +87,7 @@ module.exports = {
             if (args[0].name == "set") {
 
                 let playerStat = await client.dbo.collection("players").findOne({ "gamertag": args[0].options[0].value });
-                if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.")] });
+                if (!isDefined(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.")] });
 
                 if (args[0].options[1].value > banking.guilds[GuildDB.serverID].balance) {
                     let nsf = new EmbedBuilder()
@@ -126,7 +127,7 @@ module.exports = {
             } else if (args[0].name == "pay") {
 
                 let playerStat = await client.dbo.collection("players").findOne({ "discordID": interaction.member.user.id });
-                if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** Your user ID could not be found, contact an Admin.")] });
+                if (!isDefined(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** Your user ID could not be found, contact an Admin.")] });
 
                 if (playerStat.bounties.length == 0) {
                     const noBounty = new EmbedBuilder()

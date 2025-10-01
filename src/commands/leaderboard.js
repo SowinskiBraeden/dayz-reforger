@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "leaderboard",
@@ -53,7 +54,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");

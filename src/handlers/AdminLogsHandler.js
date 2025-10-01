@@ -1,11 +1,12 @@
 const { EmbedBuilder } = require("discord.js");
 const { nearest } = require("../database/destinations");
-const { GetWebhook, WebhookSend } = require("./WebhookHandler");
+const { GetWebhook, WebhookSend } = require("../services/WebhookService");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
 
     SendConnectionLogs: async (client, guild, data) => {
-        if (!client.exists(guild.connectionLogsChannel)) return;
+        if (!isDefined(guild.connectionLogsChannel)) return;
         const channel = client.GetChannel(guild.connectionLogsChannel);
         if (!channel) return;
 
@@ -27,13 +28,13 @@ module.exports = {
             } else connectionLog.addFields({ name: "**Session Time**", value: `**Unknown**`, inline: false });
         }
 
-        // if (client.exists(channel)) await channel.send({ embeds: [connectionLog] });
+        // if (isDefined(channel)) await channel.send({ embeds: [connectionLog] });
         await WebhookSend(client, webhook, { embeds: [connectionLog] });
     },
 
     DetectCombatLog: async (client, guild, data) => {
-        if (!client.exists(data.lastDamageDate)) return;
-        if (!client.exists(guild.connectionLogsChannel)) return;
+        if (!isDefined(data.lastDamageDate)) return;
+        if (!isDefined(guild.connectionLogsChannel)) return;
         const channel = client.GetChannel(guild.connectionLogsChannel);
         if (!channel) return; // Ensure channel exists
 
@@ -61,7 +62,7 @@ module.exports = {
         const webhook = await GetWebhook(client, NAME, guild.connectionLogsChannel);
 
         let content = { embeds: [combatLog] };
-        if (client.exists(guild.adminRole)) content.content = `<@&${guild.adminRole}>`;
+        if (isDefined(guild.adminRole)) content.content = `<@&${guild.adminRole}>`;
         WebhookSend(client, webhook, content);
         // return channel.send({ embeds: [combatLog] });
     }

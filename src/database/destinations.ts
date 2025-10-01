@@ -1,6 +1,7 @@
-import { calculateVector } from "@util/Vector";
+import { calculateVector } from "../util/Vector";
 
-export const Missions = {
+export const Missions =
+{
   "dayzOffline.chernarusplus": "Chernarus",
   "dayzOffline.enoch": "Livonia",
   "dayzOffline.sakhal": "Sakhal",
@@ -9,10 +10,11 @@ export const Missions = {
 export type MissionKey  = keyof typeof Missions;
 export type MissionName = typeof Missions[MissionKey];
 
-export type Position = [number, number];
+export type Position = [number, number] | [];
 
 // Calculates the nearest location to a given coordinate
-export function nearest(pos: Position, mission: MissionName): string {
+export function nearest(pos: Position, mission: MissionName): string
+{
     let tempDest;
     let lastDist = 1000000;
     let destination_dir;
@@ -28,13 +30,15 @@ export function nearest(pos: Position, mission: MissionName): string {
     return lastDist > 500 ? `${destination_dir} of ${tempDest}` : `Near ${tempDest}`;
 };
 
-interface Destination {
+interface Destination
+{
     name: string;
     coord: Position;
 }
 
 // A curated list of destinations across DayZ Chernarus and Livonia
-const destinations: Record<MissionName, Array<Destination>> = {
+const destinations: Record<MissionName, Array<Destination>> =
+{
     Chernarus: [
         {
             name: "Sinystok",

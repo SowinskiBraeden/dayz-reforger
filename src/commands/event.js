@@ -1,6 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "event",
@@ -16,7 +17,7 @@ module.exports = {
         name: "player-track",
         description: "Track a player and announce location",
         value: "player-track",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player",
@@ -60,7 +61,7 @@ module.exports = {
         name: "delete",
         description: "Delete an active event",
         value: "delete",
-        type: ApplicationCommandOptionType.SubCommand
+        type: ApplicationCommandOptionType.Subcommand
     }],
     SlashCommand: {
         /**
@@ -72,7 +73,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -92,7 +93,7 @@ module.exports = {
             if (args[0].name == "player-track") {
 
                 let playerStat = await client.dbo.collection("players").findOne({ "gamertag": args[0].options[0].value });
-                if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].options[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
+                if (!isDefined(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].options[0].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
                 let event = {
                     type: args[0].name,

@@ -1,29 +1,50 @@
 import { Snowflake } from "discord.js";
 import DayZR from "../DayZRBot";
-import { NitradoCredentialStatus } from "@util/NitradoAPI";
+import { NitradoCredentialStatus } from "../services/NitradoAPI";
+import { ArmbandName } from "./armbands";
+import { MissionName } from "./destinations";
 
-export const enum IntegerBoolean {
+export const enum IntegerBoolean
+{
     FALSE,
     TRUE
 };
 
-export interface UAV {
+export interface UAV
+{
     // TODO: fill this out
 };
 
-export interface Alarm {
+export interface Alarm
+{
     // TODO: fill this out
 };
 
-export interface NitradoConfig {
+export interface NitradoCredentials
+{
+    ServerID: string;
+    UserID:   string;
+    Auth:     string;
+};
+
+export interface NitradoConfig
+{
     ServerID: string;
     UserID:   string;
     Auth:     string;
     Status:   NitradoCredentialStatus;
+    Mission:  MissionName,
 };
 
-interface GuildConfigAttributes {
-    serverID:              Snowflake;
+export interface FactionArmband
+{
+    faction: Snowflake; // faction role ID
+    armband: ArmbandName;
+}
+
+interface GuildConfigAttributes
+{
+    serverID:              Snowflake;        // Guild ID
     lastLog:               string | null;
     serverName:            string;
     autoRestart:           IntegerBoolean;
@@ -31,40 +52,41 @@ interface GuildConfigAttributes {
     showKillfeedWeapon:    IntegerBoolean;
     purchaseUAV:           IntegerBoolean;
     purchaseEMP:           IntegerBoolean;
-    allowedChannels:       Array<Snowflake>;
+    allowedChannels:       Array<Snowflake>; // Array of channel IDs
     customChannelStatus?:  boolean;          // optional - generated outside of DB
     hasBotAdmin?:          boolean;          // optional - generated outside of DB
 
-    killfeedChannel:       Snowflake;
-    connectionLogsChannel: Snowflake;
-    activePlayersChannel:  Snowflake;
-    welcomeChannel:        Snowflake;
+    killfeedChannel:       Snowflake;        // Channel ID
+    connectionLogsChannel: Snowflake;        // Channel ID
+    activePlayersChannel:  Snowflake;        // Channel ID
+    welcomeChannel:        Snowflake;        // Channel ID
 
-    factionArmbands:       any;
+    factionArmbands:       Record<Snowflake, FactionArmband>;
     usedArmbands:          Array<string>;
     excludedRoles:         Array<string>;
-    hasExcludedRoles?:     boolean;         // optional - generated outside of DB
-    botAdminRoles:         Array<Snowflake>;
+    hasExcludedRoles?:     boolean;          // optional - generated outside of DB
+    botAdminRoles:         Array<Snowflake>; // Array of role IDs
 
     alarms:                Array<Alarm>;
     events:                Array<any>;
     uavs:                  Array<UAV>;
 
-    incomeRoles:           Array<Snowflake>;
+    incomeRoles:           Array<Snowflake>; // Array of role IDs
     incomeLimiter:         number;
 
     startingBalance:       number;
     uavPrice:              number;
     empPrice:              number;
 
-    linkedGamertagRole:    Snowflake;
-    memberRole:            Snowflake;
-    adminRole:             Snowflake;
+    linkedGamertagRole:    Snowflake;        // Role ID
+    memberRole:            Snowflake;        // Role ID
+    adminRole:             Snowflake;        // Role ID
 
     combatLogTimer:        number;
 }
 
-interface GuildConfigDB {
+export interface GuildConfigDB
+{
     server: GuildConfigAttributes;
     Nitrado: NitradoConfig | null;
 };
@@ -75,7 +97,8 @@ interface GuildConfigDB {
 // Also this is so stupid, in the DB all server attributes are under server, 
 // while in the code we almost always have the attributes directly in top
 // level of object, i.e. guild.startingBalance instead of guild.server.startingBalance
-export interface GuildConfig extends GuildConfigAttributes {
+export interface GuildConfig extends GuildConfigAttributes
+{
     Nitrado: NitradoConfig | null;
 }
 

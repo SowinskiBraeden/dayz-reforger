@@ -17,7 +17,7 @@ module.exports = {
             name: "commands",
             description: "List all commands",
             value: "commands",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "command",
                 description: "Get information on a specific command",
@@ -30,19 +30,19 @@ module.exports = {
             name: "support",
             description: "Get support for Application",
             value: "support",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: "credits",
             description: "DayZ.R Bot Credits",
             value: "credits",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: "stats",
             description: "Current Bot Statistics",
             value: "stats",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         }
     ],
     SlashCommand: {

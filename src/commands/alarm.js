@@ -1,6 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
+const isDefined = require("../util/Validation.js");
 
 const generateAlarmMenus = (alarms, customId, placeholder, description) => {
     let alarmComponents = [];
@@ -40,13 +41,13 @@ module.exports = {
             name: "create",
             description: "Create a new Zone Ping Alarm",
             value: "create",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [
                 {
                     name: "x-coord",
                     description: "X Coordinate of the origin",
                     value: "x-coord",
-                    type: ApplicationCommandOptionType.Float,
+                    type: ApplicationCommandOptionType.Number,
                     min_value: 0.01,
                     required: true,
                 },
@@ -54,7 +55,7 @@ module.exports = {
                     name: "y-coord",
                     description: "Y Coordinate of the origin",
                     value: "y-coord",
-                    type: ApplicationCommandOptionType.Float,
+                    type: ApplicationCommandOptionType.Number,
                     min_value: 0.01,
                     required: true,
                 },
@@ -62,7 +63,7 @@ module.exports = {
                     name: "radius",
                     description: "Radius of Alarm",
                     value: "radius",
-                    type: ApplicationCommandOptionType.Float,
+                    type: ApplicationCommandOptionType.Number,
                     min_value: 25.00,
                     required: true,
                 },
@@ -108,13 +109,13 @@ module.exports = {
             name: "delete",
             description: "Delete an Alarm",
             value: "delete",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: "add-player",
             description: "Add player to be ignored list of an Alarm",
             value: "add-player",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "gamertag",
                 description: "Gamertag of player to ignore",
@@ -127,7 +128,7 @@ module.exports = {
             name: "remove-player",
             description: "Remove a player from the ignored list of an Alarm",
             value: "remove-player",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "gamertag",
                 description: "Gamertag of player to ignore",
@@ -140,19 +141,19 @@ module.exports = {
             name: "disable",
             description: "Disable an Alarm",
             value: "disable",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: "enable",
             description: "Enable an Alarm",
             value: "enable",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: "mute",
             description: "Mute the role ping of an Alarm",
             value: "mute",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "toggle",
                 description: "Turn on/off role pings for this alarm",
@@ -165,7 +166,7 @@ module.exports = {
             name: "set-rule",
             description: "Add a Rule to an Alarm",
             value: "set-rule",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "rule",
                 description: "Select a rule to add to an Alarm",
@@ -183,13 +184,13 @@ module.exports = {
             name: "remove-rule",
             description: "Remove a rule from an Alarm",
             value: "remove-rule",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
         },
         {
             name: "rename",
             description: "Rename an Alarm",
             value: "rename",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "name",
                 description: "New Alarm Name",
@@ -202,12 +203,12 @@ module.exports = {
             name: "move-origin",
             description: "Move the origin of an Alarm",
             value: "move-origin",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "x-coord",
                 description: "X Coordinate of the new origin",
                 value: "x-coord",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 0.01,
                 required: true,
             },
@@ -215,7 +216,7 @@ module.exports = {
                 name: "y-coord",
                 description: "Y Coordinate of the new origin",
                 value: "y-coord",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 0.01,
                 required: true,
             }]
@@ -237,7 +238,7 @@ module.exports = {
             if (GuildDB.hasBotAdmin && interaction.member.roles.filter(e => GuildDB.botAdminRoles.indexOf(e) !== -1).length > 0) canUseCommand = true;
             if (!canUseCommand) return interaction.send({ content: "You don\"t have the permissions to use this command." });
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -259,8 +260,8 @@ module.exports = {
                     role: args[0].options[5].value,
                     ignoredPlayers: [],
                     rules: [],
-                    empExempt: client.exists(args[0].options[6]) ? args[0].options[6].value : false,
-                    showPlayerCoord: client.exists(args[0].options[7]) ? args[0].options[7].value : true,
+                    empExempt: isDefined(args[0].options[6]) ? args[0].options[6].value : false,
+                    showPlayerCoord: isDefined(args[0].options[7]) ? args[0].options[7].value : true,
                     disabled: false,
                     empExpire: null,
                 };
@@ -451,7 +452,7 @@ module.exports = {
                 let alarmIndex = GuildDB.alarms.indexOf(alarm);
 
                 let playerStat = await client.dbo.collection("players").findOne({ "gamertag": interaction.customId.split("-")[2] });
-                if (!client.exists(playerStat)) return interaction.update({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.")], components: [] });
+                if (!isDefined(playerStat)) return interaction.update({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.")], components: [] });
 
                 let add = interaction.customId.split("-")[1] == "add";
 

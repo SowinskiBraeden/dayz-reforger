@@ -1,8 +1,9 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 const { ApplicationCommandOptionType } = require("discord.js");
 const bitfieldCalculator = require("discord-bitfield-calculator");
-const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage, NitradoCredentialStatus } = require("../util/NitradoAPI");
+const { BanPlayer, UnbanPlayer, RestartServer, CheckServerStatus, DisableBaseDamage, DisableContainerDamage, NitradoCredentialStatus } = require("../services/NitradoAPI");
 const { encrypt, decrypt } = require("../util/Cryptic");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "server",
@@ -18,31 +19,31 @@ module.exports = {
         name: "initialize",
         description: "Connect your Nitrado server to the bot",
         value: "initialize",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     },
     {
         name: "disconnect",
         description: "Delete your Nitrado server from the bot database",
         value: "disconnect",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     },
     {
         name: "credentials-status",
         description: "Check the status of your Nitrado Credentials",
         value: "credentials-status",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     },
     {
         name: "retry-credentials",
         description: "If your credentials are marked as FAILED, try retreiving Nitrado logs again.",
         value: "retry-credentials",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     },
     {
         name: "ban-player",
         description: "Ban a player from the DayZ server",
         value: "ban-player",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "gamertag of the player to ban.",
@@ -54,7 +55,7 @@ module.exports = {
         name: "unban-player",
         description: "Unban a player from the DayZ server",
         value: "unban-player",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "gamertag of the player to unban.",
@@ -67,17 +68,17 @@ module.exports = {
         name: "restart",
         description: "Restart the DayZ Server",
         value: "restart",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     }, {
         name: "auto-restart",
         description: "Enable/Disable periodic server checks and restart if stopped",
         value: "auto-restart",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
     }, {
         name: "disable-base-damage",
         description: "Disable/Enable base damage",
         value: "disable-base-damage",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "preference",
             description: "DisableBaseDamage Preference",
@@ -89,7 +90,7 @@ module.exports = {
         name: "disable-container-damage",
         description: "Disable/Enable container damage",
         value: "disable-container-damage",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "preference",
             description: "disableContainerDamage Preference",
@@ -117,7 +118,7 @@ module.exports = {
 
             if (args[0].name == "initialize") {
 
-                if (client.exists(GuildDB.Nitrado)) {
+                if (isDefined(GuildDB.Nitrado)) {
                     const prompt = new EmbedBuilder()
                         .setTitle(`Nitrado Server Information Already Configured!`)
                         .setDescription("**Notice:** This will overwrite your previously configured Nitrado Server Information")
@@ -190,7 +191,7 @@ module.exports = {
                 return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
             }
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Notice:**\nThis Discord guild has not been configured with a Nitrado DayZ server. To configure your guild, use </server initialize:1166877457559851011>`)] });
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Notice:**\nThis Discord guild has not been configured with a Nitrado DayZ server. To configure your guild, use </server initialize:1166877457559851011>`)] });
 
             if (args[0].name == "credentials-status") {
 

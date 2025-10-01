@@ -10,12 +10,15 @@
         "resolveJsonModule": true,
         "forceConsistentCasingInFileNames": true,
         "allowJs": true,
-        "baseUrl": "./src",
+        "lib": ["es2020"],
+        "types": ["node"],
+        "moduleResolution": "node",
+        "baseUrl": ".",
         "paths": {
-            "@util/*": ["util/*"],
-            "@db/*": ["database/*"]
+            "@util/*": ["src/util/*"],
+            "@db/*": ["src/database/*"]
         }
     },
-    "include": ["src"],
+    "include": ["src", "src/types"],
     "exclude": ["node_modules"]
 }

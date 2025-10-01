@@ -1,6 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const { createUser, addUser } = require("../database/user");
 const { ApplicationCommandOptionType } = require("discord.js");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "purchase-emp",
@@ -33,7 +34,7 @@ module.exports = {
         */
         run: async (client, interaction, args, { GuildDB }) => {
 
-            if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+            if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                 const warnNitradoNotInitialized = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
                     .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -41,18 +42,18 @@ module.exports = {
                 return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
             }
 
-            if (client.exists(GuildDB.purchaseEMP) && !GuildDB.purchaseEMP) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Notice:** The admins have disabled this feature")] });
+            if (isDefined(GuildDB.purchaseEMP) && !GuildDB.purchaseEMP) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Notice:** The admins have disabled this feature")] });
 
             const duration = args[0].value;
             let banking = await client.dbo.collection("users").findOne({ "user.userID": interaction.member.user.id }).then(banking => banking);
 
             if (!banking) {
                 banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
-                if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+                if (!isDefined(banking)) return client.sendInternalError(interaction, err);
             }
             banking = banking.user;
 
-            if (!client.exists(banking.guilds[GuildDB.serverID])) {
+            if (!isDefined(banking.guilds[GuildDB.serverID])) {
                 const success = addUser(banking.guilds, GuildDB.serverID, interaction.member.user.id, client, GuildDB.startingBalance);
                 if (!success) return client.sendInternalError(interaction, "Failed to add bank");
             }

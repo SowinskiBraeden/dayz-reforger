@@ -4,6 +4,7 @@ const bitfieldCalculator = require("discord-bitfield-calculator");
 const { Armbands } = require("../database/armbands.js");
 const { createUser, addUser } = require("../database/user");
 const { UpdatePlayer } = require("../database/player");
+const isDefined = require("../util/Validation.js");
 
 module.exports = {
     name: "admin",
@@ -19,7 +20,7 @@ module.exports = {
         name: "gamertag-link",
         description: "Link a gamertag for a user",
         value: "gamertag-link",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "user",
             description: "User to link gamertag to",
@@ -38,7 +39,7 @@ module.exports = {
         name: "gamertag-unlink",
         description: "Unlink a gamertag for a user",
         value: "gamertag-unlink",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "user",
             description: "User to link gamertag to",
@@ -50,7 +51,7 @@ module.exports = {
         name: "claim-armband",
         description: "Claim an armband for a faction",
         value: "claim-armband",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "faction_role",
             description: "Claim an armband for this faction role.",
@@ -62,7 +63,7 @@ module.exports = {
         name: "bounty-clear",
         description: "Clear a bounty off a player",
         value: "bounty-clear",
-        type: ApplicationCommandOptionType.SubCommand,
+        type: ApplicationCommandOptionType.Subcommand,
         options: [{
             name: "gamertag",
             description: "Gamertag of player",
@@ -75,17 +76,17 @@ module.exports = {
         name: "money",
         description: "Add/Remove money to a user",
         value: "money",
-        type: ApplicationCommandOptionType.SubCommandGroup,
+        type: ApplicationCommandOptionType.SubcommandGroup,
         options: [{
             name: "add",
             description: "Add money to user",
             value: "add",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "amount",
                 description: "The amount to add to balance",
                 value: "amount",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 0.01,
                 required: true,
             }, {
@@ -99,12 +100,12 @@ module.exports = {
             name: "remove",
             description: "Remove money from a user",
             value: "remove",
-            type: ApplicationCommandOptionType.SubCommand,
+            type: ApplicationCommandOptionType.Subcommand,
             options: [{
                 name: "amount",
                 description: "The amount to remove from balance",
                 value: "amount",
-                type: ApplicationCommandOptionType.Float,
+                type: ApplicationCommandOptionType.Number,
                 min_value: 0.01,
                 required: true,
             }, {
@@ -134,7 +135,7 @@ module.exports = {
 
             if (args[0].name == "gamertag-link") {
 
-                if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+                if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                     const warnNitradoNotInitialized = new EmbedBuilder()
                         .setColor(client.config.Colors.Yellow)
                         .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -143,9 +144,9 @@ module.exports = {
                 }
 
                 let playerStat = await client.dbo.collection("players").findOne({ "gamertag": args[0].options[1].value });
-                if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].options[1].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
+                if (!isDefined(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** This gamertag \` ${args[0].options[1].value} \` cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least \` 5 minutes \`.`)] });
 
-                if (client.exists(playerStat.discordID)) {
+                if (isDefined(playerStat.discordID)) {
                     const warnGTOverwrite = new EmbedBuilder()
                         .setColor(client.config.Colors.Yellow)
                         .setDescription(`**Notice:**\n> The gamertag has previously been linked to <@${playerStat.discordID}>. Are you sure you would like to change this?`)
@@ -170,12 +171,12 @@ module.exports = {
                 await UpdatePlayer(client, playerStat, interaction);
 
                 let member = interaction.guild.members.cache.get(args[0].options[0].value);
-                if (client.exists(GuildDB.linkedGamertagRole)) {
+                if (isDefined(GuildDB.linkedGamertagRole)) {
                     let role = interaction.guild.roles.cache.get(GuildDB.linkedGamertagRole);
                     member.roles.add(role);
                 }
 
-                if (client.exists(GuildDB.memberRole)) {
+                if (isDefined(GuildDB.memberRole)) {
                     let role = interaction.guild.roles.cache.get(GuildDB.memberRole);
                     member.roles.add(role);
                 }
@@ -188,7 +189,7 @@ module.exports = {
 
             } else if (args[0].name == "gamertag-unlink") {
 
-                if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+                if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                     const warnNitradoNotInitialized = new EmbedBuilder()
                         .setColor(client.config.Colors.Yellow)
                         .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -197,7 +198,7 @@ module.exports = {
                 }
 
                 let playerStat = await client.dbo.collection("players").findOne({ "discordID": args[0].options[0].value });
-                if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** <@${args[0].options[0].value}> has no gamertag linked.`)] });
+                if (!isDefined(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** <@${args[0].options[0].value}> has no gamertag linked.`)] });
 
                 const warnGTOverwrite = new EmbedBuilder()
                     .setColor(client.config.Colors.Yellow)
@@ -281,7 +282,7 @@ module.exports = {
 
             } else if (args[0].name == "bounty-clear") {
 
-                if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
+                if (!isDefined(GuildDB.Nitrado) || !isDefined(GuildDB.Nitrado.ServerID) || !isDefined(GuildDB.Nitrado.UserID) || !isDefined(GuildDB.Nitrado.Auth)) {
                     const warnNitradoNotInitialized = new EmbedBuilder()
                         .setColor(client.config.Colors.Yellow)
                         .setDescription("**WARNING:** The DayZ Nitrado Server has not been configured for this guild yet. This command or feature is currently unavailable.");
@@ -290,7 +291,7 @@ module.exports = {
                 }
 
                 let playerStat = await client.dbo.collection("players").findOne({ "gamertag": args[0].options[0].value });
-                if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.")] });
+                if (!isDefined(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription("**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.")] });
 
                 playerStat.bounties = [];
 
@@ -309,16 +310,16 @@ module.exports = {
 
                 if (!banking) {
                     banking = await createUser(targetUserID, GuildDB.serverID, GuildDB.startingBalance, client)
-                    if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+                    if (!isDefined(banking)) return client.sendInternalError(interaction, err);
                 }
                 banking = banking.user;
 
-                if (!client.exists(banking.guilds[GuildDB.serverID])) {
+                if (!isDefined(banking.guilds[GuildDB.serverID])) {
                     const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
                     if (!success) return client.sendInternalError(interaction, "Failed to add bank");
                 }
 
-                if (!client.exists(banking.guilds[GuildDB.serverID].balance)) banking.guilds[GuildDB.serverID].balance = GuildDB.startingBalance;
+                if (!isDefined(banking.guilds[GuildDB.serverID].balance)) banking.guilds[GuildDB.serverID].balance = GuildDB.startingBalance;
 
                 const add = args[0].options[0].name == "add";
                 let newBalance = add
@@ -354,12 +355,12 @@ module.exports = {
                     await UpdatePlayer(client, playerStat);
 
                     let member = interaction.guild.members.cache.get(interaction.member.user.id);
-                    if (client.exists(GuildDB.linkedGamertagRole)) {
+                    if (isDefined(GuildDB.linkedGamertagRole)) {
                         let role = interaction.guild.roles.cache.get(GuildDB.linkedGamertagRole);
                         member.roles.add(role);
                     }
 
-                    if (client.exists(GuildDB.memberRole)) {
+                    if (isDefined(GuildDB.memberRole)) {
                         let role = interaction.guild.roles.cache.get(GuildDB.memberRole);
                         member.roles.add(role);
                     }

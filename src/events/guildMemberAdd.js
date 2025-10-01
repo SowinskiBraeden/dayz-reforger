@@ -4,7 +4,7 @@ const { GetGuild } = require("../database/guild");
 module.exports = async (client, member) => {
 
     let GuildDB = await GetGuild(client, member.guild.id);
-    if (!client.exists(GuildDB.welcomeChannel)) return;
+    if (!isDefined(GuildDB.welcomeChannel)) return;
     const channel = client.GetChannel(GuildDB.welcomeChannel);
 
     if (GuildDB.serverName == "") GuildDB.serverName = "our server!"

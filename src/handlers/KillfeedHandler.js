@@ -3,9 +3,10 @@ const { createUser, addUser } = require("../database/user");
 const { KillInAlarm } = require("./AlarmsHandler");
 const { nearest } = require("../database/destinations");
 const { getDefaultPlayer, UpdatePlayer } = require("../database/player");
-const { calculateNewCombatRating } = require("./CombatRatingHandler");
+const { calculateNewCombatRating } = require("../util/CombatRating");
 const { weapons, weaponClassOf } = require("../database/weapons");
 const { GetWebhook, WebhookSend } = require("../util/WebhookHandler");
+const isDefined = require("../util/Validation.js");
 
 const Templates = {
     Killed: 1,
@@ -71,7 +72,7 @@ module.exports = {
         const newDt = await client.getDateEST(info.time);
 
         let victimStat = await client.dbo.collection("players").findOne({ "playerID": info.playerID });
-        if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
+        if (!isDefined(victimStat)) victimStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
 
         victimStat.lastDeathDate = newDt;
 
@@ -126,15 +127,15 @@ module.exports = {
         const newDt = await client.getDateEST(info.time);
         const unixTime = Math.floor(newDt.getTime() / 1000);
 
-        const showCoords = client.exists(guild.showKillfeedCoords) ? guild.showKillfeedCoords : false; // default to false if no record of configuration.
-        const showWeapon = client.exists(guild.showKillfeedWeapon) ? guild.showKillfeedWeapon : false; // default to false if no record of configuration.
+        const showCoords = isDefined(guild.showKillfeedCoords) ? guild.showKillfeedCoords : false; // default to false if no record of configuration.
+        const showWeapon = isDefined(guild.showKillfeedWeapon) ? guild.showKillfeedWeapon : false; // default to false if no record of configuration.
 
         const destination = nearest(info.victimPOS, guild.Nitrado.Mission);
 
         if ([Templates.LandMine, Templates.Explosion, Templates.Vehicle].includes(killedBy))
             if (killedBy == Templates.LandMine || killedBy == Templates.Explosion || killedBy == Templates.Vehicle) {
                 let victimStat = await client.dbo.collection("players").findOne({ "playerID": info.victimID });
-                if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, NitradoServerID);
+                if (!isDefined(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, NitradoServerID);
                 victimStat.deaths++;
                 victimStat.deathStreak++;
                 victimStat.worstDeathStreak = victimStat.deathStreak > victimStat.worstDeathStreak ? victimStat.deathStreak : victimStat.worstDeathStreak;
@@ -157,18 +158,18 @@ module.exports = {
                 const webhook = await GetWebhook(client, NAME, guild.killfeedChannel);
                 WebhookSend(client, webhook, { embeds: [killEvent] });
 
-                // if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
+                // if (isDefined(channel)) await channel.send({ embeds: [killEvent] });
                 return;
             }
 
         KillInAlarm(client, guild.serverID, info); // check if kill happened in a no kill zone
 
-        if (!client.exists(info.victim) || !client.exists(info.victimID) || !client.exists(info.killer) || !client.exists(info.killerID)) return;
+        if (!isDefined(info.victim) || !isDefined(info.victimID) || !isDefined(info.killer) || !isDefined(info.killerID)) return;
 
         let victimStat = await client.dbo.collection("players").findOne({ "playerID": info.victimID });
         let killerStat = await client.dbo.collection("players").findOne({ "playerID": info.killerID });
-        if (!client.exists(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, NitradoServerID);
-        if (!client.exists(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, NitradoServerID);
+        if (!isDefined(victimStat)) victimStat = getDefaultPlayer(info.victim, info.victimID, NitradoServerID);
+        if (!isDefined(killerStat)) killerStat = getDefaultPlayer(info.killer, info.killerID, NitradoServerID);
 
         let weapon = info.weapon.includes("Engraved") ? info.weapon.split("Engraved ")[1] :
             info.weapon.includes("Sawed-off") ? info.weapon.split("Sawed-off ")[1] :
@@ -181,7 +182,7 @@ module.exports = {
         killerStat.KDR = killerStat.kills / (killerStat.deaths == 0 ? 1 : killerStat.deaths); // prevent division by 0
         killerStat.longestKill = info.distance > killerStat.longestKill ? info.distance : killerStat.longestKill;
         killerStat.deathStreak = 0;
-        if (!client.exists(killerStat.weaponStats[weapon].kills)) killerStat.weaponStats[weapon].kills = 0;
+        if (!isDefined(killerStat.weaponStats[weapon].kills)) killerStat.weaponStats[weapon].kills = 0;
         killerStat.weaponStats[weapon].kills++;
 
         // Update victim stats
@@ -191,21 +192,21 @@ module.exports = {
         victimStat.KDR = victimStat.kills / (victimStat.deaths == 0 ? 1 : victimStat.deaths); // prevent division by 0
         victimStat.killStreak = 0;
         victimStat.lastDeathDate = newDt;
-        if (!client.exists(victimStat.weaponStats[weapon].deaths)) victimStat.weaponStats[weapon].death = 0;
+        if (!isDefined(victimStat.weaponStats[weapon].deaths)) victimStat.weaponStats[weapon].death = 0;
         victimStat.weaponStats[weapon].deaths++;
 
         // Create defaults for non-existing ratings
-        if (!client.exists(killerStat.combatRating)) killerStat.combatRating = 800;
-        if (!client.exists(victimStat.combatRating)) victimStat.combatRating = 800;
-        if (!client.exists(killerStat.combatRatingHistory)) killerStat.combatRatingHistory = [800];
-        if (!client.exists(victimStat.combatRatingHistory)) victimStat.combatRatingHistory = [800];
-        if (!client.exists(killerStat.highestCombatRating)) killerStat.highestCombatRating = Math.max(...killerStat.combatRatingHistory);
-        if (!client.exists(victimStat.lowestCombatRating)) victimStat.lowestCombatRating = Math.min(...victimStat.combatRatingHistory);
+        if (!isDefined(killerStat.combatRating)) killerStat.combatRating = 800;
+        if (!isDefined(victimStat.combatRating)) victimStat.combatRating = 800;
+        if (!isDefined(killerStat.combatRatingHistory)) killerStat.combatRatingHistory = [800];
+        if (!isDefined(victimStat.combatRatingHistory)) victimStat.combatRatingHistory = [800];
+        if (!isDefined(killerStat.highestCombatRating)) killerStat.highestCombatRating = Math.max(...killerStat.combatRatingHistory);
+        if (!isDefined(victimStat.lowestCombatRating)) victimStat.lowestCombatRating = Math.min(...victimStat.combatRatingHistory);
 
         // Calculate new ratings
         let killerOldRating = killerStat.combatRating;
         let victimOldRating = victimStat.combatRating;
-        killerStat.combatRating = calculateNewCombatRating(killerStat.combatRating, victimStat.combatRating, client.exists(info.bodyPart) && info.bodyPart.includes("Head") ? 1.25 : 1);
+        killerStat.combatRating = calculateNewCombatRating(killerStat.combatRating, victimStat.combatRating, isDefined(info.bodyPart) && info.bodyPart.includes("Head") ? 1.25 : 1);
         victimStat.combatRating = calculateNewCombatRating(victimStat.combatRating, killerStat.combatRating, 0);
 
         // Update combat rating records
@@ -230,11 +231,11 @@ module.exports = {
 
             if (!banking) {
                 banking = await createUser(interaction.member.user.id, guild.serverID, guild.startingBalance, client)
-                if (!client.exists(banking)) return client.sendInternalError(interaction, err);
+                if (!isDefined(banking)) return client.sendInternalError(interaction, err);
             }
             banking = banking.user;
 
-            if (!client.exists(banking.guilds[guild.serverID])) {
+            if (!isDefined(banking.guilds[guild.serverID])) {
                 const success = addUser(banking.guilds, guild.serverID, interaction.member.user.id, client, guild.startingBalance);
                 if (!success) return client.sendInternalError(interaction, "Failed to add bank");
             }
@@ -280,10 +281,10 @@ module.exports = {
         const webhook = await GetWebhook(client, NAME, guild.killfeedChannel);
 
         WebhookSend(client, webhook, { embeds: [killEvent] });
-        if (client.exists(receivedBounty) && client.exists(channel)) WebhookSend(client, webhook, { content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
+        if (isDefined(receivedBounty) && isDefined(channel)) WebhookSend(client, webhook, { content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
 
-        // if (client.exists(channel)) await channel.send({ embeds: [killEvent] });
-        // if (client.exists(receivedBounty) && client.exists(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
+        // if (isDefined(channel)) await channel.send({ embeds: [killEvent] });
+        // if (isDefined(receivedBounty) && isDefined(channel)) await channel.send({ content: `<@${killerStat.discordID}>`, embeds: [receivedBounty] });
 
         return;
     }
