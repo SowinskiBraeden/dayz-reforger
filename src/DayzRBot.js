@@ -6,7 +6,7 @@ const Logger = require("../util/Logger");
 const crypto = require('crypto');
 
 // custom util imports
-const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, PostServerSettings, NitradoCredentialStatus } = require('../util/NitradoAPI');
+const { DownloadNitradoFile, CheckServerStatus, FetchServerSettings, PostServerSettings, NitradoCredentialStatus, GetRemoteDir } = require('../util/NitradoAPI');
 const { HandlePlayerLogs, HandleActivePlayersList } = require('../util/LogsHandler');
 const { HandleKillfeed, UpdateLastDeathDate } = require('../util/KillfeedHandler');
 const { HandleExpiredUAVs, HandleEvents, PlaceFireplaceInAlarm } = require('../util/AlarmsHandler');
@@ -120,7 +120,7 @@ class DayzRBot extends Client {
         this.log(`Interaction [${interaction.guild_id}] - ${command}`);
 
         const rest = new REST({ version: '10' }).setToken(this.config.Token);
-        
+
         // Easy to send response so ;)
         interaction.guild = await this.guilds.fetch(interaction.guild_id);
         const handleCallback = async (interactionType, message) => {
@@ -136,7 +136,7 @@ class DayzRBot extends Client {
         interaction.send       = async (message) => handleCallback(InteractionResponseType.ChannelMessageWithSource,         message);
         interaction.deferReply = async (message) => handleCallback(InteractionResponseType.DeferredChannelMessageWithSource, message);
         interaction.showModal  = async (message) => handleCallback(InteractionResponseType.Modal,                            message);
-        
+
         interaction.editReply = async (message) => {
           return await rest.patch(Routes.webhookMessage(this.application.id, interaction.token), {
             body: message,
@@ -187,7 +187,7 @@ class DayzRBot extends Client {
     if (this.playerSessions.get(guild.Nitrado.ServerID).size === 0) {
       let players = await this.dbo.collection('players').find({"nitradoServerID": guild.Nitrado.ServerID}) // Get all players of this server
         .toArray().then(all => all.filter(p => p.connected).map(p => p.connected = false)); // assume all players who were previously connected are not connected on init only.
-      
+
       for (let i = 0; i < players.length; i++) {
         await UpdatePlayer(this, players[i])
       }
@@ -203,7 +203,7 @@ class DayzRBot extends Client {
       if (lines[i].includes('connected') || lines[i].includes('pos=<')) await HandlePlayerLogs(guild.Nitrado.ServerID, this, guild, lines[i], guild.combatLogTimer);
       if (lines[i].includes('killed by Zmb') || lines[i].includes('>) died.')) await UpdateLastDeathDate(guild.Nitrado.ServerID, this, lines[i]); // Updates users last death date for non PVP deaths.
       if (lines[i].includes(') placed Fireplace')) await PlaceFireplaceInAlarm(this, guild, lines[i]);
-      
+
       // Handle killfeed logs
       if (
         (lines[i].includes('killed by  with') || lines[i].includes('killed by LandMineTrap'))                         || // Handle explosive deaths
@@ -222,18 +222,18 @@ class DayzRBot extends Client {
         if (!channel) return;
 
         const NAME = "DayZ.R Zone Alert";
-        const webhook = await GetWebhook(this, NAME, channel_id);   
+        const webhook = await GetWebhook(this, NAME, channel_id);
 
         data.forEach(async (embeds, role) => {
           let embedArrays = [];
           while (embeds.length > 0)
             embedArrays.push(embeds.splice(0, maxEmbed));
 
-          for (let i = 0; i < embedArrays.length; i++) { 
+          for (let i = 0; i < embedArrays.length; i++) {
             let content = { embeds: embedArrays[i] };
             if (role != '-no-role-ping-') content.content = `<@&${role}>`;
             WebhookSend(this, webhook, content);
-            
+
             // if (role == '-no-role-ping-') channel.send({ embeds: embedArrays[i] });
             // else channel.send({ content: `<@&${role}>`, embeds: embedArrays[i] });
           }
@@ -266,7 +266,7 @@ class DayzRBot extends Client {
           if (!this.exists(info.player) || !this.exists(info.playerID)) continue;  // Skip this player if the player does not exist.
 
           lastDetectedTime = await this.getDateEST(info.time);
-          
+
           let playerStat = await this.dbo.collection("players").findOne({"playerID": info.playerID});
           if (!this.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, guild.Nitrado.ServerID);
 
@@ -311,7 +311,7 @@ class DayzRBot extends Client {
 
     c.guilds.cache.forEach(async (guild) => {
       let GuildDB = await GetGuild(c, guild.id);
-      
+
       /*
         Note to self:
         return statements do not prematurely exit out of a forEach loop like it does in a for loop.
@@ -321,7 +321,7 @@ class DayzRBot extends Client {
       if (GuildDB.Nitrado.Status == NitradoCredentialStatus.FAILED) return; // Continue if these credentials are marked as failed
 
       const NitradoCred = {
-        ServerID: GuildDB.Nitrado.ServerID, 
+        ServerID: GuildDB.Nitrado.ServerID,
         UserID: GuildDB.Nitrado.UserID,
         Auth: decrypt(
           GuildDB.Nitrado.Auth,
@@ -349,8 +349,13 @@ class DayzRBot extends Client {
 
       GuildDB.Nitrado.Mission = Missions[settings.settings.config.mission];
 
-      if (settings.game_specific.log_files.length == 0) return; // Ignore if no log files on Nitrado server
-      const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
+      console.log(`${settings.game_specific.path}config`);
+      let filenames = await GetRemoteDir(NitradoCred, c, `${settings.game_specific.path}config`);
+      filenames = filenames.map(path => path.path)
+      filenames = filenames.filter(path => path.includes(".ADM"))
+      const filename = filenames[filenames.length - 1];
+
+      // const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
       const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
 
       // Ensure Player List is logged for next update
@@ -396,8 +401,8 @@ class DayzRBot extends Client {
       databaselogs.attempts = 0; // reset attempts
       this.databaseConnected = true;
     } catch (err) {
-      databaselogs.attempts++; 
-      databaselogs.connected = false; 
+      databaselogs.attempts++;
+      databaselogs.connected = false;
       let db = mongoURI.includes("@") ? mongoURI.split("@")[1] : mongoURI.split("//")[1];
       db = db.includes("/") ? db.split("/")[0] : db;
       this.error(`Failed to connect to mongodb (mongodb://${db}/${dbo}): attempt ${databaselogs.attempts} - ${err}`);
@@ -416,7 +421,7 @@ class DayzRBot extends Client {
 
     if (!this.databaseConnected) return;
     let guilds = await this.dbo.collection("guilds").find({}).toArray();
-   
+
     /*
       Initialize auto restart for enabled servers
       Initialize last logs
@@ -426,7 +431,7 @@ class DayzRBot extends Client {
       if (!this.exists(guilds[i].Nitrado)) continue;
       if (guilds[i].server.autoRestart) {
         const NitradoCred = {
-          ServerID: guilds[i].Nitrado.ServerID, 
+          ServerID: guilds[i].Nitrado.ServerID,
           UserID: guilds[i].Nitrado.UserID,
           Auth: decrypt(
             guilds[i].Nitrado.Auth,
@@ -457,7 +462,7 @@ class DayzRBot extends Client {
   }
 
   exists(n) { return typeof(n) == 'number' ? !isNaN(n) : null != n && undefined != n && "" != n }
-  
+
   secondsToDhms(seconds) {
     seconds = Number(seconds);
     const d = Math.floor(seconds / (3600 * 24));

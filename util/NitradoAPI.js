@@ -22,7 +22,7 @@ const UploadNitradoFile = async (nitrado_cred, client, remoteDir, remoteFilename
       }).then(response => response.json());
 
       let contents = fs.readFileSync(localFileDir, 'utf8');
-      
+
       const uploadRes = await fetch(res.data.token.url, {
         method: "POST",
         headers: {
@@ -63,35 +63,36 @@ const HandlePlayerBan = async (nitrado_cred, client, gamertag, ban) => {
   }
 }
 
-const GetRemoteDir = async (nitrado_cred, client, dir="") => {
-  const dirParam = client.exists(dir) ? `?dir=${dir}` : "";
-  for (let retries = 0; retries <= maxRetries; retries++) {
-    try {
-      const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/file_server/list${dirParam}`, {
-        headers: {
-          "Authorization": nitrado_cred.Auth
-        }
-      }).then(response => 
-        response.json().then(data => data)
-      ).then(res => res);
-
-      if (res.status === "error") return 1;
-      
-      return res.data.entries;  
-    } catch (error) {
-      client.error(`GetRemoteDir: Error connecting to server (${nitrado_cred.ServerID}): ${error}`);
-      if (retries == maxRetries) {
-        client.error(`GetRemoteDir: Error connecting to server (${nitrado_cred.ServerID}) after ${maxRetries} retries`);
-        return 1;
-      }
-    }
-    await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
-  }
-}
-
 // Public functions (called externally)
 
 module.exports = {
+
+
+  GetRemoteDir: async (nitrado_cred, client, dir="") => {
+    const dirParam = client.exists(dir) ? `?dir=${dir}` : "";
+    for (let retries = 0; retries <= maxRetries; retries++) {
+      try {
+        const res = await fetch(`https://api.nitrado.net/services/${nitrado_cred.ServerID}/gameservers/file_server/list${dirParam}`, {
+          headers: {
+            "Authorization": nitrado_cred.Auth
+          }
+        }).then(response =>
+          response.json().then(data => data)
+        ).then(res => res);
+
+        if (res.status === "error") return 1;
+
+        return res.data.entries;
+      } catch (error) {
+        client.error(`GetRemoteDir: Error connecting to server (${nitrado_cred.ServerID}): ${error}`);
+        if (retries == maxRetries) {
+          client.error(`GetRemoteDir: Error connecting to server (${nitrado_cred.ServerID}) after ${maxRetries} retries`);
+          return 1;
+        }
+      }
+      await new Promise(resolve => setTimeout(resolve, retryDelay)); // Delay before retrying
+    }
+  },
 
   DownloadNitradoFile: async(nitrado_cred, client, filename, outputDir)  => {
     for (let retries = 0; retries <= maxRetries; retries++) {
@@ -100,7 +101,7 @@ module.exports = {
           headers: {
             "Authorization": nitrado_cred.Auth
           }
-        }).then(response => 
+        }).then(response =>
           response.json().then(data => data)
         ).then(res => res);
 
@@ -124,8 +125,8 @@ module.exports = {
   },
 
   /*
-    Export explicit function names; i.e BanPlayer() & UnbanPlayer() 
-    that call to the private parent function HandlePlayerBan() 
+    Export explicit function names; i.e BanPlayer() & UnbanPlayer()
+    that call to the private parent function HandlePlayerBan()
     rather than write two whole different functions for each.
   */
 
@@ -261,7 +262,7 @@ module.exports = {
     const missionPath = remoteDirsFromBase[0].path;
     const cfggameplayPath = `${missionPath}/cfggameplay.json`;
 
-    const jsonDir = `./logs/cfggameplay.json`;   
+    const jsonDir = `./logs/cfggameplay.json`;
     await module.exports.DownloadNitradoFile(nitrado_cred, client, cfggameplayPath, jsonDir);
 
     let gameplay = JSON.parse(fs.readFileSync(jsonDir));
@@ -272,7 +273,7 @@ module.exports = {
 
     const uploaded = await UploadNitradoFile(nitrado_cred, client, missionPath, 'cfggameplay.json', jsonDir);
     if (uploaded == 1) return 1;
-   
+
     return 0;
   },
 
@@ -289,7 +290,7 @@ module.exports = {
     const missionPath = remoteDirsFromBase[0].path;
     const cfggameplayPath = `${missionPath}/cfggameplay.json`;
 
-    const jsonDir = `./logs/cfggameplay.json`;   
+    const jsonDir = `./logs/cfggameplay.json`;
     await module.exports.DownloadNitradoFile(nitrado_cred, client, cfggameplayPath, jsonDir);
 
     let gameplay = JSON.parse(fs.readFileSync(jsonDir));
@@ -300,7 +301,7 @@ module.exports = {
 
     const uploaded = await UploadNitradoFile(nitrado_cred, client, missionPath, 'cfggameplay.json', jsonDir);
     if (uploaded == 1) return 1;
-   
+
     return 0;
   },
 
