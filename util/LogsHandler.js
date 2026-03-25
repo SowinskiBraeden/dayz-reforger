@@ -37,7 +37,7 @@ module.exports = {
       playerStat.connected = true;
       if (!client.exists(playerStat.connections)) playerStat.connections = 0;
       playerStat.connections++;
-      
+
       // Track adjusted sessions this instance has handled (e.g. no bot crashes or restarts).
       if (client.playerSessions.get(NitradoServerID).has(info.playerID)) {
         // Player is already in a session, update the session's end time.
@@ -76,7 +76,7 @@ module.exports = {
 
       let playerStat = await client.dbo.collection("players").findOne({"playerID": info.playerID});
       if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
-      
+
       let oldUnixTime;
       let sessionTimeSeconds;
       const newDt = await client.getDateEST(info.time);
@@ -211,7 +211,7 @@ module.exports = {
 
     const data = await FetchServerSettings(nitrado_cred, client, 'HandleActivePlayersList');  // Fetch server status
     const e = data && data !== 1; // Check if data exists
-    
+
     const hostname      = e ? data.data.gameserver.settings.config.hostname : 'N/A';
     const map           = Missions[data.data.gameserver.settings.config.mission];
     const status        = e ? data.data.gameserver.status : 'N/A';
@@ -227,13 +227,14 @@ module.exports = {
     const emojiStatus = Statuses[status].emoji || "❓";
     const textStatus  = Statuses[status].text || "Unknown Status";
 
-    let activePlayers = await client.dbo.collection("players").find({"nitradoServerID": nitrado_cred.ServerID}).toArray().filter(player => player.connected);
+    let activePlayers = await client.dbo.collection("players").find({ "nitradoServerID": parseInt(nitrado_cred.ServerID) }).toArray();
+    activePlayers = activePlayers.filter(player => player.connected);
 
     let des = activePlayers.length > 0 ? `` : `**No Players Online**`;
     for (let i = 0; i < activePlayers.length; i++) {
       des += `**- ${activePlayers[i].gamertag}**\n`;
     }
-    
+
     const nodes = activePlayers.length === 0;
     const serverEmbed = new EmbedBuilder()
       .setColor(client.config.Colors.Default)
@@ -250,10 +251,10 @@ module.exports = {
       .setTimestamp()
       .setTitle(`Players Online:`)
       .setDescription(des || (nodes ? "No Players Online :(" : ""));
-      
+
     const NAME = "DayZ.R Admin Logs";
-    const webhook = await GetWebhook(client, NAME, guild.connectionLogsChannel);
-    
+    const webhook = await GetWebhook(client, NAME, guild.activePlayersChannel);
+
     let id = client.playerListMsgIds.get(guild.serverID);
     if (id == "") {
       id = await WebhookSend(client, webhook, { embeds: [serverEmbed, activePlayersEmbed] }).id;
