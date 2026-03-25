@@ -33,6 +33,7 @@ module.exports = {
       if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
       const newDt = await client.getDateEST(info.time);
 
+      playerStat.gamertag = info.player; // update username if changed
       playerStat.lastConnectionDate = newDt;
       playerStat.connected = true;
       if (!client.exists(playerStat.connections)) playerStat.connections = 0;
@@ -87,6 +88,7 @@ module.exports = {
       } else sessionTimeSeconds = 0;
       if (!client.exists(playerStat.longestSessionTime)) playerStat.longestSessionTime = 0;
 
+      playerStat.gamertag = info.player; // update username if changed
       playerStat.totalSessionTime = playerStat.totalSessionTime + sessionTimeSeconds;
       playerStat.lastSessionTime = sessionTimeSeconds;
       playerStat.longestSessionTime = sessionTimeSeconds > playerStat.longestSessionTime ? sessionTimeSeconds : playerStat.longestSessionTime;
@@ -132,6 +134,7 @@ module.exports = {
       if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
       if (!client.exists(playerStat.lastConnectionDate)) playerStat.lastConnectionDate = await client.getDateEST(info.time);
 
+      playerStat.gamertag = info.player; // update username if changed
       playerStat.lastPos = playerStat.pos;
       playerStat.pos = info.pos;
       playerStat.lastTime = playerStat.time;
@@ -172,8 +175,11 @@ module.exports = {
       if (!client.exists(playerStat)) playerStat = getDefaultPlayer(info.player, info.playerID, NitradoServerID);
       if (!client.exists(attackerStat)) attackerStat = getDefaultPlayer(info.attacker, info.attackerID, NitradoServerID);
 
+      playerStat.gamertag = info.player; // update username if changed
       playerStat.lastDamageDate = await client.getDateEST(info.time);
       playerStat.lastHitBy = info.attacker;
+
+      attackerStat.gamertag = info.attacker; // update username if changed
 
       if (!client.exists(playerStat.shotsLanded)) playerStat = insertPVPstats(playerStat);
       if (!client.exists(attackerStat.shotsLanded)) attackerStat = insertPVPstats(attackerStat);
