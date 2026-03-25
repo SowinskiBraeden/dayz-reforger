@@ -349,20 +349,17 @@ class DayzRBot extends Client {
 
       GuildDB.Nitrado.Mission = Missions[settings.settings.config.mission];
 
-      console.log(`${settings.game_specific.path}config`);
       let filenames = await GetRemoteDir(NitradoCred, c, `${settings.game_specific.path}config`);
+      filenames = filenames.sort((a, b) => a.modified_at - b.modified_at)
+      filenames = filenames.filter(path => path.path.includes(".ADM"))
       filenames = filenames.map(path => path.path)
-      filenames = filenames.filter(path => path.includes(".ADM"))
       const filename = filenames[filenames.length - 1];
-
-      // const filename = settings.game_specific.log_files.sort((a, b) => a.length - b.length)[0];
-      const path = `${settings.game_specific.path.slice(0, -1)}${filename.split(settings.game)[1]}`;
 
       // Ensure Player List is logged for next update
       const playerListEnabled = parseInt(settings.settings.config.adminLogPlayerList)
       if (!playerListEnabled) PostServerSettings(NitradoCred, c, "config", "adminLogPlayerList", '1')
 
-      await DownloadNitradoFile(NitradoCred, c, path, `./logs/${NitradoCred.ServerID}-logs.ADM`).then(async (status) => {
+      await DownloadNitradoFile(NitradoCred, c, filename, `./logs/${NitradoCred.ServerID}-logs.ADM`).then(async (status) => {
         if (status == 1) return c.error(`Failed to Download Nitrado Log Files - [${NitradoCred.ServerID}]`);
         await c.readLogs(GuildDB).then(async () => {
           HandleExpiredUAVs(c, GuildDB);
