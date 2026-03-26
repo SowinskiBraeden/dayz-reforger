@@ -8,7 +8,7 @@ module.exports = async (client, interaction) => {
     This file routes any menu, modal & button interactions
     from any command
   */
- 
+
   let GuildDB = await GetGuild(client, interaction.guildId);
   const interactionName = interaction.customId.split("-")[0];
   let interactionHandler = client.interactionHandlers.get(interactionName);

@@ -96,7 +96,7 @@ module.exports = {
             .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.player}** was located within **${distance} meters** of the Zone **${alarm.name}**`)
             .addFields({ name: '**Location**', value: `**[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})**`, inline: false })
         );
-      
+
         return;
       }
     }
@@ -116,7 +116,7 @@ module.exports = {
         let uavEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setDescription(`**UAV Detection - <t:${unixTime}>**\n**${data.player}** was spotted in the UAV zone at **[${data.pos[0]}, ${data.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.pos[0]};${data.pos[1]})\n${destination}**`)
-      
+
         client.users.fetch(uav.owner, false).then((user) => {
           user.send({ embeds: [uavEmbed] });
         });
@@ -133,9 +133,9 @@ module.exports = {
 
       let now = new Date();
       let diff = Math.round((now.getTime() - uav.creationDate.getTime()) / 1000 / 60); // diff minutes
-  
+
       if (diff <= 30) continue;
-    
+
       uavs.splice(i, 1);
       update = true;
 
@@ -154,9 +154,9 @@ module.exports = {
   },
 
   KillInAlarm: async (client, guildId, data) => {
-    
+
     let guild = await GetGuild(client, guildId);
-    
+
     for (let i = 0; i < guild.alarms.length; i++) {
       let alarm = guild.alarms[i];
       if (alarm.disabled || !alarm.rules.includes('ban_on_kill')) continue; // ignore if alarm is disabled or not ban on kill;
@@ -176,10 +176,10 @@ module.exports = {
           .setColor(client.config.Colors.Default)
           .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${data.killer}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned for killing **${data.victim}**.__`)
           .addFields({ name: '**Location**', value: `**[${data.killerPOS[0]}, ${data.killerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${data.killerPOS[0]};${data.killerPOS[1]})**`, inline: false })
-      
+
         const NAME = "DayZ.R Zone Alert";
         const webhook = await GetWebhook(client, NAME, alarm.channel);
-        
+
         let content = { content: `<@&${alarm.role}>`, embeds: [alarmEmbed] };
         WebhookSend(client, webhook, content);
 
@@ -224,10 +224,10 @@ module.exports = {
           .setColor(client.config.Colors.Default)
           .setDescription(`**Zone Ping - <t:${unixTime}>**\n**${info.player}** was located within **${distance} meters** of the Zone **${alarm.name}** __and has been banned for **placing a fireplace**.__`)
           .addFields({ name: '**Location**', value: `**[${info.playerPOS[0]}, ${info.playerPOS[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${info.playerPOS[0]};${info.playerPOS[1]})**`, inline: false })
-      
+
         const NAME = "DayZ.R Zone Alert";
         const webhook = await GetWebhook(client, NAME, alarm.channel);
-        
+
         let content = { content: `<@&${alarm.role}>`, embeds: [alarmEmbed] };
         WebhookSend(client, webhook, content);
 

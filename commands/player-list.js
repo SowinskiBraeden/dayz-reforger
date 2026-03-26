@@ -12,7 +12,7 @@ module.exports = {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: [],
   },
-  options: [],  
+  options: [],
   SlashCommand: {
     /**
      *
@@ -35,7 +35,7 @@ module.exports = {
 
       const data = await FetchServerSettings(GuildDB.Nitrado, client, 'commands/player-list.js');  // Fetch server status
       const e = data && data !== 1; // Check if data exists
-      
+
       const hostname      = e ? data.data.gameserver.settings.config.hostname : 'N/A';
       const map           = e ? Missions[data.data.gameserver.settings.config.mission] : 'N/A';
       const status        = e ? data.data.gameserver.status : 'N/A';
@@ -57,7 +57,7 @@ module.exports = {
       for (let i = 0; i < activePlayers.length; i++) {
         des += `**- ${activePlayers[i].gamertag}**\n`;
       }
-      
+
       const nodes = activePlayers.length === 0;
       const serverEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default)

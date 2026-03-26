@@ -70,7 +70,7 @@ module.exports = {
       let banking;
       if (args[0].name == 'set' || args[0].name == 'pay') {
         banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
-  
+
         if (!banking) {
           banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
           if (!client.exists(banking)) return client.sendInternalError(interaction, err);
@@ -87,7 +87,7 @@ module.exports = {
 
         let playerStat = await client.dbo.collection("players").findOne({"gamertag": args[0].options[0].value});
         if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before for at least ` 5 minutes `.')] });
-        
+
         if (args[0].options[1].value > banking.guilds[GuildDB.serverID].balance) {
           let nsf = new EmbedBuilder()
             .setDescription('**Bank Notice:** NSF. Non sufficient funds')
@@ -97,7 +97,7 @@ module.exports = {
         }
 
         const newBalance = banking.guilds[GuildDB.serverID].balance - args[0].options[1].value;
-      
+
         client.dbo.collection("users").updateOne({ "user.userID": interaction.member.user.id }, {
           $set: {
             [`user.guilds.${GuildDB.serverID}.balance`]: newBalance,
@@ -115,24 +115,24 @@ module.exports = {
         playerStat.bountiesLength = playerStat.bounties.length; // Will ensure bounties length = # of bounties, even if bountiesLength does not exists in player stat.
 
         await UpdatePlayer(client, playerStat, interaction);
-        
+
         const successEmbed = new EmbedBuilder()
           .setTitle('Success')
           .setDescription(`Successfully set a **$${args[0].options[1].value.toFixed(2).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}** bounty on \` ${playerStat.gamertag} \`\nThis can be viewed using </bounty view:1086786904671924267>`)
           .setColor(client.config.Colors.Green);
-        
+
         return interaction.send({ embeds: [successEmbed], flags: (1 << 6) });
 
       } else if (args[0].name == 'pay') {
 
         let playerStat = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
         if (!client.exists(playerStat)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** Your user ID could not be found, contact an Admin.')] });
-        
+
         if (playerStat.bounties.length == 0) {
           const noBounty = new EmbedBuilder()
             .setColor(client.config.Colors.Yellow)
             .setDescription(`You have no bounties to pay off.`)
-          
+
           return interaction.send({ embeds: [noBounty] });
         }
 
@@ -150,14 +150,14 @@ module.exports = {
         }
 
         const newBalance = banking.guilds[GuildDB.serverID].balance - (totalBounty * 2);
-      
+
         await client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         });
 
         playerStat.bounties = [];
         playerStat.bountiesLength = 0;
-        
+
         await UpdatePlayer(client, playerStat, interaction);
 
         const payedOff = new EmbedBuilder()
@@ -171,7 +171,7 @@ module.exports = {
         const activeBounties = await client.dbo.collection("players").find({
           "bountiesLength": { $gt: 0 }
         }).toArray();
-        
+
         let bountiesEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setDescription('**Active Boutnies**');

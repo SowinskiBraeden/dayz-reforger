@@ -13,7 +13,7 @@ process.on('uncaughtException', async (error) => {
 	// Asynchronously write the error message to a log file using Promises
 	await new Promise((resolve, reject) => {
 		if (HandleActivePlayersList.lastSendMessage) HandleActivePlayersList.lastSendMessage.delete().catch(error => client.sendError(channel, `HandleActivePlayersList Error: \n${error}`));  // Remove previous embed message before closing
-		fs.appendFile(path.join(__dirname, "./logs/Logs.log"), 
+		fs.appendFile(path.join(__dirname, "./logs/Logs.log"),
 		`{"level":"error","message":"${d.getHours()}:${d.getMinutes()} - ${d.getMonth()+1}:${d.getDate()}:${d.getFullYear()} | uncaughtException: ${error.stack}"}`, (logErr) => {
 			if (logErr) {
 				console.error('Error writing uncaughtException to log file:', logErr);

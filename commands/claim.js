@@ -52,7 +52,7 @@ module.exports = {
         const warnArmbadChange = new EmbedBuilder()
           .setColor(client.config.Colors.Yellow)
           .setDescription(`**Notice:**\n> The faction <@&${args[0].value}> already has an armband selected. Are you sure you would like to change this?`)
-        
+
         const opt = new ActionRowBuilder()
           .addComponents(
             new ButtonBuilder()
@@ -71,7 +71,7 @@ module.exports = {
       let available = new StringSelectMenuBuilder()
         .setCustomId(`Claim-${args[0].value}-1-${interaction.member.user.id}`)
         .setPlaceholder('Select an armband from list 1 to claim')
-      
+
       let availableNext = new StringSelectMenuBuilder()
         .setCustomId(`Claim-${args[0].value}-2-${interaction.member.user.id}`)
         .setPlaceholder('Select an armband from list 2 to claim')
@@ -98,7 +98,7 @@ module.exports = {
       if (tracker > 25) {
         opt2 = new ActionRowBuilder().addComponents(availableNext);
         compList.push(opt2);
-      } 
+      }
 
       return interaction.send({ components: compList });
     },
@@ -106,7 +106,7 @@ module.exports = {
   Interactions: {
     Claim: {
       run: async (client, interaction, GuildDB) => {
-        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+        if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         let factionID = interaction.customId.split('-')[1];
@@ -134,7 +134,7 @@ module.exports = {
             if (err) return client.sendInternalError(interaction, err);
           })
         }
-        
+
         client.dbo.collection("guilds").updateOne({'server.serverID': GuildDB.serverID}, query, (err, res) => {
           if (err) return client.sendInternalError(interaction, err);
         })
@@ -159,14 +159,14 @@ module.exports = {
 
     ChangeArmband: {
       run: async (client, interaction, GuildDB) => {
-        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+        if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
           let available = new StringSelectMenuBuilder()
             .setCustomId(`Claim-${interaction.customId.split('-')[2]}-update-1-${interaction.member.user.id}`)
             .setPlaceholder('Select an armband from list 1 to claim')
-          
+
           let availableNext = new StringSelectMenuBuilder()
             .setCustomId(`Claim-${interaction.customId.split('-')[2]}-update-2-${interaction.member.user.id}`)
             .setPlaceholder('Select an armband from list 2 to claim')
@@ -193,9 +193,9 @@ module.exports = {
           if (tracker > 25) {
             opt2 = new ActionRowBuilder().addComponents(availableNext);
             compList.push(opt2);
-          } 
+          }
 
-          return interaction.update({ embeds: [], components: compList });  
+          return interaction.update({ embeds: [], components: compList });
 
         } else {
           const cancel = new EmbedBuilder()

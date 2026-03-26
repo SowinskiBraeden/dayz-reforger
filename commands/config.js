@@ -12,7 +12,7 @@ module.exports = {
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: ["MANAGE_GUILD"],
-  },  
+  },
   options: [
     {
       name: "killfeed",
@@ -99,7 +99,7 @@ module.exports = {
           name: "clear",
           description: "Clears all configured channels",
           value: "clear",
-          type: CommandOptions.SubCommand,   
+          type: CommandOptions.SubCommand,
         },
         {
           name: "view",
@@ -419,7 +419,7 @@ module.exports = {
         required: true,
       }]
     }
-  ],  
+  ],
   SlashCommand: {
     /**
      *
@@ -428,7 +428,7 @@ module.exports = {
      * @param {string[]} args
      * @param {*} param3
     */
-    run: async (client, interaction, args, { GuildDB }) => {      
+    run: async (client, interaction, args, { GuildDB }) => {
       const permissions = bitfieldCalculator.permissions(interaction.member.permissions);
       let canUseCommand = false;
 
@@ -451,7 +451,7 @@ module.exports = {
             if (!channelAdd) {error=true;newChannelErrorEmbed.setDescription(`**Error Notice:** Cannot find that channel.`);}
             if (channelAdd.type=="voice") {error=true;newChannelErrorEmbed.setDescription(`**Error Notice:** Cannot add voice channel to allowed channels.`);}
             if (error) return interaction.send({ embeds: [newChannelErrorEmbed] });
-                      
+
             client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$push:{"server.allowedChannels": channelid}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
             });
@@ -486,7 +486,7 @@ module.exports = {
               )
 
             return interaction.send({ embeds: [promptRemoveChannel], components: [optRemoveChannel], flags: (1 << 6) });
-            
+
           } else if (channels_config == 'clear') {
 
             const errorNoAllowedChannels = new EmbedBuilder()
@@ -512,10 +512,10 @@ module.exports = {
               )
 
             return interaction.send({ embeds: [promptClearChannels], components: [optClearChannels], flags: (1 << 6) });
-            
+
 
           } else if (channels_config == 'view') {
-            
+
             if (!GuildDB.customChannelStatus) {
               const noConfiguredChannels = new EmbedBuilder()
                 .setColor(client.config.Colors.Default)
@@ -537,7 +537,7 @@ module.exports = {
             configuredChannels.setDescription(des);
 
             return interaction.send({ embeds: [configuredChannels] });
-          
+
           }
 
         case 'bot_admin_role':
@@ -548,12 +548,12 @@ module.exports = {
             client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$push: {"server.botAdminRoles": botAdminRoleId}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
             });
-      
+
             const successSetBotAdminRoleEmbed = new EmbedBuilder()
               .setDescription(`Successfully added <@&${botAdminRoleId}> as a bot admin role.\nUsers with this role can use restricted commands.`)
               .setColor(client.config.Colors.Green);
-      
-            return interaction.send({ embeds: [successSetBotAdminRoleEmbed] });    
+
+            return interaction.send({ embeds: [successSetBotAdminRoleEmbed] });
 
           } else if (bot_admin_config == 'remove') {
 
@@ -582,7 +582,7 @@ module.exports = {
               )
 
             return interaction.send({ embeds: [promptRemoveAdminRole], components: [optRemoveAdminRole], flags: (1 << 6) });
-          
+
           } else if (bot_admin_config == 'view') {
 
             if (GuildDB.botAdminRoles.length == 0) {
@@ -612,17 +612,17 @@ module.exports = {
           client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.adminRole": args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           const successSetAdminRoleEmbed = new EmbedBuilder()
             .setDescription(`Successfully set <@&${args[0].options[0].value}> as the server admin role..`)
             .setColor(client.config.Colors.Green);
-    
+
           return interaction.send({ embeds: [successSetAdminRoleEmbed] });
 
         case 'exclude':
           const exclude_config = args[0].options[0].name;
           const exclude_roleid = ['add', 'remove'].includes(exclude_config) ? args[0].options[0].options[0].value : null;
-          
+
           if (exclude_config == 'add') {
             client.dbo.collection('guilds').updateOne({'server.serverID': GuildDB.serverID}, {$push: {'server.excludedRoles': exclude_roleid}}, (err, res) => {
               if (err) return client.sendInternalError(interaction, err);
@@ -644,7 +644,7 @@ module.exports = {
               .setDescription(`**Done!**\n> Successfully removed <@&${exclude_roleid}> to list of excluded roles.`)
 
             return interaction.send({ embeds: [successRemoveExcludeEmbed] });
-          
+
           } else if (exclude_config == "view") {
 
             if (GuildDB.excludedRoles.length == 0) {
@@ -689,7 +689,7 @@ module.exports = {
             )
 
           return interaction.send({ embeds: [promptReset], components: [optReset], flags: (1 << 6) });
-      
+
         case 'view':
 
           // wrappers
@@ -707,7 +707,7 @@ module.exports = {
           const purchaseUAV             = GuildDB.purchaseUAV        ? `${g}true` : `${r}false`;
           const purchaseEMP             = GuildDB.purchaseEMP        ? `${g}true` : `${r}false`;
           const adminRoles              = GuildDB.hasBotAdmin        ? `${g}true` : `${r}false`
-          const excludedRoles           = GuildDB.hasExcludedRoles   ? `${g}true` : `${r}false`; 
+          const excludedRoles           = GuildDB.hasExcludedRoles   ? `${g}true` : `${r}false`;
 
           // Role / channel display
           const NONE                    = `${w}${m}none${w}`;
@@ -763,50 +763,50 @@ module.exports = {
           client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {[`server.${channelType}`]: channel}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           const successSetChannelEmbed = new EmbedBuilder()
             .setDescription(`Successfully set <#${channel}> as the ${channelType} channel.`)
             .setColor(client.config.Colors.Green);
-    
+
           return interaction.send({ embeds: [successSetChannelEmbed] });
-      
+
         case 'linked_gt_role':
           const linked_gt_role = args[0].options[0].value;
-  
+
           client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.linkedGamertagRole": linked_gt_role}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           const successLinkedGTRoleEmbed = new EmbedBuilder()
             .setDescription(`Successfully set <@&${linked_gt_role}> to give to users who link their gamertag.`)
             .setColor(client.config.Colors.Green);
-    
+
           return interaction.send({ embeds: [successLinkedGTRoleEmbed] });
 
         case 'member_role':
           const member_role = args[0].options[0].value;
-  
+
           client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID},{$set: {"server.memberRole": member_role}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           const successMemberRoleEmbed = new EmbedBuilder()
             .setDescription(`Successfully set <@&${member_role}> to give to users who link they join.`)
             .setColor(client.config.Colors.Green);
-    
+
           return interaction.send({ embeds: [successMemberRoleEmbed] });
-      
+
         case 'starting_balance':
           client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.startingBalance":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           let successSetStartingBalanceEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`Successfully set $${args[0].options[0].value.toFixed(2)} as starting balance`);
-          
-          return interaction.send({ embeds: [successSetStartingBalanceEmbed] });  
-      
+
+          return interaction.send({ embeds: [successSetStartingBalanceEmbed] });
+
         case 'income_role':
           if (args[0].options[0].name== 'set') {
             const incomeRoleId = args[0].options[0].options[0].value
@@ -815,17 +815,17 @@ module.exports = {
               let errorIncomeAmount = new EmbedBuilder()
                 .setDescription('**Error Notice:** Amount cannot be $0 or less than $0.')
                 .setColor(client.config.Colors.Red);
-      
+
               return interaction.send({ embeds: [errorIncomeAmount] });
             }
-      
+
             const searchIndex = GuildDB.incomeRoles.findIndex((role) => role.role==incomeRoleId);
             if (searchIndex == -1) {
               const newIncome = {
                 role: incomeRoleId,
                 income: args[0].options[0].options[1].value,
               }
-      
+
               client.dbo.collection("guilds").updateOne({"server.serverID":GuildDB.serverID}, {$push: {"server.incomeRoles":newIncome}}, (err, res) => {
                 if (err) return client.sendInternalError(interaction, err);
               });
@@ -843,12 +843,12 @@ module.exports = {
               });
             }
             const perform = searchIndex == -1 ? 'set' : 'updated';
-      
+
             const successIncomeRoleEmbed = new EmbedBuilder()
               .setDescription(`Successfully ${perform} <@&${incomeRoleId}>'s income to $${args[0].options[0].options[1].value}`)
               .setColor(client.config.Colors.Green);
-      
-            return interaction.send({ embeds: [successIncomeRoleEmbed] });    
+
+            return interaction.send({ embeds: [successIncomeRoleEmbed] });
 
           } else if (args[0].options[0].name== 'remove') {
             const searchIndex = GuildDB.incomeRoles.findIndex((role) => role.role==incomeRoleId);
@@ -857,7 +857,7 @@ module.exports = {
                 .setDescription('**Error Notice:** Role not found')
                 .setColor(client.config.Colors.Red);
 
-              return interaction.send({ embeds: [errorIncomeNotFoundEmbed] }); 
+              return interaction.send({ embeds: [errorIncomeNotFoundEmbed] });
             } else {
               const promptRemoveIncomeRole = new EmbedBuilder()
                 .setTitle(`Are you sure you want to remove this role as an income?`)
@@ -878,45 +878,45 @@ module.exports = {
               return interaction.send({ embeds: [promptRemoveIncomeRole], components: [optRemoveIncomeRole], flags: (1 << 6) });
             }
           }
-      
+
         case 'income_limiter':
           client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.incomeLimiter":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           let successIncomeLimiterEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`Successfully set **${args[0].options[0].value} hours** as the wait time to collect income.`);
-          
-          return interaction.send({ embeds: [successIncomeLimiterEmbed] });          
-      
+
+          return interaction.send({ embeds: [successIncomeLimiterEmbed] });
+
         case 'uav-price':
           client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.uavPrice":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           let successUAVPriceEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`Successfully set $${args[0].options[0].value.toFixed(2)} as UAV price`);
-          
+
           return interaction.send({ embeds: [successUAVPriceEmbed] });
 
         case 'emp-price':
           client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.empPrice":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           let successEMPPriceEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`Successfully set $${args[0].options[0].value.toFixed(2)} as EMP price`);
-          
-          return interaction.send({ embeds: [successEMPPriceEmbed] });          
+
+          return interaction.send({ embeds: [successEMPPriceEmbed] });
 
         case 'combat-log-timer':
           client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.combatLogTimer":args[0].options[0].value}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           let successCobatLogTimerEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`Successfully set combat log timer to **${args[0].options[0].value.toFixed(0)} minutes.**`);
@@ -924,12 +924,12 @@ module.exports = {
           return interaction.send({ embeds: [successCobatLogTimerEmbed] });
 
         case 'toggle-uav-purchase':
-          const togggleUAVpurchase = args[0].options[0].value ? 1 : 0;  
+          const togggleUAVpurchase = args[0].options[0].value ? 1 : 0;
 
           client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.purchaseUAV": togggleUAVpurchase}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           let successToggleUAVpurchaseEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`Users can ${togggleUAVpurchase ? 'now' : 'no longer'} purchase UAVs.`);
@@ -937,12 +937,12 @@ module.exports = {
           return interaction.send({ embeds: [successToggleUAVpurchaseEmbed] });
 
         case 'toggle-emp-purchase':
-          const togggleEMPpurchase = args[0].options[0].value ? 1 : 0;  
+          const togggleEMPpurchase = args[0].options[0].value ? 1 : 0;
 
           client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set: {"server.purchaseEMP": togggleEMPpurchase}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-    
+
           let successToggleEMPpurchaseEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`Users can ${togggleUAVpurchase ? 'now' : 'no longer'} purchase EMPs.`);
@@ -1015,7 +1015,7 @@ module.exports = {
   },
 
   Interactions: {
-    
+
     RemoveAllowedChannels: {
       run: async (client, interaction, GuildDB) => {
         if (!interaction.customId.endsWith(interaction.member.user.id)) {
@@ -1031,11 +1031,11 @@ module.exports = {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
-    
+
         const successEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
           .setTitle(`**Success**\n> Successfullly ${action} the channel.`)
-    
+
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     },
@@ -1045,12 +1045,12 @@ module.exports = {
         if (!interaction.customId.endsWith(interaction.member.user.id)) {
           return interaction.reply({
             content: "This buttpm is not for you",
-            flags: (1 << 6) 
+            flags: (1 << 6)
           });
         }
         let action;
         if (interaction.customId.split('-')[1] == 'yes') {
-          action = 'cleared'; 
+          action = 'cleared';
           client.dbo.collection("guilds").updateOne({"server.serverID": GuildDB.serverID}, {$set:{"server.allowedChannels":[]}}, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           })
@@ -1080,11 +1080,11 @@ module.exports = {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
-    
+
         const successEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
           .setDescription(`**Successfully ${action} <@&${roleId}> as the bot admin role.**`)
-    
+
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     },
@@ -1106,11 +1106,11 @@ module.exports = {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
-    
+
         const successEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
           .setDescription(`**Successfully ${action} <@&${roleId}> as an income role.**`)
-    
+
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     },
@@ -1131,13 +1131,13 @@ module.exports = {
             if (err) return client.sendInternalError(interaction, err);
           });
         } else if (interaction.customId.split('-')[1]=='no') action = 'kept';
-    
+
         const successEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
           .setTitle(`Successfully ${action} guild configurations.`)
-    
+
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     }
-  } 
+  }
 }

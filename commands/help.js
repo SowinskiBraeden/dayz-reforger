@@ -32,7 +32,7 @@ module.exports = {
       value: "support",
       type: CommandOptions.SubCommand,
     },
-    { 
+    {
       name: "credits",
       description: "DayZ.R Bot Credits",
       value: "credits",
@@ -58,15 +58,15 @@ module.exports = {
       if (args[0].name == 'commands') {
         let Commands = client.commands.filter((cmd) => {
           return !cmd.debug
-        }).map((cmd) => 
+        }).map((cmd) =>
             `\`/${cmd.name}${cmd.usage ? " " + cmd.usage : ""}\` - ${cmd.description}`
         );
-  
+
         let Embed = new EmbedBuilder()
           .setTitle('Commands')
           .setColor(client.config.Colors.Default)
           .setDescription(`${Commands.join("\n")}
-    
+
     DayZR Bot Version: v${client.config.Version}`);
         if (!args[0].options[0]) return interaction.send({ embeds: [Embed] });
         else {
@@ -77,7 +77,7 @@ module.exports = {
             );
           if (!cmd)
             return interaction.send({ content: `❌ | Unable to find that command.` });
-  
+
           let embed = new EmbedBuilder()
             .setDescription(cmd.description)
             .setColor(client.config.Colors.Green)
@@ -85,7 +85,7 @@ module.exports = {
 
           if (cmd.SlashCommand.options && cmd.SlashCommand.options[0].type == 1) {
             let description = `${cmd.description}\n\n**Usage**\n`;
-  
+
             for (let i = 0; i < cmd.SlashCommand.options.length; i++) {
               if (cmd.SlashCommand.options[i].type == 1) {
                 let param = '';
@@ -107,7 +107,7 @@ module.exports = {
         const supportEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setDescription(`**__DayZ.R Bot Support__**
-          
+
             Are you experiencing troubles with the DayZ.R Bot?
             Do you have questions or concerns?
             Do you require help to use the bot?
@@ -126,22 +126,22 @@ module.exports = {
           .setDescription(`
             **Bot Author:** mcdazzzled
             **Github:** https://github.com/SowinskiBraeden/dayz-reforger
-            
+
             ${client.config.SupportServer}
           `);
 
         return interaction.send({ embeds: [creditsEmbed] })
       } else if (args[0].name == 'stats') {
         const end = new Date().getTime();
-        
+
         const totalGuilds = await client.shard.fetchClientValues("guilds.cache.size").then(results => {
           return results.reduce((acc, guildCount) => acc + guildCount, 0);
         });
-        
+
         const totalUsers = await client.shard.broadcastEval(c => {
           c.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0);
         }).then(data => data.reduce((acc, memberCount) => acc + memberCount, 0));
-        
+
         const stats = new EmbedBuilder()
           .setColor(client.config.Colors.Default)
           .setTitle('DayZ Reforger Bot Statistics')

@@ -35,7 +35,7 @@ module.exports = {
       const warnGTOverwrite = new EmbedBuilder()
         .setColor(client.config.Colors.Yellow)
         .setDescription(`**Notice:**\n> Are you sure you want to unlink your gamertag? This will limit some automatic features.`);
-      
+
       const opt = new ActionRowBuilder()
         .addComponents(
           new ButtonBuilder()
@@ -56,14 +56,14 @@ module.exports = {
 
     UnlinkGamertag: {
       run: async(client, interaction, GuildDB) => {
-        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+        if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
           let playerStat = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
 
           playerStat.discordID = "";
-          
+
           await UpdatePlayer(client, playerStat, interaction);
 
           let connectedEmbed = new EmbedBuilder()

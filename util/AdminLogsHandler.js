@@ -8,7 +8,7 @@ module.exports = {
     if (!client.exists(guild.connectionLogsChannel)) return;
     const channel = client.GetChannel(guild.connectionLogsChannel);
     if (!channel) return;
-  
+
     let newDt = await client.getDateEST(data.time);
     let unixTime = Math.floor(newDt.getTime() / 1000);
 
@@ -48,7 +48,7 @@ module.exports = {
     // If lastHitBy (attacker) died after shooting this player
     // then it does not count as combat logging, (the combat ended due to death)
     let attacker = await client.dbo.collection("players").findOne({"gamertag": data.lastHitBy});
-    if (attacker.lastDeathDate > data.lastDamageDate) return;    
+    if (attacker.lastDeathDate > data.lastDamageDate) return;
 
     let unixTime = Math.floor(newDt.getTime() / 1000);
     const destination = nearest(data.pos, guild.Nitrado.Mission);
@@ -59,7 +59,7 @@ module.exports = {
 
     const NAME = "DayZ.R Admin Logs";
     const webhook = await GetWebhook(client, NAME, guild.connectionLogsChannel);
-    
+
     let content = { embeds: [combatLog] };
     if (client.exists(guild.adminRole)) content.content = `<@&${guild.adminRole}>`;
     WebhookSend(client, webhook, content);

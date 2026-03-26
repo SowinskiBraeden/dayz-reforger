@@ -56,7 +56,7 @@ module.exports = {
         )
 
       return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
-      
+
     },
   },
 
@@ -66,7 +66,7 @@ module.exports = {
       run: async (client, interaction, GuildDB) => {
         const choice = interaction.customId.split('-')[1];
         const targetUserID = interaction.customId.split('-')[2];
-    
+
         if (!interaction.customId.endsWith(interaction.member.user.id)) {
           return interaction.reply({
             content: "This button is not for you",
@@ -79,7 +79,7 @@ module.exports = {
             .setTitle('Successfully reset user\'s data')
 
           let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
-      
+
           let bankingReset = false;
           if (!banking) bankingReset = true
           else banking = banking.user

@@ -189,7 +189,7 @@ module.exports = {
 
         return interaction.send({ embeds: [prompt], components: [opt], flags: (1 << 6) });
       }
-      
+
       if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription(`**Notice:**\nThis Discord guild has not been configured with a Nitrado DayZ server. To configure your guild, use </server initialize:1166877457559851011>`)] });
 
       if (args[0].name == 'credentials-status') {
@@ -263,7 +263,7 @@ module.exports = {
       } else if (args[0].name == "auto-restart") {
         let msg = 'Auto server restart periodic check enabled.';
         let pref = 0;
-        
+
         // Enable/Disable a 10min periodic server status check.
         if (!client.arIntervalIds.has(GuildDB.serverID)) {
           client.arIntervalIds.set(GuildDB.serverID, setInterval(CheckServerStatus, client.arInterval, GuildDB.Nitrado, client));
@@ -283,7 +283,7 @@ module.exports = {
         });
 
         return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(msg)], flags: (1 << 6) });
-      
+
       } else if (args[0].name == 'disable-base-damage') {
         const preference = args[0].options[0].value;
         await interaction.deferReply({ flags: (1 << 6) });
@@ -292,7 +292,7 @@ module.exports = {
 
         if (disableBaseDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableBaseDamage**. This can result from a variety of reasons:\nNitrado servers may be experiencing issues\nThe DayZ.R Bot may be experiencing issues\nYour Nitrado credentials were entered incorrectly')], flags: (1 << 6) });
         return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully set **disableBaseDamage** to ${preference}.\nRestart the DayZ server to apply these changes.`)], flags: (1 << 6) });
-      
+
       } else if (args[0].name == 'disable-container-damage') {
         const preference = args[0].options[0].value;
         await interaction.deferReply({ flags: (1 << 6) });
@@ -301,16 +301,16 @@ module.exports = {
 
         if (disableContainerDamageFailed) return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Red).setDescription('Failed to set **disableContainerDamage**. This can result from a variety of reasons:\nNitrado servers may be experiencing issues\nThe DayZ.R Bot may be experiencing issues\nYour Nitrado credentials were entered incorrectly')], flags: (1 << 6) });
         return interaction.editReply({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Green).setDescription(`Successfully set **disableContainerDamage** to ${preference}.\nRestart the DayZ server to apply these changes.`)], flags: (1 << 6) });
-      
+
       }
     }
   },
 
   Interactions: {
-    
+
     NitradoCredentials: {
       run: async(client, interaction, GuildDB) => {
-        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+        if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         const Nitrado = {
@@ -344,21 +344,21 @@ module.exports = {
           const NitradoCredentials = new ModalBuilder()
             .setTitle('Connect your Nitrado Server')
             .setCustomId(`NitradoCredentials-${interaction.member.user.id}`);
-  
+
           const ServerID = new ActionRowBuilder().addComponents(new TextInputBuilder()
             .setCustomId('ServerIDInput')
             .setLabel('Your Nitrado Server ID')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
           );
-  
+
           const UserID = new ActionRowBuilder().addComponents(new TextInputBuilder()
             .setCustomId('UserIDInput')
             .setLabel('Your Nitrado User ID')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
           );
-  
+
           const Auth = new ActionRowBuilder().addComponents(new TextInputBuilder()
             .setCustomId('AuthInput')
             .setLabel('Your Nitrado Authentication Token')
@@ -366,9 +366,9 @@ module.exports = {
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
           );
-  
+
           NitradoCredentials.addComponents(ServerID, UserID, Auth);
-          
+
           // TODO: Figure out how to remove the prompt buttons and the embed.
           return interaction.showModal(NitradoCredentials);
         } else {

@@ -37,13 +37,13 @@ module.exports = {
 
       let newDt = await client.getDateEST(playerStat.time);
       let unixTime = Math.floor(newDt.getTime()/1000);
-  
+
       const destination = nearest(playerStat.pos, GuildDB.Nitrado.Mission);
-  
+
       let lastLocation = new EmbedBuilder()
         .setColor(client.config.Colors.Default)
         .setDescription(`**Location - <t:${unixTime}>**\nYour last location was detected at **[${playerStat.pos[0]}, ${playerStat.pos[1]}](https://www.izurvive.com/chernarusplussatmap/#location=${playerStat.pos[0]};${playerStat.pos[1]})**\n${destination}`)
-    
+
       return interaction.send({ embeds: [lastLocation], flags: (1 << 6) });
     },
   },

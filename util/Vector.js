@@ -6,7 +6,7 @@ module.exports = {
     let theta = (thetat < 0) ? (360 + thetat) : thetat;
     let compass = ["S", "SW", "W", "NW", "N", "NE", "E", "SE", "S"];
     let dir = compass[Math.round(theta / 45)];
-  
+
     return {distance, theta, dir}
-  } 
+  }
 }

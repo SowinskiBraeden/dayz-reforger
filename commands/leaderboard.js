@@ -21,7 +21,7 @@ module.exports = {
       { name: "Money", value: "money" },
       { name: "Total Time Played", value: "totalSessionTime" },
       { name: "Longest Game Session", value: "longestSessionTime" },
-      { name: "Kills", value: "kills" }, 
+      { name: "Kills", value: "kills" },
       { name: "Kill Streak", value: "killStreak" },
       { name: "Best Kill Streak", value: "bestKillStreak" },
       { name: "Deaths", value: "deaths" },
@@ -60,7 +60,7 @@ module.exports = {
 
         return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
       }
-      
+
       const category = args[0].value;
       const limit = args[1].value;
 
@@ -72,28 +72,28 @@ module.exports = {
         ]).toArray();
 
       } else {
-        
+
         leaderboard = await client.dbo.collection("players").aggregate([
           { $sort: { [`${category}`]: -1 } }
         ]).toArray();
 
       }
-      
+
       let leaderboardEmbed = new EmbedBuilder()
         .setColor(client.config.Colors.Default);
-      
+
       let title = category == 'kills' ? "Total Kills Leaderboard" :
         category == 'killStreak' ? "Current Killstreak Leaderboard" :
         category == 'bestKillStreak' ? "Best Killstreak Leaderboard" :
         category == 'deaths' ? "Total Deaths Leaderboard" :
         category == 'deathStreak' ? "Current Deathstreak Leaderboard" :
-        category == 'worstDeathStreak' ? "Worst Deathstreak Leaderboard" : 
-        category == 'longestKill' ? "Longest Kill Leaderboard" : 
-        category == 'money' ? "Money Leaderboard" : 
-        category == 'totalSessionTime' ? "Total Time Played" : 
-        category == 'longestSessionTime' ? "Longest Game Session" : 
-        category == 'KDR' ? "Kill Death Ratio" : 
-        category == 'connections' ? "Times Connected" : 
+        category == 'worstDeathStreak' ? "Worst Deathstreak Leaderboard" :
+        category == 'longestKill' ? "Longest Kill Leaderboard" :
+        category == 'money' ? "Money Leaderboard" :
+        category == 'totalSessionTime' ? "Total Time Played" :
+        category == 'longestSessionTime' ? "Longest Game Session" :
+        category == 'KDR' ? "Kill Death Ratio" :
+        category == 'connections' ? "Times Connected" :
         category == 'shotsLanded' ? "Shots Landed" :
         category == 'timesShot' ? "Times Shot" :
         category == 'combatRating' ? "Combat Rating" : 'N/A Error';
@@ -103,21 +103,21 @@ module.exports = {
       let des = ``;
       for (let i = 0; i < limit; i++) {
         if (leaderboard.length < limit && i == leaderboard.length) break;
-        
+
         let stats = category == 'kills' ? `${leaderboard[i].kills} Kill${(leaderboard[i].kills>1||leaderboard[i].kills==0)?'s':''}` :
                     category == 'killStreak' ? `${leaderboard[i].killStreak} Player Killstreak` :
                     category == 'bestKillStreak' ? `${leaderboard[i].bestKillStreak} Player Killstreak` :
                     category == 'deaths' ? `${leaderboard[i].deaths} Death${leaderboard[i].deaths>1||leaderboard[i].deaths==0?'s':''}` :
                     category == 'deathStreak' ? `${leaderboard[i].deathStreak} Deathstreak` :
                     category == 'worstDeathstreak' ? `${leaderboard[i].worstDeathStreak} Deathstreak` :
-                    category == 'longestKill' ? `${leaderboard[i].longestKill}m` : 
-                    category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 
-                    category == 'totalSessionTime' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${client.secondsToDhms(leaderboard[i].lastSessionTime)}` : 
-                    category == 'longestSessionTime' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` : 
-                    category == 'KDR' ? `**KDR: ${leaderboard[i].KDR.toFixed(2)}**` : 
-                    category == 'connection' ? `**Connections: ${leaderboard[i].connections}**` : 
-                    category == 'combatRating' ? `**Combat Rating:** ${leaderboard[i].combatRating}` : 
-                    category == 'shotsLanded' ? `**Shots Landed:** ${leaderboard[i].shotsLanded}` : 
+                    category == 'longestKill' ? `${leaderboard[i].longestKill}m` :
+                    category == 'money' ? `$${(leaderboard[i].user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :
+                    category == 'totalSessionTime' ? `**Total:** ${client.secondsToDhms(leaderboard[i].totalSessionTime)}\n> **Last Session:** ${client.secondsToDhms(leaderboard[i].lastSessionTime)}` :
+                    category == 'longestSessionTime' ? `**Longest Game Session:** ${client.secondsToDhms(leaderboard[i].longestSessionTime)}` :
+                    category == 'KDR' ? `**KDR: ${leaderboard[i].KDR.toFixed(2)}**` :
+                    category == 'connection' ? `**Connections: ${leaderboard[i].connections}**` :
+                    category == 'combatRating' ? `**Combat Rating:** ${leaderboard[i].combatRating}` :
+                    category == 'shotsLanded' ? `**Shots Landed:** ${leaderboard[i].shotsLanded}` :
                     category == 'timesShot' ? `**Times Shot:** ${leaderboard[i].timesShot}` : 'N/A Error';
 
         if (category == 'money') des += `**${i+1}.** <@${leaderboard[i].user.userID}> - **${stats}**\n`
@@ -128,7 +128,7 @@ module.exports = {
       }
 
       if (['money', 'totalSessionTime', 'longestSessionTime', 'combatRating'].includes(category)) leaderboardEmbed.setDescription(des);
-      
+
       return interaction.send({ embeds: [leaderboardEmbed] });
     },
   },

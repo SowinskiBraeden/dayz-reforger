@@ -61,7 +61,7 @@ module.exports = {
 
         return interaction.send({ embeds: [warnNitradoNotInitialized], flags: (1 << 6) });
       }
-      
+
       let discord  = args[1] && args[1].name == 'discord'  ? args[1].value : undefined;
       let gamertag = args[1] && args[1].name == 'gamertag' ? args[1].value : undefined;
       let self = !discord && !gamertag; // searching for self if both discord and gamertag are undefined
@@ -71,13 +71,13 @@ module.exports = {
 
       // Searching by Discord
       if (discord) query = await client.dbo.collection("players").findOne({"discordID": discord});
-  
+
       // Searching by Gamertag
       if (gamertag) query = await client.dbo.collection("players").findOne({"gamertag": gamertag});
-      
+
       // Searching for self
       if (self) query = await client.dbo.collection("players").findOne({"discordID": interaction.member.user.id});
-    
+
       if (!client.exists(query)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
 
       let weaponSelect = new StringSelectMenuBuilder()
@@ -103,7 +103,7 @@ module.exports = {
       run: async(client, interaction, GuildDB) => {
         if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
-        
+
         const weapon = interaction.values[0].split("_")[1];
         const weaponClass = interaction.values[0].split("_")[0];
         const playerID = interaction.customId.split('-')[1];
@@ -163,12 +163,12 @@ module.exports = {
             },
           },
         };
-        
+
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}`;
-        
+
         stats.setImage(chartURL);
-      
+
         return interaction.update({ components: [], embeds: [stats] });
       }
     }

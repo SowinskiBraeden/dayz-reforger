@@ -53,7 +53,7 @@ module.exports = {
 
       let comp;
       if (discord) comp = leaderboard.find(s => s.discordID == discord);
-      if (gamertag) comp = leaderboard.find(s => s.gamertag == gamertag); 
+      if (gamertag) comp = leaderboard.find(s => s.gamertag == gamertag);
       let self = leaderboard.find(s => s.discordID == interaction.member.user.id);
 
       if (!client.exists(comp)) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription(`**Not Found** Unable to find any records with the gamertag or user provided.`)] });
@@ -90,7 +90,7 @@ module.exports = {
       const diff = Math.abs(selfData.length - compData.length);
       if (selfData.length < compData.length) selfData.unshift(...(new Array(diff).fill(null, 0, diff)));
       if (compData.length < selfData.length) compData.unshift(...(new Array(diff).fill(null, 0, diff)));
-      
+
       const chart = {
         type: 'line',
         data: {
@@ -131,7 +131,7 @@ module.exports = {
           },
         },
       };
-      
+
       const encodedChart = encodeURIComponent(JSON.stringify(chart));
       const chartURL = `https://quickchart.io/chart?c=${encodedChart}&bkg=${encodeURIComponent("#ded8d7")}`;
 

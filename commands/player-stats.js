@@ -22,7 +22,7 @@ module.exports = {
       { name: "Money", value: "money" },
       { name: "Total Time Played", value: "totalSessionTime" },
       { name: "Longest Game Session", value: "longestSessionTime" },
-      { name: "Kills", value: "kills" }, 
+      { name: "Kills", value: "kills" },
       { name: "Kill Streak", value: "killStreak" },
       { name: "Best Kill Streak", value: "bestKillStreak" },
       { name: "Deaths", value: "deaths" },
@@ -56,7 +56,7 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }, start) => {
-      
+
       if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
         const warnNitradoNotInitialized = new EmbedBuilder()
           .setColor(client.config.Colors.Yellow)
@@ -69,7 +69,7 @@ module.exports = {
       let discord  = args[1] && args[1].name == 'discord'  ? args[1].value : undefined;
       let gamertag = args[1] && args[1].name == 'gamertag' ? args[1].value : undefined;
       let self = !discord && !gamertag; // searching for self if both discord and gamertag are undefined;
-      
+
       let query;
       let leaderboard;
       let leaderboardPos;
@@ -88,7 +88,7 @@ module.exports = {
         leaderboardPos = leaderboard.indexOf(query);
 
       } else {
-        
+
         leaderboard = await client.dbo.collection("players").aggregate([
           { $sort: { [`${category}`]: -1 } }
         ]).toArray();
@@ -108,13 +108,13 @@ module.exports = {
         category == 'bestkillStreak' ? "Best Killstreak" :
         category == 'deaths' ? "Total Deaths" :
         category == 'deathStreak' ? "Current Deathstreak" :
-        category == 'worstDeathStreak' ? "Worst Deathstreak" : 
-        category == 'longestKill' ? "Longest Kill" : 
-        category == 'money' ? "Total Money" : 
+        category == 'worstDeathStreak' ? "Worst Deathstreak" :
+        category == 'longestKill' ? "Longest Kill" :
+        category == 'money' ? "Total Money" :
         category == 'totalSessionTime' ? "Total Time Played" :
         category == 'longestSessionTime' ? "Longest Game Session" :
         category == 'KDR' ? "Kill Death Ratio" :
-        category == 'connections' ? "Times Connected" : 
+        category == 'connections' ? "Times Connected" :
         category == 'shotsLanded' ? "Shots Landed" :
         category == 'timesShot' ? "Times Shot" :
         category == 'combatRating' ? "Combat Rating" : 'N/A Error';
@@ -134,14 +134,14 @@ module.exports = {
                   category == 'deaths' ? `${query.deaths} Death${query.deaths>1||query.deaths==0?'s':''}` :
                   category == 'deathStreak' ? `${query.deathStreak} Deathstreak` :
                   category == 'worstDeathStreak' ? `${query.worstDeathStreak} Deathstreak` :
-                  category == 'longestKill' ? `${query.longestKill}m` : 
-                  category == 'money' ? `$${(query.user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :  
-                  category == 'KDR' ? `${query.KDR.toFixed(2)} KDR` : 
-                  category == 'connections' ? `${query.connections} connections` : 
+                  category == 'longestKill' ? `${query.longestKill}m` :
+                  category == 'money' ? `$${(query.user.guilds[GuildDB.serverID].balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}` :
+                  category == 'KDR' ? `${query.KDR.toFixed(2)} KDR` :
+                  category == 'connections' ? `${query.connections} connections` :
                   category == 'combatRating' ? `${query.combatRating}` : 'N/A Error';
 
       statsEmbed.addFields({ name: 'Leaderboard Position', value: `# ${leaderboardPos}`, inline: true });
-      
+
       if ((category == 'shotsLanded' || category == 'timesShot') && !client.exists(query.shotsLanded)) query = insertPVPstats(query);
 
       if (category == 'totalSessionTime') {
@@ -154,11 +154,11 @@ module.exports = {
           { name: 'Longest Game Session', value: client.secondsToDhms(query.longestSessionTime), inline: true },
           { name: 'Last Session Time', value: client.secondsToDhms(query.lastSessionTime), inline: true }
         );
-      } else if (category == 'shotsLanded') { 
+      } else if (category == 'shotsLanded') {
         statsEmbed.addFields(
           { name: 'Total Shots Landed', value: `${query.shotsLanded}`, inline: true },
           { name: 'View Weapon stats', value: `</weapon-stats:1169369568104415262>`, inline: true }
-        );  
+        );
 
         const chart = {
           type: 'bar',
@@ -189,18 +189,18 @@ module.exports = {
             },
           },
         };
-        
+
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}`;
-        
+
         statsEmbed.setImage(chartURL);
 
-      } else if (category == 'timesShot') { 
+      } else if (category == 'timesShot') {
         statsEmbed.addFields(
           { name: 'Total Times Shot', value: `${query.timesShot}`, inline: true },
           { name: 'View Weapon stats', value: `</weapon-stats:1169369568104415262>`, inline: true },
         );
-    
+
         const chart = {
           type: 'bar',
           data: {
@@ -230,12 +230,12 @@ module.exports = {
             },
           },
         };
-        
+
         const encodedChart = encodeURIComponent(JSON.stringify(chart));
         const chartURL = `https://quickchart.io/chart?bkg=${encodeURIComponent("#ded8d7")}&c=${encodedChart}`;
-        
+
         statsEmbed.setImage(chartURL);
-    
+
       } else if (category == 'combatRating') {
 
         let data = query.combatRatingHistory;
@@ -318,7 +318,7 @@ module.exports = {
         statsEmbed.setImage(chartURL);
 
       } else statsEmbed.addFields({ name: title, value: stats, inline: true });
- 
+
       return interaction.send({ embeds: [statsEmbed] });
     },
   },

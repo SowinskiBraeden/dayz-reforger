@@ -57,7 +57,7 @@ module.exports = {
       longestKill:            0,
       deathStreak:            0,
       worstDeathStreak:       0,
-      
+
       // In depth PVP Stats
       shotsLanded:            0,
       timesShot:              0,
@@ -75,7 +75,7 @@ module.exports = {
       highestCombatRating:    800,
       lowestCombatRating:     800,
       combatRatingHistory:    [800],
-      
+
       // General Session Data
       lastConnectionDate:     null,
       lastDisconnectionDate:  null,
@@ -87,13 +87,13 @@ module.exports = {
       lastPos:                [],
       time:                   null,
       lastTime:               null,
-      
+
       // Session Stats
       totalSessionTime:       0,
       lastSessionTime:        0,
       longestSessionTime:     0,
       connections:            0,
- 
+
       // Other
       bounties:               [],
       bountiesLength:         0,

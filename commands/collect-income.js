@@ -22,7 +22,7 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
       if (GuildDB.customChannelStatus==true&&!GuildDB.allowedChannels.includes(interaction.channel_id)) {
-        return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) }); 
+        return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) });
       }
 
       const hasIncomeRole = GuildDB.incomeRoles.some(data => {
@@ -41,7 +41,7 @@ module.exports = {
 
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
 
-      
+
       if (!banking) {
         banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
         if (!client.exists(banking)) return client.sendInternalError(interaction, err);
@@ -54,7 +54,7 @@ module.exports = {
       }
 
       if (!client.exists(banking.guilds[GuildDB.serverID].lastIncome)) banking.guilds[GuildDB.serverID].lastIncome = new Date('2000-01-01T00:00:00');
-      
+
       let now = new Date();
       let diff = (now - banking.guilds[GuildDB.serverID].lastIncome) / 1000;
       diff /= (60 * 60);
@@ -96,7 +96,7 @@ module.exports = {
         date.setHours(date.getHours() + GuildDB.incomeLimiter);
         diff = (date - now) / 1000;
         let timeTillIncome = client.secondsToDhms(diff);
-        
+
         const error = new EmbedBuilder()
           .setColor(client.config.Colors.Red)
           .setDescription(`You've already collected your income this week. Wait **${timeTillIncome}** to collect again.`);

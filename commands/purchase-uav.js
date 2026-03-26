@@ -39,7 +39,7 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
-      
+
       if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
         const warnNitradoNotInitialized = new EmbedBuilder()
           .setColor(client.config.Colors.Yellow)
@@ -72,7 +72,7 @@ module.exports = {
       }
 
       const newBalance = banking.guilds[GuildDB.serverID].balance - GuildDB.uavPrice;
-    
+
       client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
         if (err) return client.sendInternalError(interaction, err);
       });

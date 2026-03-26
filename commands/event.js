@@ -31,7 +31,7 @@ module.exports = {
       type: CommandOptions.Integer,
       required: true,
       choices: [
-        { name: '10-minutes', value: 10 }, { name: '15-minutes', value: 15 }, { name: '20-minutes', value: 20 }, { name: '25-minutes', value: 25 }, 
+        { name: '10-minutes', value: 10 }, { name: '15-minutes', value: 15 }, { name: '20-minutes', value: 20 }, { name: '25-minutes', value: 25 },
         { name: '30-minutes', value: 30 }, { name: '60-minutes', value: 60 }, { name: '90-minutes', value: 90 }, { name: '120-minutes', value: 120 },
       ]
     },
@@ -134,7 +134,7 @@ module.exports = {
             value: GuildDB.events[i].name
           });
         }
-        
+
         const eventsOptions = new ActionRowBuilder().addComponents(events);
 
         return interaction.send({ components: [eventsOptions], flags: (1 << 6) });
@@ -146,7 +146,7 @@ module.exports = {
 
     DeleteEvent: {
       run: async(client, interaction, GuildDB) => {
-        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+        if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         let event = GuildDB.events.find(e => e.name == interaction.values[0]);
@@ -162,7 +162,7 @@ module.exports = {
         let successEmbed = new EmbedBuilder()
           .setColor(client.config.Colors.Green)
           .setDescription(`**Success:** Successfully Deleted **${event.name} Event**`);
-  
+
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     }

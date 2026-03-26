@@ -44,7 +44,7 @@ module.exports = {
         const warnGTOverwrite = new EmbedBuilder()
           .setColor(client.config.Colors.Yellow)
           .setDescription(`**Notice:**\n> The gamertag has previously been linked to <@${playerStat.discordID}>. Are you sure you would like to change this?`)
-        
+
         const opt = new ActionRowBuilder()
           .addComponents(
             new ButtonBuilder()
@@ -61,7 +61,7 @@ module.exports = {
       }
 
       playerStat.discordID = interaction.member.user.id;
-      
+
       await UpdatePlayer(client, playerStat, interaction);
 
       let member = interaction.guild.members.cache.get(interaction.member.user.id);
@@ -87,14 +87,14 @@ module.exports = {
 
     OverwriteGamertag: {
       run: async(client, interaction, GuildDB) => {
-        if (!interaction.customId.endsWith(interaction.member.user.id)) 
+        if (!interaction.customId.endsWith(interaction.member.user.id))
           return interaction.reply({ content: 'This interaction is not for you', flags: (1 << 6) });
 
         if (interaction.customId.split('-')[1]=='yes') {
           let playerStat = await client.dbo.collection("players").findOne({"gamertag": interaction.customId.split('-')[2]});
 
           playerStat.discordID = interaction.member.user.id;
-          
+
           await UpdatePlayer(client, playerStat, interaction);
 
           let member = interaction.guild.members.cache.get(interaction.member.user.id);
@@ -123,6 +123,6 @@ module.exports = {
         }
       }
     }
-  
+
   }
 }

@@ -11,7 +11,7 @@ module.exports = {
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: ["MANAGE_GUILD"],
-  },  
+  },
   options: [{
     name: "duration",
     description: "Select the duration of the emp (30 or 60 minutes)",
@@ -32,7 +32,7 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
-      
+
       if (!client.exists(GuildDB.Nitrado) || !client.exists(GuildDB.Nitrado.ServerID) || !client.exists(GuildDB.Nitrado.UserID) || !client.exists(GuildDB.Nitrado.Auth)) {
         const warnNitradoNotInitialized = new EmbedBuilder()
           .setColor(client.config.Colors.Yellow)
@@ -45,7 +45,7 @@ module.exports = {
 
       const duration = args[0].value;
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
-      
+
       if (!banking) {
         banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
         if (!client.exists(banking)) return client.sendInternalError(interaction, err);
@@ -67,13 +67,13 @@ module.exports = {
 
       const price = duration == 30 ? GuildDB.empPrice : GuildDB.empPrice * 2;
       const newBalance = banking.guilds[GuildDB.serverID].balance - price;
-    
+
       if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription('**Notice:** No Existing Alarms to EMP.')], flags: (1 << 6) });
 
       client.dbo.collection("users").updateOne({"user.userID":interaction.member.user.id},{$set:{[`user.guilds.${GuildDB.serverID}.balance`]:newBalance}}, (err, res) => {
         if (err) return client.sendInternalError(interaction, err);
       });
-      
+
       let alarms = new StringSelectMenuBuilder()
         .setCustomId(`EMPAlarmSelect-${interaction.member.user.id}`)
         .setPlaceholder(`Select an Alarm to EMP.`)

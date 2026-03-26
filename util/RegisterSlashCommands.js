@@ -8,7 +8,7 @@ const { REST } = require('@discordjs/rest');
  * @param {require("../structures/DayzRBot")} client
  */
 module.exports = {
-  // Register guild commands  
+  // Register guild commands
   RegisterGuildCommands: async (client, guild) => {
     const commands = [];
     const commandFiles = fs.readdirSync(path.join(__dirname, "..", "commands")).filter(file => file.endsWith('.js'));
@@ -50,7 +50,7 @@ module.exports = {
       if (command.global) commands.push(command);
     }
 
-    const rest = new REST({ version: '10' }).setToken(client.config.Token); 
+    const rest = new REST({ version: '10' }).setToken(client.config.Token);
 
     try {
       client.log('[global] Started refreshing global (/) commands.');

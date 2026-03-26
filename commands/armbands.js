@@ -22,12 +22,12 @@ module.exports = {
     */
     run: async (client, interaction, args, { GuildDB }) => {
       if (GuildDB.customChannelStatus==true&&!GuildDB.allowedChannels.includes(interaction.channel_id))
-        return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) }); 
-      
+        return interaction.send({ content: `You are not allowed to use the bot in this channel.`,  flags: (1 << 6) });
+
       let available = new StringSelectMenuBuilder()
         .setCustomId(`View-1-${interaction.member.user.id}`)
         .setPlaceholder('View an armband from list 1')
-      
+
       let availableNext = new StringSelectMenuBuilder()
         .setCustomId(`View-2-${interaction.member.user.id}`)
         .setPlaceholder('View an armband from list 2')
@@ -55,7 +55,7 @@ module.exports = {
       if (tracker > 25) {
         opt2 = new ActionRowBuilder().addComponents(availableNext);
         compList.push(opt2);
-      } 
+      }
 
       return interaction.send({ components: compList, flags: (1 << 6) });
     },

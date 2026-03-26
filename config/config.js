@@ -18,7 +18,7 @@ const PresenceStatus = {
 };
 
 module.exports = {
-	Dev: process.env.Dev || "DEV.",                     
+	Dev: process.env.Dev || "DEV.",
 	Version: package.version, // (major).(minor).(patch)
   Admins: ["362791661274660874", "329371697570381824"], // Admins of the bot
   SupportServer: "https://discord.gg/KVFJCvvFtK", // Support Server Link

@@ -15,11 +15,11 @@ const generateAlarmMenus = (alarms, customId, placeholder, description) => {
       currentAlarmComponents.addOptions({
         label: alarm.name,
         description: description,
-        value: alarm.name,  
+        value: alarm.name,
       });
     });
     alarmComponents.push(new ActionRowBuilder().addComponents(currentAlarmComponents));
-    id++; 
+    id++;
   }
 
   return alarmComponents;
@@ -34,7 +34,7 @@ module.exports = {
   permissions: {
     channel: ["VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS"],
     member: ["MANAGE_GUILD"],
-  },  
+  },
   options: [
     {
       name: "create",
@@ -229,7 +229,7 @@ module.exports = {
      * @param {string[]} args
      * @param {*} param3
     */
-    run: async (client, interaction, args, { GuildDB }) => {      
+    run: async (client, interaction, args, { GuildDB }) => {
       const permissions = bitfieldCalculator.permissions(interaction.member.permissions);
       let canUseCommand = false;
 
@@ -293,9 +293,9 @@ module.exports = {
         return interaction.send({ components: alarmComponents, flags: (1 << 6) });
 
       } else if (args[0].name == 'add-player' || args[0].name == 'remove-player') {
-        
+
         const add = args[0].name == 'add-player';
-       
+
         if (GuildDB.alarms.length == 0) return interaction.send({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Default).setDescription(`**Notice:** No Existing Alarms to ${add?'Add':'Remove'} Player ${add?'to':'from'}.`)] });
 
         const alarmComponents = generateAlarmMenus(
@@ -422,7 +422,7 @@ module.exports = {
 
         if (interaction.customId.split('-')[1] == 'yes') {
           let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.customId.split('-')[2]);
-  
+
           client.dbo.collection('guilds').updateOne({ 'server.serverID': GuildDB.serverID }, {
             $pull: {
               'server.alarms': alarm,
@@ -430,17 +430,17 @@ module.exports = {
           }, (err, res) => {
             if (err) return client.sendInternalError(interaction, err);
           });
-  
+
           let successEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`**Success:** Successfully Deleted **${interaction.customId.split('-')[2]}**`);
-  
+
           return interaction.update({ embeds: [successEmbed], components: [] });
         } else {
           let successEmbed = new EmbedBuilder()
             .setColor(client.config.Colors.Green)
             .setDescription(`The Zone Alarm **${interaction.customId.split('-')[2]}** will not be deleted.`);
-  
+
           return interaction.update({ embeds: [successEmbed], components: []});
         }
       }
@@ -449,14 +449,14 @@ module.exports = {
       run: async(client, interaction, GuildDB) => {
         let alarm = GuildDB.alarms.find(alarm => alarm.name == interaction.values[0]);
         let alarmIndex = GuildDB.alarms.indexOf(alarm);
-      
+
         let playerStat = await client.dbo.collection("players").findOne({"gamertag": interaction.customId.split('-')[2]});
         if (!client.exists(playerStat)) return interaction.update({ embeds: [new EmbedBuilder().setColor(client.config.Colors.Yellow).setDescription('**Not Found** This player cannot be found, the gamertag may be incorrect or this player has not logged onto the server before.')], components: [] });
-      
+
         let add = interaction.customId.split('-')[1] == 'add';
 
         if (add) alarm.ignoredPlayers.push(playerStat.playerID);
-        else alarm.ignoredPlayers = alarm.ignoredPlayers.filter((v) => { 
+        else alarm.ignoredPlayers = alarm.ignoredPlayers.filter((v) => {
           return v != playerStat.playerID;
         });
 
@@ -514,7 +514,7 @@ module.exports = {
               value: alarm.rules[i]
             });
           }
-          
+
           const opt = new ActionRowBuilder().addComponents(alarmRules);
 
           return interaction.update({ components: [opt], flags: (1 << 6) });
@@ -642,5 +642,5 @@ module.exports = {
         return interaction.update({ embeds: [successEmbed], components: [] });
       }
     }
-  } 
+  }
 }

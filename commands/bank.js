@@ -64,7 +64,7 @@ module.exports = {
       }
 
       let banking = await client.dbo.collection("users").findOne({"user.userID": interaction.member.user.id}).then(banking => banking);
-      
+
       if (!banking) {
         banking = await createUser(interaction.member.user.id, GuildDB.serverID, GuildDB.startingBalance, client)
         if (!client.exists(banking)) return client.sendInternalError(interaction, err);
@@ -91,7 +91,7 @@ module.exports = {
             if (!client.exists(banking)) return client.sendInternalError(interaction, err);
           }
           targetUserBanking = targetUserBanking.user;
-    
+
           if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
             const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
             if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
@@ -141,7 +141,7 @@ module.exports = {
           if (!client.exists(banking)) return client.sendInternalError(interaction, err);
         }
         targetUserBanking = targetUserBanking.user;
-  
+
         if (!client.exists(targetUserBanking.guilds[GuildDB.serverID])) {
           const success = addUser(banking.guilds, GuildDB.serverID, targetUserID, client, GuildDB.startingBalance);
           if (!success) return client.sendInternalError(interaction, 'Failed to add bank');
