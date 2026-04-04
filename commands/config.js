@@ -1,6 +1,6 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const CommandOptions = require('../util/CommandOptionTypes').CommandOptionTypes;
-const bitfieldCalculator = require('discord-bitfield-calculator');
+// const bitfieldCalculator = require('discord-bitfield-calculator');
 const { getDefaultSettings } = require('../database/guild');
 
 module.exports = {
@@ -429,10 +429,11 @@ module.exports = {
      * @param {*} param3
     */
     run: async (client, interaction, args, { GuildDB }) => {
-      const permissions = bitfieldCalculator.permissions(interaction.member.permissions);
+      // const permissions = new PermissionsBitField(interaction.member.permissions).toArray();
+      const permissions = new PermissionsBitField(interaction.member.permissions).toArray();
       let canUseCommand = false;
 
-      if (permissions.includes("MANAGE_GUILD")) canUseCommand = true;
+      if (permissions.includes("ManageGuild")) canUseCommand = true;
       if (GuildDB.hasBotAdmin && interaction.member.roles.filter(e => GuildDB.botAdminRoles.indexOf(e) !== -1).length > 0) canUseCommand = true;
       if (!canUseCommand) return interaction.send({ content: 'You don\'t have the permissions to use this command.' });
 
